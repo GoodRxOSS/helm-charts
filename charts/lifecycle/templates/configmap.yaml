@@ -1,0 +1,43 @@
+# Copyright 2025 GoodRx, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+{{- if .Values.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+{{- if and .Values.config.fullnameOverride (ne .Values.config.fullnameOverride "") }}
+  name: {{ .Values.config.fullnameOverride }}
+{{- else }}
+  name: {{ include "..helper.fullname" $ }}-config
+{{- end }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/resource-policy": keep
+data:
+  APP_HOST: https://app.{{ .Values.global.domain }}
+  DISTRIBUTION_HOST: distribution.{{ .Values.global.domain }}
+  BUILDKIT_HOST: {{ include "..helper.buildkitSvcUrl" $ }}
+{{- if and .Values.secrets.bootstrap.fullnameOverride (ne .Values.secrets.bootstrap.fullnameOverride "") }}
+  SECRET_BOOTSTRAP_NAME: {{ .Values.secrets.bootstrap.fullnameOverride }}
+{{- else }}
+  SECRET_BOOTSTRAP_NAME: {{ include "..helper.fullname" $ }}-bootstrap
+{{- end }}
+{{- if and .Values.secrets.common.fullnameOverride (ne .Values.secrets.common.fullnameOverride "") }}
+  SECRET_COMMON_NAME: {{ .Values.secrets.common.fullnameOverride }}
+{{- else }}
+  SECRET_COMMON_NAME: {{ include "..helper.fullname" $ }}-common
+{{- end }}
+{{- end -}}

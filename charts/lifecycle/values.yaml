@@ -1,0 +1,320 @@
+# Copyright 2025 GoodRx, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+global:
+  domain: example.com
+  appSubDomain: app
+  scope: core
+  image:
+    repository: lifecycleoss/app
+    tag: ""
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: []
+
+  podSecurityContext:
+    fsGroup: 2000
+
+  securityContext:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+
+  env:
+    - name: JOB_VERSION
+      value: default
+    - name: ENVIRONMENT
+      value: production
+    - name: NODE_ENV
+      value: production
+    - name: APP_ENV
+      value: production
+    - name: PINO_PRETTY
+      value: "false"
+    - name: PORT
+      value: "80"
+  envFrom: {}
+
+components:
+  web:
+    enabled: true
+    fullnameOverride: ""
+
+    container:
+      command: []
+      args: []
+
+    service:
+      enabled: true
+      type: ClusterIP
+      port: 80
+      targetPort: 80
+
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+      hosts: []
+      defaultBackend: {}
+
+    deployment:
+      replicaCount: 1
+      resources:
+        requests:
+          cpu: 200m
+          memory: 200Mi
+      extraEnv:
+        - name: LIFECYCLE_MODE
+          value: web
+      envFrom: {}
+
+      ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+      livenessProbe:
+        httpGet:
+          path: /api/health
+          port: http
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        failureThreshold: 6
+      readinessProbe:
+        httpGet:
+          path: /api/health
+          port: http
+        periodSeconds: 5
+        failureThreshold: 3
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
+      volumes: []
+      volumeMounts: []
+      startupProbe: {}
+
+  worker:
+    enabled: true
+    fullnameOverride: ""
+
+    container:
+      command: []
+      args: []
+
+    service:
+      enabled: false
+      externalTrafficPolicy: ""
+      clusterIP: ""
+
+    ingress:
+      enabled: false
+
+    networkPolicy:
+      enabled: false
+      ingress: []
+      egress: []
+
+    deployment:
+      replicaCount: 1
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 4000Mi
+        requests:
+          cpu: 200m
+          memory: 200Mi
+      extraEnv:
+        - name: LIFECYCLE_MODE
+          value: job
+        - name: STAGE
+          value: prod
+        - name: LOG_LEVEL
+          value: info
+        - name: MAX_GITHUB_API_REQUEST
+          value: "33"
+        - name: GITHUB_API_REQUEST_INTERVAL
+          value: "10000"
+      envFrom: {}
+
+      ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+      livenessProbe:
+        httpGet:
+          path: /api/health
+          port: http
+        initialDelaySeconds: 60
+        periodSeconds: 10
+        failureThreshold: 12
+        timeoutSeconds: 10
+      readinessProbe:
+        httpGet:
+          path: /api/jobs
+          port: http
+        periodSeconds: 5
+        failureThreshold: 3
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
+      volumes: []
+      volumeMounts: []
+      startupProbe: {}
+
+    pdb:
+      enabled: false
+      minAvailable: 1
+
+    hpa:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80
+
+rbac:
+  create: true
+
+config:
+  enabled: true
+  fullnameOverride: ""
+  annotations: []
+
+secrets:
+  common:
+    enabled: true
+    fullnameOverride: ""
+    annotations: []
+
+  bootstrap:
+    enabled: true
+    fullnameOverride: ""
+    annotations: []
+
+    githubPrivateKey: ""
+    githubClientSecret: ""
+    githubWebhookSecret: ""
+    githubAppId: ""
+    githubClientId: ""
+    githubInstallationId: ""
+
+  postgres:
+    enabled: true
+    fullnameOverride: ""
+    annotations: []
+    postgresAdminPassword: ""
+    postgresUserPassword: ""
+
+  redis:
+    enabled: true
+    fullnameOverride: ""
+    annotations: []
+    redisPassword: ""
+
+
+postgres:
+  enabled: true
+  fullnameOverride: ""
+
+  # Values passed directly to the bitnami/postgresql subchart.
+  # Refer to Bitnami PostgreSQL chart docs for all options:
+  # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+
+  auth:
+    database: lifecycle
+    username: lifecycle
+    existingSecret: '{{ include "..helper.postgresSecretName" . }}'
+    secretKeys:
+      adminPasswordKey: "POSTGRES_ADMIN_PASSWORD"
+      userPasswordKey: "POSTGRES_USER_PASSWORD"
+
+  # Persistence settings (example)
+  primary:
+    persistence:
+      enabled: true
+      size: 11Gi
+#   resources:
+#     requests:
+#       cpu: 100m
+#       memory: 256Mi
+#     limits:
+#       cpu: 200m
+#       memory: 512Mi
+
+redis:
+  enabled: true
+  fullnameOverride: ""
+
+  # Values passed directly to the bitnami/redis subchart.
+  # Refer to Bitnami Redis chart docs for all options:
+  # https://github.com/bitnami/charts/tree/main/bitnami/redis
+
+  auth:
+    enabled: true
+    password: "password"
+    existingSecret: '{{ include "..helper.redisSecretName" . }}'
+    existingSecretPasswordKey: "REDIS_PASSWORD"
+
+  architecture: standalone
+  master:
+    persistence:
+      enabled: true
+      size: 8Gi
+#   resources: # Example resource limits
+#     requests:
+#       cpu: 100m
+#       memory: 128Mi
+#     limits:
+#       cpu: 200m
+#       memory: 256Mi
+
+distribution:
+  enabled: true
+  image:
+    tag: "2.8.3"
+  persistence:
+    enabled: true
+    size: "20Gi"
+  ingress:
+    enabled: true
+    hostname: distribution.example.com
+    ingressClassName: "nginx"
+    annotations:
+      "nginx.ingress.kubernetes.io/proxy-body-size": "0"
+
+buildkit:
+  enabled: true
+  fullnameOverride: ""
+  buildkitdToml: |
+    debug = true
+    [registry."distribution.example.com"]
+      http = true
+      insecure = true
+    [worker.oci]
+      platforms = [ "linux/amd64" ]
+      reservedSpace = "60%"
+      maxUsedSpace = "80%"
+      max-parallelism = 25
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"

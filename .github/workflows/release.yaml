@@ -1,0 +1,128 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - charts/*/Chart.yaml
+
+env:
+  CHARTS_BASE_DIR: charts
+  SKIP_EXISTING: "true"
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+
+      - name: Process All Charts and Add Repositories Dynamically
+        shell: bash
+        run: |
+          #!/usr/bin/env bash
+          set -eo pipefail
+
+          declare -A repos_to_add
+
+          mapfile -t chart_yaml_paths < <(find "${CHARTS_BASE_DIR}" -name "Chart.yaml")
+
+          for chart_yaml_path in "${chart_yaml_paths[@]}"; do
+            echo "Processing Chart.yaml: ${chart_yaml_path}"
+            chart_dir=$(dirname "${chart_yaml_path}")
+
+            helm dependency update "${chart_dir}" || { echo "Failed to update dependencies for ${chart_dir}"; exit 1; }
+
+            mapfile -t current_chart_repos < <(yq '.dependencies[] | .repository' "${chart_yaml_path}")
+
+            for repo_url in "${current_chart_repos[@]}"; do
+              if [[ -n "$repo_url" && ! "$repo_url" =~ ^\s*# ]]; then
+                repos_to_add["$repo_url"]=1
+              fi
+            done
+          done
+
+          echo "Adding unique Helm repositories:"
+          if [ ${#repos_to_add[@]} -eq 0 ]; then
+            echo "No external repositories found in Chart.yaml files. Skipping helm repo add commands."
+          else
+            for repo_url in "${!repos_to_add[@]}"; do
+              repo_name=$(echo "$repo_url" | sed -r 's/https?:\/\///' | tr -s '/.' '-' | tr -dc '[:alnum:]-')
+              repo_name="${repo_name:0:30}"
+              echo "Adding repository: ${repo_name} from ${repo_url}"
+              helm repo add "$repo_name" "$repo_url" || { echo "Failed to add repo ${repo_name} ${repo_url}"; exit 1; }
+            done
+          fi
+
+          helm repo update
+          echo "All Helm repositories added and updated."
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_SKIP_EXISTING: ${{ env.SKIP_EXISTING }}
+        with:
+          charts_dir: ${{ env.CHARTS_BASE_DIR }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package and Push Helm charts to OCI Registry
+        env:
+          SKIP_EXISTING_OCI: ${{ env.SKIP_EXISTING }}
+        shell: bash
+        run: |
+          set -eo pipefail
+
+          mapfile -t chart_yaml_paths < <(find "${CHARTS_BASE_DIR}" -name "Chart.yaml")
+
+          for chart_yaml_path in "${chart_yaml_paths[@]}"; do
+            chart_dir=$(dirname "${chart_yaml_path}")
+            echo "--- Processing chart in ${chart_dir} ---"
+
+            CHART_NAME=$(yq e '.name' "${chart_yaml_path}")
+            CHART_VERSION=$(yq e '.version' "${chart_yaml_path}")
+            OCI_REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            OCI_REPO="oci://ghcr.io/${OCI_REPO_LOWER}"
+
+            if [[ "${SKIP_EXISTING_OCI}" == "true" ]]; then
+              echo "Checking if ${CHART_NAME}:${CHART_VERSION} exists in ${OCI_REPO}"
+              if helm pull "${OCI_REPO}/${CHART_NAME}" --version "${CHART_VERSION}" &>/dev/null; then
+                echo "Chart version ${CHART_VERSION} already exists. Skipping push."
+                continue
+              else
+                echo "Chart version ${CHART_VERSION} not found. Proceeding with push."
+              fi
+            fi
+
+            echo "Packaging ${CHART_NAME}:${CHART_VERSION}..."
+            helm package "${chart_dir}"
+
+            PACKAGE_FILE="${CHART_NAME}-${CHART_VERSION}.tgz"
+
+            echo "Pushing ${PACKAGE_FILE} to OCI registry..."
+            helm push "${PACKAGE_FILE}" "${OCI_REPO}"
+
+            echo "Successfully pushed ${CHART_NAME} to ghcr.io"
+          done

@@ -1,0 +1,194 @@
+{{- /*
+Copyright 2025 GoodRx, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
+
+{{- range $name, $component := .Values.components }}
+{{- if $component.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+{{- if and $component.fullnameOverride (ne $component.fullnameOverride "") }}
+  name: {{ $component.fullnameOverride }}
+{{- else }}
+  name: {{ include "..helper.fullname" $ }}-{{ $name }}
+{{- end }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "..helper.labels" (merge (dict "component" $name) $) | nindent 4 }}
+spec:
+  replicas: {{ $component.deployment.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "..helper.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $name }}
+  template:
+    metadata:
+      labels:
+        {{- include "..helper.labels" (merge (dict "component" $name) $) | nindent 8 }}
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "..helper.serviceAccountName" $ }}
+      securityContext:
+        {{- toYaml $.Values.global.podSecurityContext | nindent 8 }}
+      {{- with $component.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $component.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $component.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $component.deployment.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $name }}
+          securityContext:
+            {{- toYaml $.Values.global.securityContext | nindent 12 }}
+          image: "{{ $.Values.global.image.repository }}:{{ dig "image" "tag" (include "..helper.appVersion" $) $component }}"
+          imagePullPolicy: {{ dig "image" "pullPolicy" $.Values.global.image.pullPolicy $component }}
+          {{- if $component.container.command }}
+          command:
+            {{- toYaml $component.container.command | nindent 12 }}
+          {{- end }}
+          {{- if $component.container.args }}
+          args:
+            {{- toYaml $component.container.args | nindent 12 }}
+          {{- end }}
+          env:
+            {{- if $.Values.postgres.enabled }}
+            - name: APP_DB_HOST
+              value: {{ include "..helper.postgresSvcPrefix" $ }}
+            - name: APP_DB_PORT
+              value: {{ $.Values.postgres.auth.port | default "5432" | quote }}
+            - name: APP_DB_USER
+              value: {{ $.Values.postgres.auth.username | default "postgres" | quote }}
+            - name: APP_DB_NAME
+              value: {{ $.Values.postgres.auth.database | default "postgres" | quote }}
+            - name: APP_DB_PASSWORD
+              valueFrom:
+                {{- if $.Values.postgres.auth.existingSecret }}
+                secretKeyRef:
+                  name: {{ printf "%s" (tpl $.Values.postgres.auth.existingSecret $) }}
+                  key: {{ $.Values.postgres.auth.secretKeys.userPasswordKey | default "APP_DB_PASSWORD" | quote }}
+                {{- else if $.Values.postgres.auth.password }}
+                value: {{ $.Values.postgres.auth.password | default "postgres" | quote }}
+                {{- else }}
+                value: {{ "postgres" | quote }}
+                {{- end }}
+            {{- end }}
+            {{- if $.Values.redis.enabled }}
+            - name: APP_REDIS_HOST
+              value: {{ include "..helper.redisSvcPrefix" $ }}
+            - name: APP_REDIS_PORT
+              value: {{ $.Values.redis.auth.port | default "6379" | quote }}
+            - name: APP_REDIS_PASSWORD
+              valueFrom:
+                {{- if $.Values.redis.auth.existingSecret }}
+                secretKeyRef:
+                  name: {{ printf "%s" (tpl $.Values.redis.auth.existingSecret $) }}
+                  key: {{ $.Values.redis.auth.existingSecretPasswordKey | default "APP_REDIS_PASSWORD" | quote }}
+                {{- else if $.Values.redis.auth.password }}
+                value: {{ $.Values.redis.auth.password | default "password" | quote }}
+                {{- else }}
+                value: {{ "password" | quote }}
+                {{- end }}
+            {{- end }}
+            {{- range $.Values.global.env }}
+            - name: {{ .name }}
+              {{- if hasKey . "value" }}
+              value: {{ .value | quote }}
+              {{- else if hasKey . "valueFrom" }}
+              valueFrom:
+                {{- toYaml .valueFrom | nindent 16 }}
+              {{- end }}
+            {{- end }}
+            {{- range $component.deployment.extraEnv }}
+            - name: {{ .name }}
+              {{- if hasKey . "value" }}
+              value: {{ .value | quote }}
+              {{- else if hasKey . "valueFrom" }}
+              valueFrom:
+                {{- toYaml .valueFrom | nindent 16 }}
+              {{- end }}
+            {{- end }}
+            - name: HELM_RELEASE_NAME
+              value: {{ $.Release.Name }}
+          envFrom:
+          {{- if $.Values.config.enabled }}
+            - configMapRef:
+              {{- if $.Values.config.fullnameOverride }}
+                name: {{ $.Values.config.fullnameOverride }}
+              {{- else }}
+                name: {{ include "..helper.fullname" $ }}-config
+              {{- end }}
+          {{- end }}
+          {{- if $.Values.secrets.bootstrap.enabled }}
+            - secretRef:
+              {{- if $.Values.secrets.bootstrap.fullnameOverride }}
+                name: {{ $.Values.secrets.bootstrap.fullnameOverride }}
+              {{- else }}
+                name: {{ include "..helper.fullname" $ }}-bootstrap
+              {{- end }}
+          {{- end }}
+          {{- if $.Values.secrets.common.enabled }}
+            - secretRef:
+              {{- if $.Values.secrets.common.fullnameOverride }}
+                name: {{ $.Values.secrets.common.fullnameOverride }}
+              {{- else }}
+                name: {{ include "..helper.fullname" $ }}-common
+              {{- end }}
+          {{- end }}
+          {{- if $.Values.global.envFrom }}
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
+          {{- end }}
+          {{- if $component.deployment.envFrom }}
+            {{- toYaml $component.deployment.envFrom | nindent 12 }}
+          {{- end }}
+          ports:
+            {{- with $component.deployment.ports }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            {{- with $component.deployment.livenessProbe }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            {{- with $component.deployment.readinessProbe }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- with $component.deployment.resources }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with $component.deployment.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $component.deployment.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
+{{- end }}

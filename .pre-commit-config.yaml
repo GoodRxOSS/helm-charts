@@ -1,0 +1,42 @@
+---
+repos:
+  - repo: local
+    hooks:
+      - id: helm-lint
+        name: helm lint
+        language: system
+        entry: bash -c 'for file in "$@"; do chart_dir=$(dirname "$file"); if [ "$(basename "$chart_dir")" = "templates" ]; then chart_dir=$(dirname "$chart_dir"); fi; helm lint "$chart_dir"; done' bash
+        files: ^charts/.*/(Chart\.yaml|values\.yaml|templates/.*\.yaml)$
+        pass_filenames: true
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.37.1
+    hooks:
+      - id: yamllint
+        args: [--strict, -c, .yamllint.yml]
+
+  - repo: https://github.com/google/addlicense
+    rev: "master"
+    hooks:
+      - id: addlicense
+        args: [
+          "-c", "GoodRx, Inc.",
+          "-ignore", ".pre-commit-config.yaml",
+          "-ignore", ".github/**",
+          "-ignore", ".yamllint.yml",
+          "."
+        ]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # - id: check-yaml
+      # - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/norwoodj/helm-docs
+    rev: "v1.14.2"
+    hooks:
+      - id: helm-docs-built
+        args:
+          - --chart-search-root=charts
