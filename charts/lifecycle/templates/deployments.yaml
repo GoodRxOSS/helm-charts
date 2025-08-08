@@ -124,6 +124,15 @@ spec:
                 {{- toYaml .valueFrom | nindent 16 }}
               {{- end }}
             {{- end }}
+            {{- range $.Values.global.extraEnv }}
+            - name: {{ .name }}
+              {{- if hasKey . "value" }}
+              value: {{ .value | quote }}
+              {{- else if hasKey . "valueFrom" }}
+              valueFrom:
+                {{- toYaml .valueFrom | nindent 16 }}
+              {{- end }}
+            {{- end }}
             {{- range $component.deployment.extraEnv }}
             - name: {{ .name }}
               {{- if hasKey . "value" }}
