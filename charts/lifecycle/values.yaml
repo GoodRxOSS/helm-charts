@@ -217,6 +217,7 @@ secrets:
     githubAppId: ""
     githubClientId: ""
     githubInstallationId: ""
+    appBootstrapToken: ""
 
   postgres:
     enabled: true
@@ -230,7 +231,6 @@ secrets:
     fullnameOverride: ""
     annotations: []
     redisPassword: ""
-
 
 postgres:
   enabled: true
