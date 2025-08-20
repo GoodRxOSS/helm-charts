@@ -180,6 +180,7 @@ A Helm umbrella chart for full Lifecycle stack
 | secrets.bootstrap.githubInstallationId | string | `""` |  |
 | secrets.bootstrap.githubPrivateKey | string | `""` |  |
 | secrets.bootstrap.githubWebhookSecret | string | `""` |  |
+| secrets.bootstrap.appBootstrapToken | string | `""` |  |
 | secrets.common.annotations | list | `[]` |  |
 | secrets.common.enabled | bool | `true` |  |
 | secrets.common.fullnameOverride | string | `""` |  |
