@@ -243,6 +243,8 @@ postgres:
   # Refer to Bitnami PostgreSQL chart docs for all options:
   # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
 
+  image:
+    repository: bitnamilegacy/postgresql
   auth:
     database: lifecycle
     username: lifecycle
@@ -272,6 +274,8 @@ redis:
   # Refer to Bitnami Redis chart docs for all options:
   # https://github.com/bitnami/charts/tree/main/bitnami/redis
 
+  image:
+    repository: bitnamilegacy/redis
   auth:
     enabled: true
     password: "password"
