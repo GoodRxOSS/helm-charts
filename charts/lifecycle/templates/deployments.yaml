@@ -28,6 +28,11 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "..helper.labels" (merge (dict "component" $name) $) | nindent 4 }}
+    {{- if $component.extraLabels }}
+    {{- range $key, $value := $component.extraLabels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
 spec:
   replicas: {{ $component.deployment.replicaCount | default 1 }}
   selector:
@@ -38,6 +43,11 @@ spec:
     metadata:
       labels:
         {{- include "..helper.labels" (merge (dict "component" $name) $) | nindent 8 }}
+        {{- if $component.extraLabels }}
+        {{- range $key, $value := $component.extraLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
     spec:
       {{- with $.Values.global.imagePullSecrets }}
       imagePullSecrets:

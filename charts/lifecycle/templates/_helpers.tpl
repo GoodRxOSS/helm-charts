@@ -48,6 +48,11 @@ app.kubernetes.io/version: {{ include "..helper.appVersion" . | quote }}
 app.kubernetes.io/component: {{ .component }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/part-of: {{ .Values.global.scope | default "core" }}
+{{- if .Values.global.extraLabels }}
+{{- range $key, $value := .Values.global.extraLabels }}
+{{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{/*

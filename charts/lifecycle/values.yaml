@@ -48,12 +48,14 @@ global:
     - name: PORT
       value: "80"
   extraEnv: []
+  extraLabels: {}
   envFrom: {}
 
 components:
   web:
     enabled: true
     fullnameOverride: ""
+    extraLabels: {}
 
     container:
       command: []
@@ -111,6 +113,7 @@ components:
   worker:
     enabled: true
     fullnameOverride: ""
+    extraLabels: {}
 
     container:
       command: []
