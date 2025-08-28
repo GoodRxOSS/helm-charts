@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.6-alpha.3](https://img.shields.io/badge/AppVersion-0.0.6--alpha.3-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.6-alpha.3](https://img.shields.io/badge/AppVersion-0.0.6--alpha.3-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -49,6 +49,7 @@ A Helm umbrella chart for full Lifecycle stack
 | components.web.deployment.volumeMounts | list | `[]` |  |
 | components.web.deployment.volumes | list | `[]` |  |
 | components.web.enabled | bool | `true` |  |
+| components.web.extraLabels | object | `{}` |  |
 | components.web.fullnameOverride | string | `""` |  |
 | components.web.ingress.annotations."cert-manager.io/cluster-issuer" | string | `"letsencrypt"` |  |
 | components.web.ingress.defaultBackend | object | `{}` |  |
@@ -97,6 +98,7 @@ A Helm umbrella chart for full Lifecycle stack
 | components.worker.deployment.volumeMounts | list | `[]` |  |
 | components.worker.deployment.volumes | list | `[]` |  |
 | components.worker.enabled | bool | `true` |  |
+| components.worker.extraLabels | object | `{}` |  |
 | components.worker.fullnameOverride | string | `""` |  |
 | components.worker.hpa.enabled | bool | `false` |  |
 | components.worker.hpa.maxReplicas | int | `5` |  |
@@ -141,6 +143,7 @@ A Helm umbrella chart for full Lifecycle stack
 | global.env[5].name | string | `"PORT"` |  |
 | global.env[5].value | string | `"80"` |  |
 | global.extraEnv | list | `[]` |  |
+| global.extraLabels | object | `{}` |  |
 | global.image.pullPolicy | string | `"IfNotPresent"` |  |
 | global.image.repository | string | `"lifecycleoss/app"` |  |
 | global.image.tag | string | `""` |  |
@@ -172,6 +175,7 @@ A Helm umbrella chart for full Lifecycle stack
 | redis.master.persistence.enabled | bool | `true` |  |
 | redis.master.persistence.size | string | `"8Gi"` |  |
 | secrets.bootstrap.annotations | list | `[]` |  |
+| secrets.bootstrap.appBootstrapToken | string | `""` |  |
 | secrets.bootstrap.enabled | bool | `true` |  |
 | secrets.bootstrap.fullnameOverride | string | `""` |  |
 | secrets.bootstrap.githubAppId | string | `""` |  |
@@ -180,7 +184,6 @@ A Helm umbrella chart for full Lifecycle stack
 | secrets.bootstrap.githubInstallationId | string | `""` |  |
 | secrets.bootstrap.githubPrivateKey | string | `""` |  |
 | secrets.bootstrap.githubWebhookSecret | string | `""` |  |
-| secrets.bootstrap.appBootstrapToken | string | `""` |  |
 | secrets.common.annotations | list | `[]` |  |
 | secrets.common.enabled | bool | `true` |  |
 | secrets.common.fullnameOverride | string | `""` |  |
