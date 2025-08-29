@@ -162,6 +162,7 @@ A Helm umbrella chart for full Lifecycle stack
 | postgres.auth.username | string | `"lifecycle"` |  |
 | postgres.enabled | bool | `true` |  |
 | postgres.fullnameOverride | string | `""` |  |
+| postgres.image.repository | string | `"bitnamilegacy/postgresql"` |  |
 | postgres.primary.persistence.enabled | bool | `true` |  |
 | postgres.primary.persistence.size | string | `"11Gi"` |  |
 | rbac.create | bool | `true` |  |
@@ -172,6 +173,7 @@ A Helm umbrella chart for full Lifecycle stack
 | redis.auth.password | string | `"password"` |  |
 | redis.enabled | bool | `true` |  |
 | redis.fullnameOverride | string | `""` |  |
+| redis.image.repository | string | `"bitnamilegacy/redis"` |  |
 | redis.master.persistence.enabled | bool | `true` |  |
 | redis.master.persistence.size | string | `"8Gi"` |  |
 | secrets.bootstrap.annotations | list | `[]` |  |
