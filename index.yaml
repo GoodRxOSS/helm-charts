@@ -3,6 +3,37 @@ entries:
   lifecycle:
   - apiVersion: v2
     appVersion: 0.0.6-alpha.3
+    created: "2025-08-29T20:42:07.981547448Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.5.19
+    - alias: redis
+      condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 19.6.3
+    - alias: distribution
+      condition: distribution.enabled
+      name: distribution
+      repository: https://jouve.github.io/charts
+      version: 0.1.7
+    - alias: buildkit
+      condition: buildkit.enabled
+      name: buildkit-service
+      repository: https://andrcuns.github.io/charts
+      version: 0.10.0
+    description: A Helm umbrella chart for full Lifecycle stack
+    digest: 647c44c5485de2887600f141588bff1407d0b548840659aa5f5d5f7a290fad21
+    name: lifecycle
+    type: application
+    urls:
+    - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-0.3.1/lifecycle-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: 0.0.6-alpha.3
     created: "2025-08-28T19:17:44.80445211Z"
     dependencies:
     - alias: postgres
@@ -125,4 +156,4 @@ entries:
     urls:
     - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-0.1.0/lifecycle-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-28T19:17:44.804466467Z"
+generated: "2025-08-29T20:42:07.981569389Z"
