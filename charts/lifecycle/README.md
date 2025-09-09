@@ -177,7 +177,6 @@ A Helm umbrella chart for full Lifecycle stack
 | redis.master.persistence.enabled | bool | `true` |  |
 | redis.master.persistence.size | string | `"8Gi"` |  |
 | secrets.bootstrap.annotations | list | `[]` |  |
-| secrets.bootstrap.appBootstrapToken | string | `""` |  |
 | secrets.bootstrap.enabled | bool | `true` |  |
 | secrets.bootstrap.fullnameOverride | string | `""` |  |
 | secrets.bootstrap.githubAppId | string | `""` |  |

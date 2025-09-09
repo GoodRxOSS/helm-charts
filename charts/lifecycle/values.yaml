@@ -220,7 +220,6 @@ secrets:
     githubAppId: ""
     githubClientId: ""
     githubInstallationId: ""
-    appBootstrapToken: ""
 
   postgres:
     enabled: true
