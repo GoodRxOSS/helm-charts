@@ -1,17 +1,59 @@
 # lifecycle
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.6-alpha.3](https://img.shields.io/badge/AppVersion-0.0.6--alpha.3-informational?style=flat-square)
+![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.3](https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
+
+## Installation
+
+### Prerequisites
+
+Create a minimal `values.yaml` file with your domain configuration:
+
+```yaml
+global:
+  domain: YOUR-DOMAIN.com  # CHANGE THIS to your actual domain
+  image:
+    tag: 0.1.3
+
+distribution:
+  ingress:
+    hostname: distribution.YOUR-DOMAIN.com  # CHANGE THIS to match your domain
+
+buildkit:
+  buildkitdToml: |
+    debug = true
+    [registry."distribution.YOUR-DOMAIN.com"]  # CHANGE THIS to match your domain
+      http = true
+      insecure = true
+    [worker.oci]
+      platforms = [ "linux/amd64" ]
+      reservedSpace = "60%"
+      maxUsedSpace = "80%"
+      max-parallelism = 25
+```
+
+**Important:** Replace all instances of `YOUR-DOMAIN.com` with your actual domain name.
+
+### Install the Chart
+
+```bash
+helm upgrade -i lifecycle \
+  oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
+  --version 0.3.3 \
+  -f values.yaml \
+  -n lifecycle-app \
+  --create-namespace
+```
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 0.10.0 |
-| https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
-| https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
-| https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
+| <https://andrcuns.github.io/charts> | buildkit(buildkit-service) | 0.10.0 |
+| <https://charts.bitnami.com/bitnami> | postgres(postgresql) | 15.5.19 |
+| <https://charts.bitnami.com/bitnami> | redis(redis) | 19.6.3 |
+| <https://jouve.github.io/charts> | distribution(distribution) | 0.1.7 |
 
 ## Values
 
@@ -197,4 +239,3 @@ A Helm umbrella chart for full Lifecycle stack
 | secrets.redis.enabled | bool | `true` |  |
 | secrets.redis.fullnameOverride | string | `""` |  |
 | secrets.redis.redisPassword | string | `""` |  |
-
