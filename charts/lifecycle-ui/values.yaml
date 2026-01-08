@@ -1,0 +1,142 @@
+# Copyright 2025 GoodRx, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+global:
+  domain: example.com
+  uiSubDomain: ui
+
+image:
+  repository: lifecycleoss/lifecycle-ui
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+extraLabels: {}
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: false
+  runAsNonRoot: false
+
+deployment:
+  replicaCount: 1
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+  livenessProbe:
+    httpGet:
+      path: /api/health
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 6
+
+  readinessProbe:
+    httpGet:
+      path: /api/health
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 3
+
+  startupProbe: {}
+
+  command: []
+  args: []
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+  extraEnv: []
+  envFrom: []
+
+  volumes: []
+  volumeMounts: []
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+  annotations: {}
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts: []
+  # - host: ui.example.com
+  #   paths:
+  #     - path: /
+  #       pathType: Prefix
+  tls: []
+  # - secretName: ui-tls
+  #   hosts:
+  #     - ui.example.com
+
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+pdb:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+secrets:
+  enabled: true
+  fullnameOverride: ""
+  annotations: {}
+  nextauthSecret: ""
+  keycloakClientSecret: ""
+  keycloakServiceClientSecret: ""
+
+config:
+  enabled: true
+  fullnameOverride: ""
+  annotations: {}
+
+  nextPublicAppUrl: ""
+  appUrl: ""
+  nextauthUrl: ""
+  nextPublicApiUrl: ""
+  apiUrl: ""
+
+  nextPublicKeycloakBaseUrl: ""
+  keycloakBaseUrl: ""
+  nextPublicKeycloakRealm: ""
+  keycloakRealm: ""
+  keycloakClientId: ""
+  keycloakServiceClientId: ""
