@@ -26,10 +26,10 @@ spec:
   selector:
     matchLabels:
       {{- include "lifecycle-ui.helper.selectorLabels" . | nindent 6 }}
-  {{- if .Values.pdb.minAvailable }}
-  minAvailable: {{ .Values.pdb.minAvailable }}
-  {{- end }}
+  {{- /* maxUnavailable takes precedence if set, otherwise use minAvailable */}}
   {{- if .Values.pdb.maxUnavailable }}
   maxUnavailable: {{ .Values.pdb.maxUnavailable }}
+  {{- else if .Values.pdb.minAvailable }}
+  minAvailable: {{ .Values.pdb.minAvailable }}
   {{- end }}
 {{- end }}
