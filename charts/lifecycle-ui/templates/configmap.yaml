@@ -1,0 +1,44 @@
+{{- /*
+Copyright 2025 GoodRx, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
+
+{{- if .Values.config.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "lifecycle-ui.helper.configName" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "lifecycle-ui.helper.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/resource-policy": keep
+  {{- with .Values.config.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  NEXT_PUBLIC_APP_URL: {{ .Values.config.nextPublicAppUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
+  APP_URL: {{ .Values.config.appUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
+  NEXTAUTH_URL: {{ .Values.config.nextauthUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
+  NEXT_PUBLIC_API_URL: {{ .Values.config.nextPublicApiUrl | quote }}
+  API_URL: {{ .Values.config.apiUrl | quote }}
+  NEXT_PUBLIC_KEYCLOAK_BASE_URL: {{ .Values.config.nextPublicKeycloakBaseUrl | quote }}
+  KEYCLOAK_BASE_URL: {{ .Values.config.keycloakBaseUrl | quote }}
+  NEXT_PUBLIC_KEYCLOAK_REALM: {{ .Values.config.nextPublicKeycloakRealm | quote }}
+  KEYCLOAK_REALM: {{ .Values.config.keycloakRealm | quote }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.config.keycloakClientId | quote }}
+  KEYCLOAK_SERVICE_CLIENT_ID: {{ .Values.config.keycloakServiceClientId | quote }}
+{{- end }}
