@@ -220,6 +220,16 @@ entries:
     version: 0.1.0
   lifecycle-ui:
   - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2026-01-08T21:50:36.1089456Z"
+    description: A Helm chart for Lifecycle UI
+    digest: eeb61d23ae3530af362c0ddcb233f6e42a40a12c2ed913fc4eb05f94e3878a66
+    name: lifecycle-ui
+    type: application
+    urls:
+    - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-ui-0.1.1/lifecycle-ui-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2026-01-08T21:02:03.86506821Z"
     description: A Helm chart for Lifecycle UI
@@ -229,4 +239,4 @@ entries:
     urls:
     - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-ui-0.1.0/lifecycle-ui-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-08T21:02:03.865089047Z"
+generated: "2026-01-08T21:50:36.108968994Z"
