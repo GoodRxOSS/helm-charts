@@ -1,0 +1,122 @@
+# Copyright 2026 GoodRx, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+nameOverride: ""
+fullnameOverride: ""
+
+watchNamespaces:
+# If this variable is not specified, the keycloak-operator will watch the namespace where it is installed.
+#  - keycloak
+
+keycloak:
+  image:
+    repository: quay.io/keycloak/keycloak
+    tag: ""
+    pullPolicy: IfNotPresent
+
+image:
+  repository: quay.io/keycloak/keycloak-operator
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+rbac:
+  create: true
+
+podSecurityContext:
+  fsGroup: 2000
+
+securityContext:
+  readOnlyRootFilesystem: false
+  runAsNonRoot: false
+
+service:
+  type: ClusterIP
+  port: 80
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: 700m
+    memory: 450Mi
+  requests:
+    cpu: 300m
+    memory: 450Mi
+
+env: {}
+
+extraEnv: []
+envFrom: {}
+
+container:
+  command: []
+  args: []
+
+ports:
+  - name: http
+    containerPort: 8080
+    protocol: TCP
+
+livenessProbe:
+  httpGet:
+    path: /q/health/live
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /q/health/ready
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+startupProbe:
+  httpGet:
+    path: /q/health/started
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+volumes: []
+volumeMounts: []
+
+extraLabels: {}
+
+deployment:
+  extraLabels: {}
+  annotations: {}

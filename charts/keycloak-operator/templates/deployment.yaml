@@ -1,0 +1,151 @@
+{{- /*
+Copyright 2026 GoodRx, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+{{- if and .Values.fullnameOverride (ne .Values.fullnameOverride "") }}
+  name: {{ .Values.fullnameOverride }}
+{{- else }}
+  name: {{ include "keycloak-operator.fullname" . }}
+{{- end }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "keycloak-operator.labels" (merge (dict "component" "operator") .) | nindent 4 }}
+    {{- if .Values.deployment.extraLabels }}
+    {{- range $key, $value := .Values.deployment.extraLabels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
+  {{- with .Values.deployment.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "keycloak-operator.labels" (merge (dict "component" "operator") .) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "keycloak-operator.labels" (merge (dict "component" "operator") .) | nindent 8 }}
+        {{- if .Values.deployment.extraLabels }}
+        {{- range $key, $value := .Values.deployment.extraLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "keycloak-operator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ include "keycloak-operator.name" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (include "keycloak-operator.appVersion" .) }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.container.command }}
+          command:
+            {{- toYaml .Values.container.command | nindent 12 }}
+          {{- end }}
+          {{- if .Values.container.args }}
+          args:
+            {{- toYaml .Values.container.args | nindent 12 }}
+          {{- end }}
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: RELATED_IMAGE_KEYCLOAK
+              value: "{{ .Values.keycloak.image.repository }}:{{ .Values.keycloak.image.tag | default .Chart.AppVersion }}"
+            - name: QUARKUS_OPERATOR_SDK_CONTROLLERS_KEYCLOAKREALMIMPORTCONTROLLER_NAMESPACES
+              value: {{ .Values.watchNamespaces | default (list "JOSDK_WATCH_CURRENT") | join "," | quote }}
+            - name: QUARKUS_OPERATOR_SDK_CONTROLLERS_KEYCLOAKCONTROLLER_NAMESPACES
+              value: {{ .Values.watchNamespaces | default (list "JOSDK_WATCH_CURRENT") | join "," | quote }}
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              {{- if hasKey . "value" }}
+              value: {{ .value | quote }}
+              {{- else if hasKey . "valueFrom" }}
+              valueFrom:
+                {{- toYaml .valueFrom | nindent 16 }}
+              {{- end }}
+            {{- end }}
+            {{- range .Values.extraEnv }}
+            - name: {{ .name }}
+              {{- if hasKey . "value" }}
+              value: {{ .value | quote }}
+              {{- else if hasKey . "valueFrom" }}
+              valueFrom:
+                {{- toYaml .valueFrom | nindent 16 }}
+              {{- end }}
+            {{- end }}
+            - name: HELM_RELEASE_NAME
+              value: {{ .Release.Name }}
+          envFrom:
+          {{- if .Values.envFrom }}
+            {{- toYaml .Values.envFrom | nindent 12 }}
+          {{- end }}
+          ports:
+            {{- with .Values.ports }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            {{- with .Values.livenessProbe }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            {{- with .Values.readinessProbe }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- with .Values.resources }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
