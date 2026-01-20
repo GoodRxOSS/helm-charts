@@ -1,0 +1,1797 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../lifecycle-ui/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/logo.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>lifecycle - Lifecycle Helm Charts</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lifecycle" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Lifecycle Helm Charts" class="md-header__button md-logo" aria-label="Lifecycle Helm Charts" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lifecycle Helm Charts
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              lifecycle
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Lifecycle Helm Charts" class="md-nav__button md-logo" aria-label="Lifecycle Helm Charts" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Lifecycle Helm Charts
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle Helm Charts Repository
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Charts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../keycloak-operator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    keycloak-operator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lifecycle-ui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lifecycle-ui
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lifecycle
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lifecycle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-the-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install the Chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Values
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-the-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install the Chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Values
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lifecycle">lifecycle</h1>
+<p><img alt="Version: 0.3.3" src="https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.1.3" src="https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square" /></p>
+<p>A Helm umbrella chart for full Lifecycle stack</p>
+<h2 id="installation">Installation</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Create a minimal <code>values.yaml</code> file with your domain configuration:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">global</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">YOUR-DOMAIN.com</span><span class="w">  </span><span class="c1"># CHANGE THIS to your actual domain</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">image</span><span class="p">:</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">tag</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1.3</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nt">distribution</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">ingress</span><span class="p">:</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">distribution.YOUR-DOMAIN.com</span><span class="w">  </span><span class="c1"># CHANGE THIS to match your domain</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nt">buildkit</span><span class="p">:</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="nt">buildkitdToml</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="no">debug = true</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="no">[registry.&quot;distribution.YOUR-DOMAIN.com&quot;]  # CHANGE THIS to match your domain</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">      </span><span class="no">http = true</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">      </span><span class="no">insecure = true</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="no">[worker.oci]</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">      </span><span class="no">platforms = [ &quot;linux/amd64&quot; ]</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">      </span><span class="no">reservedSpace = &quot;60%&quot;</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">      </span><span class="no">maxUsedSpace = &quot;80%&quot;</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">      </span><span class="no">max-parallelism = 25</span>
+</span></code></pre></div>
+<p><strong>Important:</strong> Replace all instances of <code>YOUR-DOMAIN.com</code> with your actual domain name.</p>
+<h3 id="install-the-chart">Install the Chart</h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>lifecycle<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>oci://ghcr.io/goodrxoss/helm-charts/lifecycle<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.3.3<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>-f<span class="w"> </span>values.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>-n<span class="w"> </span>lifecycle-app<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--create-namespace
+</span></code></pre></div>
+<h2 id="requirements">Requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Name</th>
+<th>Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>https://andrcuns.github.io/charts</td>
+<td>buildkit(buildkit-service)</td>
+<td>0.10.0</td>
+</tr>
+<tr>
+<td>https://charts.bitnami.com/bitnami</td>
+<td>postgres(postgresql)</td>
+<td>15.5.19</td>
+</tr>
+<tr>
+<td>https://charts.bitnami.com/bitnami</td>
+<td>redis(redis)</td>
+<td>19.6.3</td>
+</tr>
+<tr>
+<td>https://jouve.github.io/charts</td>
+<td>distribution(distribution)</td>
+<td>0.1.7</td>
+</tr>
+</tbody>
+</table>
+<h2 id="values">Values</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>buildkit.buildkitdToml</td>
+<td>string</td>
+<td><code>"debug = true\n[registry.\"distribution.example.com\"]\n  http = true\n  insecure = true\n[worker.oci]\n  platforms = [ \"linux/amd64\" ]\n  reservedSpace = \"60%\"\n  maxUsedSpace = \"80%\"\n  max-parallelism = 25\n"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>buildkit.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>buildkit.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>buildkit.resources.requests.cpu</td>
+<td>string</td>
+<td><code>"500m"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>buildkit.resources.requests.memory</td>
+<td>string</td>
+<td><code>"1Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.container.args</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.container.command</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.envFrom</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.extraEnv[0].name</td>
+<td>string</td>
+<td><code>"LIFECYCLE_MODE"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.extraEnv[0].value</td>
+<td>string</td>
+<td><code>"web"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.livenessProbe.failureThreshold</td>
+<td>int</td>
+<td><code>6</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.livenessProbe.httpGet.path</td>
+<td>string</td>
+<td><code>"/api/health"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.livenessProbe.httpGet.port</td>
+<td>string</td>
+<td><code>"http"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.livenessProbe.initialDelaySeconds</td>
+<td>int</td>
+<td><code>60</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.livenessProbe.periodSeconds</td>
+<td>int</td>
+<td><code>10</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.nodeSelector</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.ports[0].containerPort</td>
+<td>int</td>
+<td><code>80</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.ports[0].name</td>
+<td>string</td>
+<td><code>"http"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.ports[0].protocol</td>
+<td>string</td>
+<td><code>"TCP"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.readinessProbe.failureThreshold</td>
+<td>int</td>
+<td><code>3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.readinessProbe.httpGet.path</td>
+<td>string</td>
+<td><code>"/api/health"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.readinessProbe.httpGet.port</td>
+<td>string</td>
+<td><code>"http"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.readinessProbe.periodSeconds</td>
+<td>int</td>
+<td><code>5</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.replicaCount</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.resources.requests.cpu</td>
+<td>string</td>
+<td><code>"200m"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.resources.requests.memory</td>
+<td>string</td>
+<td><code>"200Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.startupProbe</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.volumeMounts</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.deployment.volumes</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.extraLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.ingress.annotations."cert-manager.io/cluster-issuer"</td>
+<td>string</td>
+<td><code>"letsencrypt"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.ingress.defaultBackend</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.ingress.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.ingress.hosts</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.ingress.ingressClassName</td>
+<td>string</td>
+<td><code>"nginx"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.service.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.service.port</td>
+<td>int</td>
+<td><code>80</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.service.targetPort</td>
+<td>int</td>
+<td><code>80</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.web.service.type</td>
+<td>string</td>
+<td><code>"ClusterIP"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.container.args</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.container.command</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.envFrom</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[0].name</td>
+<td>string</td>
+<td><code>"LIFECYCLE_MODE"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[0].value</td>
+<td>string</td>
+<td><code>"job"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[1].name</td>
+<td>string</td>
+<td><code>"STAGE"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[1].value</td>
+<td>string</td>
+<td><code>"prod"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[2].name</td>
+<td>string</td>
+<td><code>"LOG_LEVEL"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[2].value</td>
+<td>string</td>
+<td><code>"info"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[3].name</td>
+<td>string</td>
+<td><code>"MAX_GITHUB_API_REQUEST"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[3].value</td>
+<td>string</td>
+<td><code>"33"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[4].name</td>
+<td>string</td>
+<td><code>"GITHUB_API_REQUEST_INTERVAL"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.extraEnv[4].value</td>
+<td>string</td>
+<td><code>"10000"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.livenessProbe.failureThreshold</td>
+<td>int</td>
+<td><code>12</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.livenessProbe.httpGet.path</td>
+<td>string</td>
+<td><code>"/api/health"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.livenessProbe.httpGet.port</td>
+<td>string</td>
+<td><code>"http"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.livenessProbe.initialDelaySeconds</td>
+<td>int</td>
+<td><code>60</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.livenessProbe.periodSeconds</td>
+<td>int</td>
+<td><code>10</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.livenessProbe.timeoutSeconds</td>
+<td>int</td>
+<td><code>10</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.nodeSelector</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.ports[0].containerPort</td>
+<td>int</td>
+<td><code>80</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.ports[0].name</td>
+<td>string</td>
+<td><code>"http"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.ports[0].protocol</td>
+<td>string</td>
+<td><code>"TCP"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.readinessProbe.failureThreshold</td>
+<td>int</td>
+<td><code>3</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.readinessProbe.httpGet.path</td>
+<td>string</td>
+<td><code>"/api/jobs"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.readinessProbe.httpGet.port</td>
+<td>string</td>
+<td><code>"http"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.readinessProbe.periodSeconds</td>
+<td>int</td>
+<td><code>5</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.replicaCount</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.resources.limits.cpu</td>
+<td>string</td>
+<td><code>"1000m"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.resources.limits.memory</td>
+<td>string</td>
+<td><code>"4000Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.resources.requests.cpu</td>
+<td>string</td>
+<td><code>"200m"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.resources.requests.memory</td>
+<td>string</td>
+<td><code>"200Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.startupProbe</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.volumeMounts</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.deployment.volumes</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.extraLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.hpa.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.hpa.maxReplicas</td>
+<td>int</td>
+<td><code>5</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.hpa.metrics[0].resource.name</td>
+<td>string</td>
+<td><code>"cpu"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.hpa.metrics[0].resource.target.averageUtilization</td>
+<td>int</td>
+<td><code>80</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.hpa.metrics[0].resource.target.type</td>
+<td>string</td>
+<td><code>"Utilization"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.hpa.metrics[0].type</td>
+<td>string</td>
+<td><code>"Resource"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.hpa.minReplicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.ingress.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.networkPolicy.egress</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.networkPolicy.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.networkPolicy.ingress</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.pdb.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.pdb.minAvailable</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.service.clusterIP</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.service.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>components.worker.service.externalTrafficPolicy</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>config.annotations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>config.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>config.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.image.tag</td>
+<td>string</td>
+<td><code>"2.8.3"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.ingress.annotations."nginx.ingress.kubernetes.io/proxy-body-size"</td>
+<td>string</td>
+<td><code>"0"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.ingress.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.ingress.hostname</td>
+<td>string</td>
+<td><code>"distribution.example.com"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.ingress.ingressClassName</td>
+<td>string</td>
+<td><code>"nginx"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.persistence.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>distribution.persistence.size</td>
+<td>string</td>
+<td><code>"20Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.appSubDomain</td>
+<td>string</td>
+<td><code>"app"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.domain</td>
+<td>string</td>
+<td><code>"example.com"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.envFrom</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[0].name</td>
+<td>string</td>
+<td><code>"JOB_VERSION"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[0].value</td>
+<td>string</td>
+<td><code>"default"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[1].name</td>
+<td>string</td>
+<td><code>"ENVIRONMENT"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[1].value</td>
+<td>string</td>
+<td><code>"production"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[2].name</td>
+<td>string</td>
+<td><code>"NODE_ENV"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[2].value</td>
+<td>string</td>
+<td><code>"production"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[3].name</td>
+<td>string</td>
+<td><code>"APP_ENV"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[3].value</td>
+<td>string</td>
+<td><code>"production"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[4].name</td>
+<td>string</td>
+<td><code>"PINO_PRETTY"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[4].value</td>
+<td>string</td>
+<td><code>"false"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[5].name</td>
+<td>string</td>
+<td><code>"PORT"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.env[5].value</td>
+<td>string</td>
+<td><code>"80"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.extraEnv</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.extraLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.image.pullPolicy</td>
+<td>string</td>
+<td><code>"IfNotPresent"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.image.repository</td>
+<td>string</td>
+<td><code>"lifecycleoss/app"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.image.tag</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.imagePullSecrets</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.podSecurityContext.fsGroup</td>
+<td>int</td>
+<td><code>2000</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.scope</td>
+<td>string</td>
+<td><code>"core"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.securityContext.readOnlyRootFilesystem</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.securityContext.runAsNonRoot</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.serviceAccount.annotations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.serviceAccount.create</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>global.serviceAccount.name</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.auth.database</td>
+<td>string</td>
+<td><code>"lifecycle"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.auth.existingSecret</td>
+<td>string</td>
+<td><code>"{{ include \"..helper.postgresSecretName\" . }}"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.auth.secretKeys.adminPasswordKey</td>
+<td>string</td>
+<td><code>"POSTGRES_ADMIN_PASSWORD"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.auth.secretKeys.userPasswordKey</td>
+<td>string</td>
+<td><code>"POSTGRES_USER_PASSWORD"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.auth.username</td>
+<td>string</td>
+<td><code>"lifecycle"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.image.repository</td>
+<td>string</td>
+<td><code>"bitnamilegacy/postgresql"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.primary.persistence.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>postgres.primary.persistence.size</td>
+<td>string</td>
+<td><code>"11Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>rbac.create</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.architecture</td>
+<td>string</td>
+<td><code>"standalone"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.auth.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.auth.existingSecret</td>
+<td>string</td>
+<td><code>"{{ include \"..helper.redisSecretName\" . }}"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.auth.existingSecretPasswordKey</td>
+<td>string</td>
+<td><code>"REDIS_PASSWORD"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.auth.password</td>
+<td>string</td>
+<td><code>"password"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.image.repository</td>
+<td>string</td>
+<td><code>"bitnamilegacy/redis"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.master.persistence.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>redis.master.persistence.size</td>
+<td>string</td>
+<td><code>"8Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.annotations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.githubAppId</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.githubClientId</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.githubClientSecret</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.githubInstallationId</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.githubPrivateKey</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.bootstrap.githubWebhookSecret</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.common.annotations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.common.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.common.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.postgres.annotations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.postgres.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.postgres.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.postgres.postgresAdminPassword</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.postgres.postgresUserPassword</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.redis.annotations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.redis.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.redis.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.redis.redisPassword</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
