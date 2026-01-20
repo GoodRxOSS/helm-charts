@@ -1,0 +1,44 @@
+name: Pages
+on:
+  push:
+    branches: [main]
+
+jobs:
+  pages:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: pip install mkdocs-material mkdocs-awesome-pages-plugin
+
+      - name: Prepare Docs Folder
+        run: |
+          mkdir -p docs/charts
+          cp README.md docs/index.md
+          for dir in charts/*/; do
+            chart_name=$(basename "$dir")
+            if [ -f "${dir}README.md" ]; then
+              cp "${dir}README.md" "docs/charts/${chart_name}.md"
+            fi
+          done
+          cp -r assets docs/assets || echo "No assets"
+
+      - name: Build Documentation
+        run: mkdocs build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          keep_files: true
