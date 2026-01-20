@@ -1,0 +1,39 @@
+# {{ template "chart.name" . }}
+
+{{ template "chart.versionBadge" . }} {{ template "chart.typeBadge" . }} {{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+## Installation
+
+### Prerequisites
+
+You may want to override the `{{ template "chart.name" . }}` container image tag and/or the `keycloak` image tag. You should also specify a custom namespace where the operator will watch for Keycloak Custom Resources (CRs); ensure this namespace exists before installation. To do this, create a minimal `values.yaml` file with your configuration:
+
+```yaml
+keycloak:
+  image:
+    tag: "{{ template "chart.appVersion" . }}"
+
+image:
+  tag: "{{ template "chart.appVersion" . }}"
+
+watchNamespaces:
+  - keycloak
+  - my-app
+```
+
+**Important:** A new version of the `{{ template "chart.name" . }}` service may require a new Custom Resource Definition (CRD). Since the CRD is part of this Helm chart, it must be updated during the installation.
+
+### Install the Chart
+
+```shell
+helm upgrade -i {{ template "chart.name" . }} \
+  oci://ghcr.io/goodrxoss/helm-charts/{{ template "chart.name" . }} \
+  --version {{ template "chart.version" . }} \
+  -f values.yaml \
+  -n {{ template "chart.name" . }} \
+  --create-namespace
+```
+
+{{ template "chart.valuesSection" . }}
