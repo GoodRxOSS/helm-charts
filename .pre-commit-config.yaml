@@ -27,6 +27,7 @@ repos:
           "-ignore", ".github/**",
           "-ignore", ".yamllint.yml",
           "-ignore", ".pre-commit/**",
+          "-ignore", "mkdocs.yml",
         ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
