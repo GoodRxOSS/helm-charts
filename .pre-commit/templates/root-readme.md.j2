@@ -1,0 +1,11 @@
+# <img src="./assets/logo.svg" style="height:32px; width:auto; vertical-align:middle;"> Lifecycle Helm Charts Repository
+
+A collection of Helm charts primarily used for **Lifecycle** application deployment.
+
+## 📚 Available Charts:
+
+| Chart | Version | App Version | Description |
+| :--- | :--- | :--- | :--- |
+{% for chart in charts -%}
+| [{{ chart.name }}](./charts/{{ chart.dir_name }}) | `{{ chart.version }}` | `{{ chart.appVersion }}` | {{ chart.description }} |
+{% endfor %}
