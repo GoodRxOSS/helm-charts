@@ -14,7 +14,7 @@
 
 apiVersion: v2
 name: lifecycle-ui
-description: A Helm chart for Lifecycle UI
+description: A Helm chart for Lifecycle UI (Next.js)
 type: application
 version: 0.1.1
 appVersion: 0.1.1
