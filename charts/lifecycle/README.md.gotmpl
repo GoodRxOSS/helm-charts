@@ -1,0 +1,51 @@
+# {{ template "chart.name" . }}
+
+{{ template "chart.versionBadge" . }} {{ template "chart.typeBadge" . }} {{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+## Installation
+
+### Prerequisites
+
+Create a minimal `values.yaml` file with your domain configuration:
+
+```yaml
+global:
+  domain: YOUR-DOMAIN.com  # CHANGE THIS to your actual domain
+  image:
+    tag: 0.1.3
+
+distribution:
+  ingress:
+    hostname: distribution.YOUR-DOMAIN.com  # CHANGE THIS to match your domain
+
+buildkit:
+  buildkitdToml: |
+    debug = true
+    [registry."distribution.YOUR-DOMAIN.com"]  # CHANGE THIS to match your domain
+      http = true
+      insecure = true
+    [worker.oci]
+      platforms = [ "linux/amd64" ]
+      reservedSpace = "60%"
+      maxUsedSpace = "80%"
+      max-parallelism = 25
+```
+
+**Important:** Replace all instances of `YOUR-DOMAIN.com` with your actual domain name.
+
+### Install the Chart
+
+```bash
+helm upgrade -i {{ template "chart.name" . }} \
+  oci://ghcr.io/goodrxoss/helm-charts/{{ template "chart.name" . }} \
+  --version {{ template "chart.version" . }} \
+  -f values.yaml \
+  -n {{ template "chart.name" . }}-app \
+  --create-namespace
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}

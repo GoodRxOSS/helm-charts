@@ -1,6 +1,6 @@
 # keycloak-operator
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 26.4.7](https://img.shields.io/badge/AppVersion-26.4.7-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 26.4.7](https://img.shields.io/badge/AppVersion-26.4.7-informational?style=flat-square)
 
 Helm chart for Keycloak operator based on the [official manifests](https://www.keycloak.org/operator/installation#_installing_by_using_kubectl_without_operator_lifecycle_manager)
 
@@ -30,7 +30,7 @@ watchNamespaces:
 ```shell
 helm upgrade -i keycloak-operator \
   oci://ghcr.io/goodrxoss/helm-charts/keycloak-operator \
-  --version 0.2.0 \
+  --version 0.1.0 \
   -f values.yaml \
   -n keycloak-operator \
   --create-namespace

@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.3](https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square)
+![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.3](https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -50,10 +50,10 @@ helm upgrade -i lifecycle \
 
 | Repository | Name | Version |
 |------------|------|---------|
-| <https://andrcuns.github.io/charts> | buildkit(buildkit-service) | 0.10.0 |
-| <https://charts.bitnami.com/bitnami> | postgres(postgresql) | 15.5.19 |
-| <https://charts.bitnami.com/bitnami> | redis(redis) | 19.6.3 |
-| <https://jouve.github.io/charts> | distribution(distribution) | 0.1.7 |
+| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 0.10.0 |
+| https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
+| https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
+| https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
 

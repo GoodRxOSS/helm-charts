@@ -13,18 +13,19 @@ repos:
     rev: v1.37.1
     hooks:
       - id: yamllint
+        exclude: ^charts/.+/crds/.*$
         args: [--strict, -c, .yamllint.yml]
 
   - repo: https://github.com/google/addlicense
     rev: "master"
     hooks:
       - id: addlicense
+        exclude: ^charts/.+/crds/.*$
         args: [
           "-c", "GoodRx, Inc.",
           "-ignore", ".pre-commit-config.yaml",
           "-ignore", ".github/**",
           "-ignore", ".yamllint.yml",
-          "."
         ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks

@@ -1,0 +1,105 @@
+# {{ template "chart.name" . }}
+
+{{ template "chart.versionBadge" . }} {{ template "chart.typeBadge" . }} {{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+## Prerequisites
+
+- Kubernetes 1.19+
+- Helm 3.2.0+
+- Ingress controller (nginx recommended)
+- Keycloak instance for authentication
+- Lifecycle API backend
+
+## Installation
+
+### Minimal Configuration
+
+Create a `values.yaml` file with your configuration:
+
+```yaml
+global:
+  domain: YOUR-DOMAIN.com
+  uiSubDomain: ui
+
+config:
+  nextPublicApiUrl: "https://api.YOUR-DOMAIN.com"
+  apiUrl: "https://api.YOUR-DOMAIN.com"
+  nextPublicKeycloakBaseUrl: "https://keycloak.YOUR-DOMAIN.com"
+  keycloakBaseUrl: "https://keycloak.YOUR-DOMAIN.com"
+  nextPublicKeycloakRealm: "lifecycle"
+  keycloakRealm: "lifecycle"
+  keycloakClientId: "lifecycle-ui"
+  keycloakServiceClientId: "lifecycle-ui-service"
+```
+
+**Important:** Replace all instances of `YOUR-DOMAIN.com` with your actual domain name.
+
+### Install the Chart
+
+```bash
+helm upgrade -i {{ template "chart.name" . }} \
+  oci://ghcr.io/goodrxoss/helm-charts/{{ template "chart.name" . }} \
+  --version {{ template "chart.version" . }} \
+  -f values.yaml \
+  -n {{ template "chart.name" . }} \
+  --create-namespace
+```
+
+### Using a Custom Image
+
+To override the default image:
+
+```yaml
+image:
+  repository: your-registry/{{ template "chart.name" . }}
+  tag: "1.0.0"
+```
+
+### Enabling TLS
+
+To enable TLS with cert-manager:
+
+```yaml
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  tls:
+    - secretName: {{ template "chart.name" . }}-tls
+      hosts:
+        - ui.YOUR-DOMAIN.com
+```
+
+### Enabling Autoscaling
+
+```yaml
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+```
+
+### Custom Resource Limits
+
+```yaml
+deployment:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
