@@ -26,6 +26,7 @@ repos:
           "-ignore", ".pre-commit-config.yaml",
           "-ignore", ".github/**",
           "-ignore", ".yamllint.yml",
+          "-ignore", ".pre-commit/**",
         ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -41,3 +42,12 @@ repos:
       - id: helm-docs-built
         args:
           - --chart-search-root=charts
+
+  - repo: local
+    hooks:
+      - id: generate-root-readme
+        name: Generate Root README from Template
+        entry: python3 .pre-commit/scripts/generate-root-readme.py
+        language: python
+        additional_dependencies: [PyYAML, jinja2]
+        files: ^(charts/.+/Chart\.yaml|.pre-commit/templates/root-readme\.md\.j2)$
