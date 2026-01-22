@@ -1,0 +1,102 @@
+# Copyright 2026 GoodRx, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: {{ include "lifecycle-keycloak.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "lifecycle-keycloak.labels" (merge (dict "component" "keycloak") .) | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  instances: {{ .Values.instances }}
+  bootstrapAdmin:
+    user:
+      secret: {{ include "lifecycle-keycloak.bootstrapAdminSecretName" . | quote }}
+  db:
+    vendor: postgres
+    host: {{ include "lifecycle-keycloak.postgresSvcPrefix" . | quote }}
+    port: 5432
+    database: {{ .Values.postgres.auth.database | quote }}
+    usernameSecret:
+      name: {{ include "lifecycle-keycloak.postgresSecretName" . | quote }}
+      key: POSTGRES_USERNAME
+    passwordSecret:
+      name: {{ include "lifecycle-keycloak.postgresSecretName" . | quote }}
+      key: POSTGRES_USER_PASSWORD
+
+  http:
+    httpEnabled: true
+
+  hostname:
+    hostname: {{ .Values.hostname }}
+    strict: {{ .Values.hostnameStrict }}
+    backchannelDynamic: false
+
+  additionalOptions:
+    - name: hostname-strict-backchannel
+      value: "false"
+    - name: proxy-headers
+      value: "xforwarded"
+    - name: http-relative-path
+      value: /
+    - name: vault
+      value: file
+    - name: vault-dir
+      value: /opt/keycloak/vault
+    - name: spi-vault-file-key-resolvers
+      value: "KEY_ONLY"
+
+  ingress:
+    enabled: {{ .Values.ingress.enabled | default false }}
+    {{- if .Values.ingress.className }}
+    className: {{ .Values.ingress.className | quote }}
+    {{- end }}
+    {{- if .Values.ingress.tlsSecretName }}
+    tlsSecret: {{ .Values.ingress.tlsSecretName }}
+    {{- else }}
+    tlsSecret: {{ include "lifecycle-keycloak.fullname" . }}-keycloak-tls
+    {{- end }}
+    annotations:
+      {{- with .Values.ingress.annotations }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+
+  unsupported:
+    podTemplate:
+      spec:
+        containers:
+          - env:
+              - name: GITHUB_CLIENT_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ tpl (.Values.githubIdp.clientId.secretKeyRef.name | default (include "lifecycle-keycloak.githubIdpSecretName" .)) $ | quote }}
+                    key: {{ .Values.githubIdp.clientId.secretKeyRef.key | default "clientId" | quote }}
+            volumeMounts:
+              - name: vault-volume
+                mountPath: /opt/keycloak/vault
+                readOnly: true
+        volumes:
+          - name: vault-volume
+            projected:
+              sources:
+                - secret:
+                    name: {{ tpl (.Values.githubIdp.clientSecret.secretKeyRef.name | default (include "lifecycle-keycloak.githubIdpSecretName" .)) $ | quote }}
+                    items:
+                      - key: {{ .Values.githubIdp.clientSecret.secretKeyRef.key | default "clientSecret" | quote }}
+                        path: github-client-secret

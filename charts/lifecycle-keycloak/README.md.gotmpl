@@ -1,0 +1,135 @@
+# {{ template "chart.name" . }}
+
+{{ template "chart.versionBadge" . }} {{ template "chart.typeBadge" . }} {{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+---
+
+## ⚠️ Important: Requirements & Dependencies
+
+This chart does **not** install the Keycloak Operator itself. It manages the configuration (Custom Resources) that the operator processes to install Keycloak instance configured for Lifecycle Core and Lifecycle UI.
+
+* **Required Operator:** `keycloak-operator`
+* **Required CRD Version:** `keycloaks.k8s.keycloak.org/v2alpha1`
+* **Installation Link:** [Keycloak Operator Helm Chart](https://goodrxoss.github.io/helm-charts/charts/keycloak-operator/)
+
+> **Validation:** This chart includes a pre-install validation hook. If the required CRDs are not detected in your cluster, the installation will fail with a descriptive error message.
+
+{{ template "chart.requirementsTable" . }}
+
+---
+
+## Installation
+
+### Prerequisites
+
+Before installing, ensure the operator is running and watching the target namespace. Create a `values.yaml` file to configure your instance.
+
+```yaml
+# Example minimal values.yaml
+hostname: "https://keycloak.example.com"
+
+clients:
+  lifecycleUi:
+    url: "https://ui.example.com"
+
+secrets:
+  githubIdp:
+    enabled: true
+    clientId: "your-github-id"
+    clientSecret: "your-github-secret"
+```
+
+---
+
+## Configuration Details
+
+### 1. Identity Providers (GitHub IdP)
+
+You can configure GitHub authentication in two ways.
+
+> **Note:** Using `secretKeyRef` is the recommended production approach to avoid exposing credentials in Helm manifests.
+
+#### Option A: External Secret (Recommended)
+
+Reference an existing Kubernetes Secret. The `name` field supports Helm templates.
+
+```yaml
+secrets:
+  githubIdp:
+    enabled: false # We don't need the chart to create a secret
+
+githubIdp:
+  clientId:
+    secretKeyRef:
+      name: '{{"{{ .Release.Name }}-custom-secret"}}'
+      key: "github-client-id"
+  clientSecret:
+    secretKeyRef:
+      name: "my-existing-secret"
+      key: "github-client-secret"
+
+```
+
+#### Option B: Inline Credentials (Universal but less secure)
+
+The chart will automatically create a Secret for you.
+
+```yaml
+secrets:
+  githubIdp:
+    enabled: true
+    clientId: "your-github-id"
+    clientSecret: "your-github-secret"
+
+```
+
+### 2. Hostname and Client URLs
+
+You **must** provide the actual domains during installation. These are used for redirect URIs and token issuance.
+
+* `hostname`: The main entry point for Keycloak (e.g., `https://keycloak.example.com`).
+* `clients.lifecycleUi.url`: The frontend application URL (e.g., `https://ui.example.com`).
+
+### 3. Client Secrets (Bootstrap Only)
+
+You can define initial secrets for your clients:
+
+```yaml
+clients:
+  lifecycleCore:
+    clientSecret: "lifecycle-core-secret"
+  lifecycleUi:
+    clientSecret: "lifecycle-ui-secret"
+  lifecycleUiBackend:
+    clientSecret: "lifecycle-ui-backend-secret"
+
+```
+
+> **Important:** These values act as **bootstrap** values. After the initial creation, if you change them in the Keycloak Admin UI, the values in Helm will no longer stay in sync.
+
+---
+
+## Life-cycle Management & Realm Import
+
+This chart uses the `KeycloakRealmImport` resource for the initial setup.
+
+* **Immutable Configuration:** Some settings (like certain realm links or fundamental structures) are hard to modify via the Operator after the initial import.
+* **Re-initialization:** If you need to significantly change the realm structure that isn't being picked up by the Operator, you may need to **delete the Helm release and reinstall it**.
+* **Caution:** Deleting the release might trigger the deletion of the Keycloak instance and its data (PostgreSQL), depending on your `persistence` and `reclaimPolicy` settings.
+
+---
+
+### Install the Chart
+
+```shell
+helm upgrade -i {{ template "chart.name" . }} \
+  oci://ghcr.io/goodrxoss/helm-charts/{{ template "chart.name" . }} \
+  --version {{ template "chart.version" . }} \
+  -f values.yaml \
+  -n {{ template "chart.name" . }} \
+  --create-namespace
+```
+
+{{ template "chart.valuesSection" . }}

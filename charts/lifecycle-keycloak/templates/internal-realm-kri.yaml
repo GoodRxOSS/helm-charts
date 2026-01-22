@@ -1,0 +1,76 @@
+{{- /*
+Copyright 2026 GoodRx, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
+
+---
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: KeycloakRealmImport
+metadata:
+  name: {{ include "lifecycle-keycloak.fullname" . }}-internal-realm
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "lifecycle-keycloak.labels" (merge (dict "component" "keycloak") .) | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  keycloakCRName: {{ include "lifecycle-keycloak.fullname" . }}
+  realm:
+    realm: {{ .Values.internalIdp.realm | quote }}
+    displayName: {{ .Values.internalIdp.displayName | quote }}
+    enabled: true
+    sslRequired: "external"
+    registrationAllowed: false
+    duplicateEmailsAllowed: false
+    resetPasswordAllowed": false
+    loginWithEmailAllowed: true
+
+    # --- USERS ---
+    users:
+      - username: {{ .Values.internalIdp.users.bootstrapUser.username | quote }}
+        enabled: true
+        email: {{ .Values.internalIdp.users.bootstrapUser.email | quote }}
+        emailVerified: true
+        firstName: {{ .Values.internalIdp.users.bootstrapUser.firstName | quote }}
+        lastName: {{ .Values.internalIdp.users.bootstrapUser.lastName | quote }}
+        credentials:
+          - type: "password"
+            value: {{ .Values.internalIdp.users.bootstrapUser.password | quote }}
+            temporary: {{ .Values.internalIdp.users.bootstrapUser.credsTemp }}
+
+    # --- CLIENTS ---
+    clients:
+      - name: {{ printf "%s Client" .Values.internalIdp.displayName | quote }}
+        description: "OIDC client used by the internal realm to broker logins."
+        enabled: true
+        protocol: "openid-connect"
+        clientId: {{ .Values.internalIdp.clientId | quote }}
+        clientAuthenticatorType: "client-jwt"
+        attributes:
+          use.jwks.url: "true"
+          jwks.url: {{ printf "http://%s-service.%s:8080/realms/%s/protocol/openid-connect/certs" (include "lifecycle-keycloak.fullname" .) (include "lifecycle-keycloak.namespaceHostname" .) .Values.realm | quote }}
+          token.endpoint.auth.signing.alg: "RS256"
+        publicClient: false
+        redirectUris:
+          - "{{ .Values.hostname }}/*"
+        webOrigins: ["+"]
+        standardFlowEnabled: true
+        implicitFlowEnabled: false
+        directAccessGrantsEnabled: false
+        serviceAccountsEnabled: false
+        authorizationServicesEnabled: false
+        defaultClientScopes: ["web-origins", "acr", "roles", "profile", "basic", "email"]
+        optionalClientScopes: ["address", "phone", "offline_access", "organization", "microprofile-jwt"]
