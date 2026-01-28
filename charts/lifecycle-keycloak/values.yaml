@@ -27,7 +27,6 @@ clients:
   lifecycleCore:
     enabled: true
     clientId: lifecycle-core
-    clientSecret: lifecycle-core-secret
 
   lifecycleUi:
     enabled: true

@@ -63,20 +63,13 @@ spec:
 
       - clientId: {{ .Values.clients.lifecycleCore.clientId | quote }}
         enabled: {{ .Values.clients.lifecycleCore.enabled }}
-        clientAuthenticatorType: "client-secret"
-        secret: {{ .Values.clients.lifecycleCore.clientSecret | quote }}
-        redirectUris: ["/*"]
+        publicClient: true
         webOrigins: ["+"]
         standardFlowEnabled: false
+        directAccessGrantsEnabled: false
         fullScopeAllowed: true
         protocol: "openid-connect"
-        frontchannelLogout: true
-        attributes:
-          use.refresh.tokens: "true"
-          frontchannel.logout.session.required: "true"
-          backchannel.logout.session.required: "true"
-        defaultClientScopes: ["web-origins", "acr", "roles", "profile", "basic", "email"]
-        optionalClientScopes: ["address", "phone", "offline_access", "organization", "microprofile-jwt"]
+        defaultClientScopes: ["roles", "profile", "basic", "email"]
 
       - clientId: {{ .Values.clients.lifecycleUi.clientId | quote }}
         enabled: {{ .Values.clients.lifecycleUi.enabled }}
