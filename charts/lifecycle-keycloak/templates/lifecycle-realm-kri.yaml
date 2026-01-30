@@ -145,8 +145,8 @@ spec:
           clientId: {{ .Values.internalIdp.clientId | quote }}
           clientAuthMethod: "private_key_jwt"
           clientAssertionSigningAlg: "RS256"
-          tokenUrl: {{ printf "http://%s-service.%s:8080/realms/%s/protocol/openid-connect/token" (include "lifecycle-keycloak.fullname" .) (include "lifecycle-keycloak.namespaceHostname" .) .Values.internalIdp.realm | quote }}
-          jwksUrl: {{ printf "http://%s-service.%s:8080/realms/%s/protocol/openid-connect/certs" (include "lifecycle-keycloak.fullname" .) (include "lifecycle-keycloak.namespaceHostname" .) .Values.internalIdp.realm | quote }}
+          tokenUrl: {{ printf "%s/realms/%s/protocol/openid-connect/token" .Values.hostname .Values.internalIdp.realm | quote }}
+          jwksUrl: {{ printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.internalIdp.realm | quote }}
           authorizationUrl: {{ printf "%s/realms/%s/protocol/openid-connect/auth" .Values.hostname .Values.internalIdp.realm | quote }}
           logoutUrl: {{ printf "%s/realms/%s/protocol/openid-connect/logout" .Values.hostname .Values.internalIdp.realm | quote }}
           clientAssertionAudience: {{ printf "%s/realms/%s" .Values.hostname .Values.internalIdp.realm | quote }}
