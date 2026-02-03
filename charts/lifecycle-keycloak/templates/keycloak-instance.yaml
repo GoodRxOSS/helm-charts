@@ -91,6 +91,8 @@ spec:
               - name: vault-volume
                 mountPath: /opt/keycloak/vault
                 readOnly: true
+              - name: theme-volume
+                mountPath: /opt/keycloak/themes/lifecycle/login
         volumes:
           - name: vault-volume
             projected:
@@ -100,3 +102,15 @@ spec:
                     items:
                       - key: {{ .Values.githubIdp.clientSecret.secretKeyRef.key | default "clientSecret" | quote }}
                         path: github-client-secret
+          - name: theme-volume
+            configMap:
+              name: {{ include "lifecycle-keycloak.fullname" . }}-login-theme
+              items:
+                - key: theme.properties
+                  path: theme.properties
+                - key: template.ftl
+                  path: template.ftl
+                - key: login.ftl
+                  path: login.ftl
+                - key: link-idp-action.ftl
+                  path: link-idp-action.ftl

@@ -37,6 +37,10 @@ spec:
     duplicateEmailsAllowed: false
     resetPasswordAllowed": false
     loginWithEmailAllowed: true
+    loginTheme: "lifecycle"  # ref for login-theme-configmap.yaml
+    accountTheme: "keycloak"
+    adminTheme: "keycloak"
+    emailTheme: "keycloak"
 
     # --- USERS ---
     users:

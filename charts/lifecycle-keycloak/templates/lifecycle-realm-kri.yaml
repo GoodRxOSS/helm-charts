@@ -35,6 +35,10 @@ spec:
     ssoSessionIdleTimeout: 36000
     ssoSessionMaxLifespan: 43200
     sslRequired: "external"
+    loginTheme: "lifecycle"  # ref for login-theme-configmap.yaml
+    accountTheme: "keycloak"
+    adminTheme: "keycloak"
+    emailTheme: "keycloak"
 
     # --- USERS ---
     users:
