@@ -65,7 +65,7 @@ spec:
         clientAuthenticatorType: "client-jwt"
         attributes:
           use.jwks.url: "true"
-          jwks.url: {{ printf "http://%s-service.%s:8080/realms/%s/protocol/openid-connect/certs" (include "lifecycle-keycloak.fullname" .) (include "lifecycle-keycloak.namespaceHostname" .) .Values.realm | quote }}
+          jwks.url: {{ printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.realm | quote }}
           token.endpoint.auth.signing.alg: "RS256"
         publicClient: false
         redirectUris:
