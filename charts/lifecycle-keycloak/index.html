@@ -800,7 +800,7 @@
 
 
 <h1 id="lifecycle-keycloak">lifecycle-keycloak</h1>
-<p><img alt="Version: 0.1.2" src="https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.0.0" src="https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square" /></p>
+<p><img alt="Version: 0.2.0" src="https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.0.0" src="https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square" /></p>
 <p>Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports</p>
 <hr />
 <h2 id="important-requirements-dependencies">⚠️ Important: Requirements &amp; Dependencies</h2>
@@ -908,7 +908,7 @@
 <h3 id="install-the-chart">Install the Chart</h3>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.1.2<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.2.0<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>-f<span class="w"> </span>values.yaml<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span>-n<span class="w"> </span>lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span>--create-namespace
