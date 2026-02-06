@@ -372,6 +372,17 @@ entries:
     version: 0.1.0
   lifecycle-ui:
   - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2026-02-06T17:39:54.814597565Z"
+    description: A Helm chart for Lifecycle UI (Next.js)
+    digest: cb14295b86dea81173e9f94b0298e68e8229efea590e55b97f94379f86a7bcb5
+    home: https://goodrxoss.github.io/helm-charts/charts/lifecycle-ui/
+    name: lifecycle-ui
+    type: application
+    urls:
+    - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-ui-0.2.0/lifecycle-ui-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: 0.1.1
     created: "2026-01-08T21:50:36.1089456Z"
     description: A Helm chart for Lifecycle UI
@@ -391,4 +402,4 @@ entries:
     urls:
     - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-ui-0.1.0/lifecycle-ui-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-03T23:54:21.622267239Z"
+generated: "2026-02-06T17:39:54.814650333Z"
