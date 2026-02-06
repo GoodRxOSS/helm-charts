@@ -34,11 +34,6 @@ clients:
     clientSecret: lifecycle-ui-secret
     url: http://localhost:3000
 
-  lifecycleUiBackend:
-    enabled: true
-    clientId: lifecycle-ui-backend
-    clientSecret: lifecycle-ui-backend-secret
-
 companyIdp:
   enabled: true
   clientId:  # fallback to "${vault.company_idp_client_id}"
