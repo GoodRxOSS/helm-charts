@@ -119,24 +119,17 @@ secrets:
   enabled: true
   fullnameOverride: ""
   annotations: {}
-  nextauthSecret: ""
-  keycloakClientSecret: ""
-  keycloakServiceClientSecret: ""
+  authSecret: ""
+  authClientSecret: ""
 
 config:
   enabled: true
   fullnameOverride: ""
   annotations: {}
 
-  nextPublicAppUrl: ""
   appUrl: ""
-  nextauthUrl: ""
-  nextPublicApiUrl: ""
   apiUrl: ""
 
-  nextPublicKeycloakBaseUrl: ""
-  keycloakBaseUrl: ""
-  nextPublicKeycloakRealm: ""
-  keycloakRealm: ""
-  keycloakClientId: ""
-  keycloakServiceClientId: ""
+  authBaseUrl: ""
+  authRealm: ""
+  authClientId: ""

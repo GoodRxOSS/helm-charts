@@ -1,6 +1,6 @@
 # lifecycle-ui
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.1](https://img.shields.io/badge/AppVersion-0.1.1-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
 
 A Helm chart for Lifecycle UI (Next.js)
 
@@ -41,7 +41,7 @@ config:
 ```bash
 helm upgrade -i lifecycle-ui \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-ui \
-  --version 0.1.1 \
+  --version 0.2.0 \
   -f values.yaml \
   -n lifecycle-ui \
   --create-namespace
@@ -107,17 +107,11 @@ deployment:
 | config.annotations | object | `{}` |  |
 | config.apiUrl | string | `""` |  |
 | config.appUrl | string | `""` |  |
+| config.authBaseUrl | string | `""` |  |
+| config.authClientId | string | `""` |  |
+| config.authRealm | string | `""` |  |
 | config.enabled | bool | `true` |  |
 | config.fullnameOverride | string | `""` |  |
-| config.keycloakBaseUrl | string | `""` |  |
-| config.keycloakClientId | string | `""` |  |
-| config.keycloakRealm | string | `""` |  |
-| config.keycloakServiceClientId | string | `""` |  |
-| config.nextPublicApiUrl | string | `""` |  |
-| config.nextPublicAppUrl | string | `""` |  |
-| config.nextPublicKeycloakBaseUrl | string | `""` |  |
-| config.nextPublicKeycloakRealm | string | `""` |  |
-| config.nextauthUrl | string | `""` |  |
 | deployment.affinity | object | `{}` |  |
 | deployment.args | list | `[]` |  |
 | deployment.command | list | `[]` |  |
@@ -166,11 +160,10 @@ deployment:
 | pdb.minAvailable | int | `1` |  |
 | podSecurityContext.fsGroup | int | `2000` |  |
 | secrets.annotations | object | `{}` |  |
+| secrets.authClientSecret | string | `""` |  |
+| secrets.authSecret | string | `""` |  |
 | secrets.enabled | bool | `true` |  |
 | secrets.fullnameOverride | string | `""` |  |
-| secrets.keycloakClientSecret | string | `""` |  |
-| secrets.keycloakServiceClientSecret | string | `""` |  |
-| secrets.nextauthSecret | string | `""` |  |
 | securityContext.readOnlyRootFilesystem | bool | `false` |  |
 | securityContext.runAsNonRoot | bool | `false` |  |
 | service.annotations | object | `{}` |  |
