@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -128,7 +128,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.3.0 \
+  --version 0.4.0 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -145,9 +145,6 @@ helm upgrade -i lifecycle-keycloak \
 | clients.lifecycleUi.clientSecret | string | `"lifecycle-ui-secret"` |  |
 | clients.lifecycleUi.enabled | bool | `true` |  |
 | clients.lifecycleUi.url | string | `"http://localhost:3000"` |  |
-| clients.lifecycleUiBackend.clientId | string | `"lifecycle-ui-backend"` |  |
-| clients.lifecycleUiBackend.clientSecret | string | `"lifecycle-ui-backend-secret"` |  |
-| clients.lifecycleUiBackend.enabled | bool | `true` |  |
 | companyIdp.authorizationUrl | string | `nil` |  |
 | companyIdp.clientId | string | `nil` |  |
 | companyIdp.clientSecret | string | `nil` |  |

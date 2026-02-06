@@ -16,7 +16,7 @@ apiVersion: v2
 name: lifecycle-keycloak
 description: Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 type: application
-version: 0.3.0
+version: 0.4.0
 appVersion: 0.0.0
 home: https://goodrxoss.github.io/helm-charts/charts/lifecycle-keycloak/
 
