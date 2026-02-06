@@ -30,15 +30,10 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 data:
-  NEXT_PUBLIC_APP_URL: {{ .Values.config.nextPublicAppUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
-  APP_URL: {{ .Values.config.appUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
-  NEXTAUTH_URL: {{ .Values.config.nextauthUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
-  NEXT_PUBLIC_API_URL: {{ .Values.config.nextPublicApiUrl | quote }}
-  API_URL: {{ .Values.config.apiUrl | quote }}
-  NEXT_PUBLIC_KEYCLOAK_BASE_URL: {{ .Values.config.nextPublicKeycloakBaseUrl | quote }}
-  KEYCLOAK_BASE_URL: {{ .Values.config.keycloakBaseUrl | quote }}
-  NEXT_PUBLIC_KEYCLOAK_REALM: {{ .Values.config.nextPublicKeycloakRealm | quote }}
-  KEYCLOAK_REALM: {{ .Values.config.keycloakRealm | quote }}
-  KEYCLOAK_CLIENT_ID: {{ .Values.config.keycloakClientId | quote }}
-  KEYCLOAK_SERVICE_CLIENT_ID: {{ .Values.config.keycloakServiceClientId | quote }}
+  NEXT_PUBLIC_APP_URL: {{ .Values.config.appUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
+  NEXTAUTH_URL: {{ .Values.config.appUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
+  NEXT_PUBLIC_API_URL: {{ .Values.config.apiUrl | quote }}
+  NEXT_PUBLIC_KEYCLOAK_BASE_URL: {{ .Values.config.authBaseUrl | quote }}
+  NEXT_PUBLIC_KEYCLOAK_REALM: {{ .Values.config.authRealm | quote }}
+  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: {{ .Values.config.authClientId | quote }}
 {{- end }}
