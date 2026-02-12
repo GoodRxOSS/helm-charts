@@ -76,11 +76,8 @@ Namespace Hostname
 {{- if .Values.secrets.bootstrapAdmin.fullnameOverride -}}
     {{- .Values.secrets.bootstrapAdmin.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-    {{- if contains "lifecycle-keycloak" .Release.Name -}}
-        {{- printf "%s-%s" .Release.Name "bootstrap-admin" | trunc 63 | trimSuffix "-" -}}
-    {{- else -}}
-        {{- printf "%s-%s-%s" .Release.Name "lifecycle-keycloak" "bootstrap-admin" | trunc 63 | trimSuffix "-" -}}
-    {{- end -}}
+    {{- $prefix := include "lifecycle-keycloak.fullname" . -}}
+    {{- printf "%s-%s" $prefix "bootstrap-admin" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 
@@ -88,11 +85,8 @@ Namespace Hostname
 {{- if .Values.secrets.githubIdp.fullnameOverride -}}
     {{- .Values.secrets.githubIdp.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-    {{- if contains "lifecycle-keycloak" .Release.Name -}}
-        {{- printf "%s-%s" .Release.Name "github-idp" | trunc 63 | trimSuffix "-" -}}
-    {{- else -}}
-        {{- printf "%s-%s-%s" .Release.Name "lifecycle-keycloak" "github-idp" | trunc 63 | trimSuffix "-" -}}
-    {{- end -}}
+    {{- $prefix := include "lifecycle-keycloak.fullname" . -}}
+    {{- printf "%s-%s" $prefix "github-idp" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 
@@ -100,14 +94,23 @@ Namespace Hostname
 {{- if contains "lifecycle-keycloak" .Release.Name }}
     {{- printf "%s-%s" .Release.Name "postgres" | trunc 63 | trimSuffix "-" }}
 {{- else }}
-    {{- printf "%s-%s-%s" .Release.Name "lifecycle-keycloak" "postgres" | trunc 63 | trimSuffix "-" }}
+    {{- printf "%s-%s-%s" .Release.Name "keycloak" "postgres" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end -}}
 
 {{- define "lifecycle-keycloak.postgresSvcPrefix" -}}
-{{- if .Values.postgres.fullnameOverride }}
-    {{- printf "%s.%s" .Values.postgres.fullnameOverride (include "lifecycle-keycloak.namespaceHostname" .) }}
+{{- if .Values.keycloakPostgres.fullnameOverride }}
+    {{- printf "%s.%s" .Values.keycloakPostgres.fullnameOverride (include "lifecycle-keycloak.namespaceHostname" .) }}
 {{- else }}
-    {{- printf "%s-%s.%s" .Release.Name "postgres" (include "lifecycle-keycloak.namespaceHostname" .) }}
+    {{- $prefix := include "lifecycle-keycloak.fullname" . -}}
+    {{- printf "%s-%s.%s" $prefix "postgres" (include "lifecycle-keycloak.namespaceHostname" .) -}}
 {{- end }}
+{{- end -}}
+
+{{- define "lifecycle-keycloak.parentChartPrefix" -}}
+{{- if contains .Values.parentChartName .Release.Name -}}
+    {{- .Release.Name -}}
+{{- else -}}
+    {{- printf "%s-%s" .Release.Name .Values.parentChartName -}}
+{{- end -}}
 {{- end -}}
