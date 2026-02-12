@@ -105,6 +105,7 @@ secrets:
 
 keycloakPostgres:
   enabled: true
+  nameOverride: postgres
   fullnameOverride: ""
 
   # Values passed directly to the bitnami/postgresql subchart.
