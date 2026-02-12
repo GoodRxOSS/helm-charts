@@ -325,3 +325,24 @@ buildkit:
     requests:
       cpu: "500m"
       memory: "1Gi"
+
+keycloak:
+  enabled: true
+  hostname: https://auth.example.com
+
+  clients:
+    lifecycleUi:
+      url: https://ui.example.com
+
+  githubIdp:
+    clientId:
+      secretKeyRef:
+        name: '{{ include "lifecycle-keycloak.parentChartPrefix" . }}-bootstrap'
+        key: GITHUB_CLIENT_ID
+    clientSecret:
+      secretKeyRef:
+        name: '{{ include "lifecycle-keycloak.parentChartPrefix" . }}-bootstrap'
+        key: GITHUB_CLIENT_SECRET
+
+  keycloakPostgres:
+    nameOverride: keycloak-postgres
