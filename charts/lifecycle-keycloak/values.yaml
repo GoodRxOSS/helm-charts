@@ -15,6 +15,8 @@
 nameOverride: ""
 fullnameOverride: ""
 
+parentChartName: lifecycle
+
 annotations: {}
 extraLabels: {}
 
@@ -101,7 +103,7 @@ secrets:
     clientSecret:
 
 
-postgres:
+keycloakPostgres:
   enabled: true
   fullnameOverride: ""
 

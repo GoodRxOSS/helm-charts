@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -18,7 +18,7 @@ This chart does **not** install the Keycloak Operator itself. It manages the con
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
+| https://charts.bitnami.com/bitnami | keycloakPostgres(postgresql) | 15.5.19 |
 
 ---
 
@@ -128,7 +128,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.4.0 \
+  --version 0.5.0 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -177,21 +177,22 @@ helm upgrade -i lifecycle-keycloak \
 | internalIdp.users.bootstrapUser.lastName | string | `"Bootstrap"` |  |
 | internalIdp.users.bootstrapUser.password | string | `"lifecycle"` |  |
 | internalIdp.users.bootstrapUser.username | string | `"lifecycle"` |  |
+| keycloakPostgres.auth.database | string | `"keycloak"` |  |
+| keycloakPostgres.auth.existingSecret | string | `"{{ include \"lifecycle-keycloak.postgresSecretName\" . }}"` |  |
+| keycloakPostgres.auth.secretKeys.adminPasswordKey | string | `"POSTGRES_ADMIN_PASSWORD"` |  |
+| keycloakPostgres.auth.secretKeys.userPasswordKey | string | `"POSTGRES_USER_PASSWORD"` |  |
+| keycloakPostgres.auth.username | string | `"keycloak"` |  |
+| keycloakPostgres.enabled | bool | `true` |  |
+| keycloakPostgres.fullnameOverride | string | `""` |  |
+| keycloakPostgres.image.repository | string | `"bitnamilegacy/postgresql"` |  |
+| keycloakPostgres.primary.persistence.enabled | bool | `true` |  |
+| keycloakPostgres.primary.persistence.size | string | `"1Gi"` |  |
+| keycloakPostgres.primary.resources.limits.cpu | string | `"200m"` |  |
+| keycloakPostgres.primary.resources.limits.memory | string | `"256Mi"` |  |
+| keycloakPostgres.primary.resources.requests.cpu | string | `"100m"` |  |
+| keycloakPostgres.primary.resources.requests.memory | string | `"128Mi"` |  |
 | nameOverride | string | `""` |  |
-| postgres.auth.database | string | `"keycloak"` |  |
-| postgres.auth.existingSecret | string | `"{{ include \"lifecycle-keycloak.postgresSecretName\" . }}"` |  |
-| postgres.auth.secretKeys.adminPasswordKey | string | `"POSTGRES_ADMIN_PASSWORD"` |  |
-| postgres.auth.secretKeys.userPasswordKey | string | `"POSTGRES_USER_PASSWORD"` |  |
-| postgres.auth.username | string | `"keycloak"` |  |
-| postgres.enabled | bool | `true` |  |
-| postgres.fullnameOverride | string | `""` |  |
-| postgres.image.repository | string | `"bitnamilegacy/postgresql"` |  |
-| postgres.primary.persistence.enabled | bool | `true` |  |
-| postgres.primary.persistence.size | string | `"1Gi"` |  |
-| postgres.primary.resources.limits.cpu | string | `"200m"` |  |
-| postgres.primary.resources.limits.memory | string | `"256Mi"` |  |
-| postgres.primary.resources.requests.cpu | string | `"100m"` |  |
-| postgres.primary.resources.requests.memory | string | `"128Mi"` |  |
+| parentChartName | string | `"lifecycle"` |  |
 | realm | string | `"lifecycle"` |  |
 | realmDisplayName | string | `"Lifecycle"` |  |
 | secrets.bootstrapAdmin.annotations | list | `[]` |  |
