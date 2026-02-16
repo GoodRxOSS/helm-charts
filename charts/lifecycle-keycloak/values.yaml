@@ -32,9 +32,13 @@ clients:
 
   lifecycleUi:
     enabled: true
-    clientId: lifecycle-ui
-    clientSecret: lifecycle-ui-secret
     url: http://localhost:3000
+    clientId: lifecycle-ui
+    clientSecret:
+      secretKeyRef:
+        name:  # fallback to "{{ include "lifecycle-keycloak.lifecycleUiSecretName" . }}"
+        key:  # default "clientSecret"
+
 
 companyIdp:
   enabled: true
@@ -102,6 +106,11 @@ secrets:
     clientId:
     clientSecret:
 
+  lifecycleUi:
+    enabled: true
+    fullnameOverride: ""
+    annotations: []
+    clientSecret:
 
 keycloakPostgres:
   enabled: true
