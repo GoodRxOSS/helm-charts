@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.11](https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.11](https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.5.0 \
+  --version 0.6.0 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -53,7 +53,8 @@ helm upgrade -i lifecycle \
 | https://andrcuns.github.io/charts | buildkit(buildkit-service) | 0.10.0 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
-| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.5.0 |
+| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.6.0 |
+| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.0 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
@@ -248,3 +249,11 @@ helm upgrade -i lifecycle \
 | secrets.redis.enabled | bool | `true` |  |
 | secrets.redis.fullnameOverride | string | `""` |  |
 | secrets.redis.redisPassword | string | `""` |  |
+| ui.config.apiUrl | string | `"https://app.example.com"` |  |
+| ui.config.authBaseUrl | string | `"https://app.example.com"` |  |
+| ui.config.authClientId | string | `"lifecycle-ui"` |  |
+| ui.config.authClientSecret.secretKeyRef.key | string | `"clientSecret"` |  |
+| ui.config.authClientSecret.secretKeyRef.name | string | `"{{ include \"lifecycle-ui.parentChartPrefix\" . }}-keycloak-lifecycle-ui"` |  |
+| ui.config.authRealm | string | `"lifecycle"` |  |
+| ui.enabled | bool | `true` |  |
+| ui.nameOverride | string | `"ui"` |  |
