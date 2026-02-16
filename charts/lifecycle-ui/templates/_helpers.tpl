@@ -89,11 +89,11 @@ Create the name of the service account to use
 {{/*
 Create the name of the secret
 */}}
-{{- define "lifecycle-ui.helper.secretName" -}}
+{{- define "lifecycle-ui.helper.authSecretName" -}}
 {{- if .Values.secrets.fullnameOverride }}
     {{- .Values.secrets.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-    {{- printf "%s-%s" (include "lifecycle-ui.helper.fullname" .) "secrets" | trunc 63 | trimSuffix "-" }}
+    {{- printf "%s-%s" (include "lifecycle-ui.helper.fullname" .) "auth" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 
@@ -107,3 +107,11 @@ Create the name of the configmap
     {{- printf "%s-%s" (include "lifecycle-ui.helper.fullname" .) "config" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
+
+{{- define "lifecycle-ui.parentChartPrefix" -}}
+{{- if contains .Values.parentChartName .Release.Name -}}
+    {{- .Release.Name -}}
+{{- else -}}
+    {{- printf "%s-%s" .Release.Name .Values.parentChartName -}}
+{{- end -}}
+{{- end -}}

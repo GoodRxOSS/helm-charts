@@ -16,6 +16,6 @@ apiVersion: v2
 name: lifecycle-ui
 description: A Helm chart for Lifecycle UI (Next.js)
 type: application
-version: 0.2.0
+version: 0.3.0
 appVersion: 0.1.2
 home: https://goodrxoss.github.io/helm-charts/charts/lifecycle-ui/

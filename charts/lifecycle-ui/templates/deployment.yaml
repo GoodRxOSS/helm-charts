@@ -91,14 +91,20 @@ spec:
           env:
             - name: HELM_RELEASE_NAME
               value: {{ .Release.Name }}
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ tpl (.Values.config.authSecret.secretKeyRef.name | default (include "lifecycle-ui.helper.authSecretName" .)) . | quote }}
+                  key: {{ .Values.config.authSecret.secretKeyRef.key | default "authSecret" | quote }}
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ tpl (.Values.config.authClientSecret.secretKeyRef.name | default (include "lifecycle-ui.helper.authSecretName" .)) . | quote }}
+                  key: {{ .Values.config.authClientSecret.secretKeyRef.key | default "authClientSecret" | quote }}
             {{- with .Values.deployment.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if .Values.secrets.enabled }}
-            - secretRef:
-                name: {{ include "lifecycle-ui.helper.secretName" . }}
-            {{- end }}
             {{- if .Values.config.enabled }}
             - configMapRef:
                 name: {{ include "lifecycle-ui.helper.configName" . }}
