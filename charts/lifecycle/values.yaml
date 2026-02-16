@@ -346,3 +346,16 @@ keycloak:
 
   keycloakPostgres:
     nameOverride: keycloak-postgres
+
+ui:
+  enabled: true
+  nameOverride: ui
+  config:
+    apiUrl: https://app.example.com
+    authBaseUrl: https://app.example.com
+    authRealm: lifecycle
+    authClientId: lifecycle-ui
+    authClientSecret:
+      secretKeyRef:
+        name: '{{ include "lifecycle-ui.parentChartPrefix" . }}-keycloak-lifecycle-ui'
+        key: clientSecret
