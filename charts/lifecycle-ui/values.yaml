@@ -24,6 +24,7 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+parentChartName: lifecycle
 extraLabels: {}
 
 serviceAccount:
@@ -132,4 +133,12 @@ config:
 
   authBaseUrl: ""
   authRealm: ""
-  authClientId: ""
+  authSecret:
+    secretKeyRef:
+      name:  # fallback to "{{ include "lifecycle-ui.helper.authSecretName" . }}"
+      key:  # default "authSecret"
+  authClientId: "lifecycle-ui"
+  authClientSecret:
+    secretKeyRef:
+      name:  # fallback to "{{ include "lifecycle-ui.helper.authSecretName" . }}"
+      key:  # default "authClientSecret"
