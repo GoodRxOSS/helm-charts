@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -128,7 +128,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.5.1 \
+  --version 0.6.0 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -142,7 +142,8 @@ helm upgrade -i lifecycle-keycloak \
 | clients.lifecycleCore.clientId | string | `"lifecycle-core"` |  |
 | clients.lifecycleCore.enabled | bool | `true` |  |
 | clients.lifecycleUi.clientId | string | `"lifecycle-ui"` |  |
-| clients.lifecycleUi.clientSecret | string | `"lifecycle-ui-secret"` |  |
+| clients.lifecycleUi.clientSecret.secretKeyRef.key | string | `nil` |  |
+| clients.lifecycleUi.clientSecret.secretKeyRef.name | string | `nil` |  |
 | clients.lifecycleUi.enabled | bool | `true` |  |
 | clients.lifecycleUi.url | string | `"http://localhost:3000"` |  |
 | companyIdp.authorizationUrl | string | `nil` |  |
@@ -206,6 +207,10 @@ helm upgrade -i lifecycle-keycloak \
 | secrets.githubIdp.clientSecret | string | `nil` |  |
 | secrets.githubIdp.enabled | bool | `false` |  |
 | secrets.githubIdp.fullnameOverride | string | `""` |  |
+| secrets.lifecycleUi.annotations | list | `[]` |  |
+| secrets.lifecycleUi.clientSecret | string | `nil` |  |
+| secrets.lifecycleUi.enabled | bool | `true` |  |
+| secrets.lifecycleUi.fullnameOverride | string | `""` |  |
 | secrets.postgres.adminPassword | string | `""` |  |
 | secrets.postgres.annotations | list | `[]` |  |
 | secrets.postgres.enabled | bool | `true` |  |

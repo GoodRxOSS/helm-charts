@@ -98,6 +98,15 @@ Namespace Hostname
 {{- end }}
 {{- end -}}
 
+{{- define "lifecycle-keycloak.lifecycleUiSecretName" -}}
+{{- if .Values.secrets.lifecycleUi.fullnameOverride -}}
+    {{- .Values.secrets.lifecycleUi.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{- $prefix := include "lifecycle-keycloak.fullname" . -}}
+    {{- printf "%s-%s" $prefix "lifecycle-ui" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "lifecycle-keycloak.postgresSvcPrefix" -}}
 {{- if .Values.keycloakPostgres.fullnameOverride }}
     {{- printf "%s.%s" .Values.keycloakPostgres.fullnameOverride (include "lifecycle-keycloak.namespaceHostname" .) }}

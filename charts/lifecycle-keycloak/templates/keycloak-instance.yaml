@@ -87,6 +87,11 @@ spec:
                   secretKeyRef:
                     name: {{ tpl (.Values.githubIdp.clientId.secretKeyRef.name | default (include "lifecycle-keycloak.githubIdpSecretName" .)) . | quote }}
                     key: {{ .Values.githubIdp.clientId.secretKeyRef.key | default "clientId" | quote }}
+              - name: LIFECYCLE_UI_CLIENT_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ tpl (.Values.clients.lifecycleUi.clientSecret.secretKeyRef.name | default (include "lifecycle-keycloak.lifecycleUiSecretName" .)) . | quote }}
+                    key: {{ .Values.clients.lifecycleUi.clientSecret.secretKeyRef.key | default "clientSecret" | quote }}
             volumeMounts:
               - name: vault-volume
                 mountPath: /opt/keycloak/vault
