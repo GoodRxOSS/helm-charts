@@ -608,7 +608,7 @@
 
 
 <h1 id="lifecycle">lifecycle</h1>
-<p><img alt="Version: 0.5.0" src="https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.1.11" src="https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square" /></p>
+<p><img alt="Version: 0.6.0" src="https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.1.11" src="https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square" /></p>
 <p>A Helm umbrella chart for full Lifecycle stack</p>
 <h2 id="installation">Installation</h2>
 <h3 id="prerequisites">Prerequisites</h3>
@@ -638,7 +638,7 @@
 <h3 id="install-the-chart">Install the Chart</h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>lifecycle<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>oci://ghcr.io/goodrxoss/helm-charts/lifecycle<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.5.0<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.6.0<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>-f<span class="w"> </span>values.yaml<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>-n<span class="w"> </span>lifecycle-app<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--create-namespace
@@ -671,7 +671,12 @@
 <tr>
 <td>https://goodrxoss.github.io/helm-charts</td>
 <td>keycloak(lifecycle-keycloak)</td>
-<td>0.5.0</td>
+<td>0.6.0</td>
+</tr>
+<tr>
+<td>https://goodrxoss.github.io/helm-charts</td>
+<td>ui(lifecycle-ui)</td>
+<td>0.3.0</td>
 </tr>
 <tr>
 <td>https://jouve.github.io/charts</td>
@@ -1817,6 +1822,54 @@
 <td>secrets.redis.redisPassword</td>
 <td>string</td>
 <td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.config.apiUrl</td>
+<td>string</td>
+<td><code>"https://app.example.com"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.config.authBaseUrl</td>
+<td>string</td>
+<td><code>"https://app.example.com"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.config.authClientId</td>
+<td>string</td>
+<td><code>"lifecycle-ui"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.config.authClientSecret.secretKeyRef.key</td>
+<td>string</td>
+<td><code>"clientSecret"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.config.authClientSecret.secretKeyRef.name</td>
+<td>string</td>
+<td><code>"{{ include \"lifecycle-ui.parentChartPrefix\" . }}-keycloak-lifecycle-ui"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.config.authRealm</td>
+<td>string</td>
+<td><code>"lifecycle"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>ui.nameOverride</td>
+<td>string</td>
+<td><code>"ui"</code></td>
 <td></td>
 </tr>
 </tbody>
