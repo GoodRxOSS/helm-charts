@@ -29,6 +29,15 @@ spec:
     user:
       secret: {{ include "lifecycle-keycloak.bootstrapAdminSecretName" . | quote }}
   db:
+  {{- if .Values.externalDatabase.enabled }}
+    vendor: {{ .Values.externalDatabase.vendor | quote }}
+    host: {{ .Values.externalDatabase.host | quote }}
+    port: {{ .Values.externalDatabase.port }}
+    database: {{ .Values.externalDatabase.database | quote }}
+    passwordSecret:
+      name: {{ .Values.externalDatabase.password.secretKeyRef.name | quote }}
+      key: {{ .Values.externalDatabase.password.secretKeyRef.key | quote }}
+  {{- else }}
     vendor: postgres
     host: {{ include "lifecycle-keycloak.postgresSvcPrefix" . | quote }}
     port: 5432
@@ -39,6 +48,7 @@ spec:
     passwordSecret:
       name: {{ include "lifecycle-keycloak.postgresSecretName" . | quote }}
       key: POSTGRES_USER_PASSWORD
+  {{- end }}
 
   http:
     httpEnabled: true
@@ -49,6 +59,10 @@ spec:
     backchannelDynamic: false
 
   additionalOptions:
+  {{- if .Values.externalDatabase.enabled }}
+    - name: db-username
+      value: {{ .Values.externalDatabase.username | quote }}
+  {{- end }}
     - name: hostname-strict-backchannel
       value: "false"
     - name: proxy-headers

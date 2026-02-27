@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -128,7 +128,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.6.0 \
+  --version 0.7.0 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -152,6 +152,14 @@ helm upgrade -i lifecycle-keycloak \
 | companyIdp.enabled | bool | `true` |  |
 | companyIdp.jwksUrl | string | `nil` |  |
 | companyIdp.tokenUrl | string | `nil` |  |
+| externalDatabase.database | string | `"keycloak"` |  |
+| externalDatabase.enabled | bool | `false` |  |
+| externalDatabase.host | string | `nil` |  |
+| externalDatabase.password.secretKeyRef.key | string | `nil` |  |
+| externalDatabase.password.secretKeyRef.name | string | `nil` |  |
+| externalDatabase.port | int | `5432` |  |
+| externalDatabase.username | string | `"keycloak"` |  |
+| externalDatabase.vendor | string | `"postgres"` |  |
 | extraLabels | object | `{}` |  |
 | fullnameOverride | string | `""` |  |
 | githubIdp.clientId.secretKeyRef.key | string | `nil` |  |

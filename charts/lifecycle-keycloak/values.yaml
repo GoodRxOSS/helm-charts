@@ -84,6 +84,18 @@ ingress:
   className: nginx
   tls: false
 
+externalDatabase:
+  enabled: false
+  vendor: postgres
+  host:
+  port: 5432
+  database: keycloak
+  username: keycloak
+  password:
+    secretKeyRef:
+      name:
+      key:
+
 secrets:
   bootstrapAdmin:
     enabled: true
