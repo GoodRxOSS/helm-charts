@@ -61,3 +61,10 @@ dependencies:
     version: 0.3.0
     repository: "https://goodrxoss.github.io/helm-charts"
     condition: ui.enabled
+
+  # MinIO (S3-compatible object store for log archival)
+  - name: minio
+    alias: minio
+    version: 14.8.5
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: minio.enabled

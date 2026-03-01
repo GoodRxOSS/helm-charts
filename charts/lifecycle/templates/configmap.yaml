@@ -40,4 +40,10 @@ data:
 {{- else }}
   SECRET_COMMON_NAME: {{ include "..helper.fullname" $ }}-common
 {{- end }}
+{{- if .Values.minio.enabled }}
+  MINIO_ENDPOINT: {{ include "..helper.fullname" $ }}-minio
+  MINIO_PORT: "9000"
+  MINIO_BUCKET: {{ .Values.minio.defaultBuckets | default "lifecycle-logs" }}
+  MINIO_USE_SSL: "false"
+{{- end }}
 {{- end -}}

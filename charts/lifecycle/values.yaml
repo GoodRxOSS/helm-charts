@@ -387,3 +387,17 @@ ui:
       secretKeyRef:
         name: '{{ include "lifecycle-ui.parentChartPrefix" . }}-keycloak-lifecycle-ui'
         key: clientSecret
+
+minio:
+  enabled: false
+  defaultBuckets: "lifecycle-logs"
+  auth:
+    rootUser: minioadmin
+    rootPassword: minioadmin
+  persistence:
+    enabled: true
+    size: 20Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
