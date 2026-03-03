@@ -16,7 +16,7 @@ apiVersion: v2
 name: lifecycle
 description: A Helm umbrella chart for full Lifecycle stack
 type: application
-version: 0.7.0
+version: 0.8.0
 appVersion: 0.1.11
 
 dependencies:

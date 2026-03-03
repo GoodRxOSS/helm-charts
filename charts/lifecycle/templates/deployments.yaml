@@ -194,6 +194,14 @@ spec:
                 name: {{ include "..helper.fullname" $ }}-common
               {{- end }}
           {{- end }}
+          {{- if $.Values.secrets.objectStore.enabled }}
+            - secretRef:
+              {{- if $.Values.secrets.objectStore.fullnameOverride }}
+                name: {{ $.Values.secrets.objectStore.fullnameOverride }}
+              {{- else }}
+                name: {{ include "..helper.objectStoreSecretName" $ }}
+              {{- end }}
+          {{- end }}
           {{- if $.Values.global.envFrom }}
             {{- toYaml $.Values.global.envFrom | nindent 12 }}
           {{- end }}
