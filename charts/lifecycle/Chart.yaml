@@ -65,6 +65,6 @@ dependencies:
   # MinIO (S3-compatible object store for log archival)
   - name: minio
     alias: minio
-    version: 14.8.5
+    version: 17.0.21
     repository: "https://charts.bitnami.com/bitnami"
     condition: minio.enabled

@@ -51,6 +51,7 @@ helm upgrade -i lifecycle \
 | Repository | Name | Version |
 |------------|------|---------|
 | https://andrcuns.github.io/charts | buildkit(buildkit-service) | 0.10.0 |
+| https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
 | https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.0 |
@@ -224,6 +225,30 @@ helm upgrade -i lifecycle \
 | keycloak.keycloakPostgres.enabled | bool | `true` |  |
 | keycloak.keycloakPostgres.nameOverride | string | `"keycloak-postgres"` |  |
 | keycloak.secrets.postgres.enabled | bool | `true` |  |
+| minio.auth.existingSecret | string | `"{{ include \"..helper.objectStoreSecretName\" . }}"` |  |
+| minio.auth.rootPasswordSecretKey | string | `"OBJECT_STORE_SECRET_KEY"` |  |
+| minio.auth.rootUserSecretKey | string | `"OBJECT_STORE_ACCESS_KEY"` |  |
+| minio.clientImage.repository | string | `"bitnamilegacy/minio-client"` |  |
+| minio.clientImage.tag | string | `"2025.7.23"` |  |
+| minio.console.image.repository | string | `"bitnamilegacy/minio-object-browser"` |  |
+| minio.console.image.tag | string | `"2.0.2-debian-12-r3"` |  |
+| minio.defaultBuckets | string | `"lifecycle-logs"` |  |
+| minio.enabled | bool | `false` |  |
+| minio.fullnameOverride | string | `""` |  |
+| minio.image.repository | string | `"bitnamilegacy/minio"` |  |
+| minio.image.tag | string | `"2025.7.23"` |  |
+| minio.persistence.enabled | bool | `true` |  |
+| minio.persistence.size | string | `"20Gi"` |  |
+| minio.resources.requests.cpu | string | `"100m"` |  |
+| minio.resources.requests.memory | string | `"256Mi"` |  |
+| minio.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
+| minio.volumePermissions.image.tag | string | `"2025.7.23"` |  |
+| objectStore.bucket | string | `""` |  |
+| objectStore.endpoint | string | `""` |  |
+| objectStore.port | string | `"9000"` |  |
+| objectStore.region | string | `""` |  |
+| objectStore.type | string | `"minio"` |  |
+| objectStore.useSSL | string | `"false"` |  |
 | postgres.auth.database | string | `"lifecycle"` |  |
 | postgres.auth.existingSecret | string | `"{{ include \"..helper.postgresSecretName\" . }}"` |  |
 | postgres.auth.secretKeys.adminPasswordKey | string | `"POSTGRES_ADMIN_PASSWORD"` |  |
@@ -257,6 +282,11 @@ helm upgrade -i lifecycle \
 | secrets.common.annotations | list | `[]` |  |
 | secrets.common.enabled | bool | `true` |  |
 | secrets.common.fullnameOverride | string | `""` |  |
+| secrets.objectStore.accessKey | string | `""` |  |
+| secrets.objectStore.annotations | list | `[]` |  |
+| secrets.objectStore.enabled | bool | `true` |  |
+| secrets.objectStore.fullnameOverride | string | `""` |  |
+| secrets.objectStore.secretKey | string | `""` |  |
 | secrets.postgres.annotations | list | `[]` |  |
 | secrets.postgres.enabled | bool | `true` |  |
 | secrets.postgres.fullnameOverride | string | `""` |  |

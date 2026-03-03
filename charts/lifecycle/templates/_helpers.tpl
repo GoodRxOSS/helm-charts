@@ -120,3 +120,19 @@ Namespace Hostname
     {{- printf "tcp://%s-%s.%s:1234" .Release.Name "buildkit" (include "..helper.namespaceHostname" .) }}
 {{- end }}
 {{- end -}}
+
+{{- define "..helper.objectStoreSecretName" -}}
+{{- if contains "lifecycle" .Release.Name }}
+    {{- printf "%s-%s" .Release.Name "objectstore" | trunc 63 | trimSuffix "-" }}
+{{- else }}
+    {{- printf "%s-%s-%s" .Release.Name "lifecycle" "objectstore" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end -}}
+
+{{- define "..helper.minioSvcEndpoint" -}}
+{{- if .Values.minio.fullnameOverride }}
+    {{- .Values.minio.fullnameOverride }}
+{{- else }}
+    {{- printf "%s-%s" .Release.Name "minio" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end -}}

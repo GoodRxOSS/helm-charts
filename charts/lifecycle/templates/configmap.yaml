@@ -23,7 +23,7 @@ metadata:
 {{- end }}
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": pre-install
+    "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "0"
     "helm.sh/resource-policy": keep
 data:
@@ -40,10 +40,20 @@ data:
 {{- else }}
   SECRET_COMMON_NAME: {{ include "..helper.fullname" $ }}-common
 {{- end }}
-{{- if .Values.minio.enabled }}
-  MINIO_ENDPOINT: {{ include "..helper.fullname" $ }}-minio
-  MINIO_PORT: "9000"
-  MINIO_BUCKET: {{ .Values.minio.defaultBuckets | default "lifecycle-logs" }}
-  MINIO_USE_SSL: "false"
+{{- if and (eq .Values.objectStore.type "minio") .Values.minio.enabled }}
+  OBJECT_STORE_TYPE: minio
+  OBJECT_STORE_ENDPOINT: {{ .Values.objectStore.endpoint | default (include "..helper.minioSvcEndpoint" $) | quote }}
+  OBJECT_STORE_PORT: {{ .Values.objectStore.port | default "9000" | quote }}
+  OBJECT_STORE_BUCKET: {{ .Values.minio.defaultBuckets | quote }}
+  OBJECT_STORE_USE_SSL: {{ .Values.objectStore.useSSL | default "false" | quote }}
+{{- if and .Values.secrets.objectStore.fullnameOverride (ne .Values.secrets.objectStore.fullnameOverride "") }}
+  SECRET_OBJECT_STORE_NAME: {{ .Values.secrets.objectStore.fullnameOverride }}
+{{- else }}
+  SECRET_OBJECT_STORE_NAME: {{ include "..helper.objectStoreSecretName" $ }}
+{{- end }}
+{{- else if eq .Values.objectStore.type "s3" }}
+  OBJECT_STORE_TYPE: s3
+  OBJECT_STORE_REGION: {{ required "objectStore.region is required when objectStore.type is s3" .Values.objectStore.region | quote }}
+  OBJECT_STORE_BUCKET: {{ .Values.objectStore.bucket | quote }}
 {{- end }}
 {{- end -}}
