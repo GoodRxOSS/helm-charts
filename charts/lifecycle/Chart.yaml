@@ -16,7 +16,7 @@ apiVersion: v2
 name: lifecycle
 description: A Helm umbrella chart for full Lifecycle stack
 type: application
-version: 0.7.0
+version: 0.8.0
 appVersion: 0.1.11
 
 dependencies:
@@ -61,3 +61,10 @@ dependencies:
     version: 0.3.0
     repository: "https://goodrxoss.github.io/helm-charts"
     condition: ui.enabled
+
+  # MinIO (S3-compatible object store for log archival)
+  - name: minio
+    alias: minio
+    version: 17.0.21
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: minio.enabled

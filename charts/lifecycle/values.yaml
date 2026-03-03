@@ -245,6 +245,13 @@ secrets:
     annotations: []
     redisPassword: ""
 
+  objectStore:
+    enabled: true
+    fullnameOverride: ""
+    annotations: []
+    accessKey: ""
+    secretKey: ""
+
 postgres:
   enabled: true
   fullnameOverride: ""
@@ -387,3 +394,42 @@ ui:
       secretKeyRef:
         name: '{{ include "lifecycle-ui.parentChartPrefix" . }}-keycloak-lifecycle-ui'
         key: clientSecret
+
+objectStore:
+  type: minio
+  # bucket is used for s3 mode; minio mode derives the bucket from minio.defaultBuckets
+  bucket: ""
+  region: ""
+  endpoint: ""
+  port: "9000"
+  useSSL: "false"
+
+minio:
+  enabled: false
+  fullnameOverride: ""
+  defaultBuckets: "lifecycle-logs"
+  auth:
+    existingSecret: '{{ include "..helper.objectStoreSecretName" . }}'
+    rootUserSecretKey: "OBJECT_STORE_ACCESS_KEY"
+    rootPasswordSecretKey: "OBJECT_STORE_SECRET_KEY"
+  image:
+    repository: bitnamilegacy/minio
+    tag: "2025.7.23"
+  clientImage:
+    repository: bitnamilegacy/minio-client
+    tag: "2025.7.23"
+  console:
+    image:
+      repository: bitnamilegacy/minio-object-browser
+      tag: "2.0.2-debian-12-r3"
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+      tag: "2025.7.23"
+  persistence:
+    enabled: true
+    size: 20Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
