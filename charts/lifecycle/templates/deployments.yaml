@@ -108,6 +108,21 @@ spec:
                 value: {{ "postgres" | quote }}
                 {{- end }}
             {{- end }}
+            {{- if $.Values.externalDatabase.enabled }}
+            - name: APP_DB_HOST
+              value: {{ $.Values.externalDatabase.host | quote }}
+            - name: APP_DB_PORT
+              value: {{ $.Values.externalDatabase.port | quote }}
+            - name: APP_DB_USER
+              value: {{ $.Values.externalDatabase.username | quote }}
+            - name: APP_DB_NAME
+              value: {{ $.Values.externalDatabase.database | quote }}
+            - name: APP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.externalDatabase.password.secretKeyRef.name | quote }}
+                  key: {{ $.Values.externalDatabase.password.secretKeyRef.key | quote }}
+            {{- end }}
             {{- if $.Values.redis.enabled }}
             - name: APP_REDIS_HOST
               value: {{ include "..helper.redisSvcPrefix" $ }}

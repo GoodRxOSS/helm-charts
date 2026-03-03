@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.11](https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square)
+![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.11](https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.6.0 \
+  --version 0.7.0 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -53,7 +53,7 @@ helm upgrade -i lifecycle \
 | https://andrcuns.github.io/charts | buildkit(buildkit-service) | 0.10.0 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
-| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.6.0 |
+| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.0 |
 | https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.0 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
@@ -171,6 +171,13 @@ helm upgrade -i lifecycle \
 | distribution.ingress.ingressClassName | string | `"nginx"` |  |
 | distribution.persistence.enabled | bool | `true` |  |
 | distribution.persistence.size | string | `"20Gi"` |  |
+| externalDatabase.database | string | `"lifecycle"` |  |
+| externalDatabase.enabled | bool | `false` |  |
+| externalDatabase.host | string | `nil` |  |
+| externalDatabase.password.secretKeyRef.key | string | `nil` |  |
+| externalDatabase.password.secretKeyRef.name | string | `nil` |  |
+| externalDatabase.port | int | `5432` |  |
+| externalDatabase.username | string | `"lifecycle"` |  |
 | global.appSubDomain | string | `"app"` |  |
 | global.domain | string | `"example.com"` |  |
 | global.envFrom | object | `{}` |  |
@@ -201,12 +208,22 @@ helm upgrade -i lifecycle \
 | global.serviceAccount.name | string | `""` |  |
 | keycloak.clients.lifecycleUi.url | string | `"https://ui.example.com"` |  |
 | keycloak.enabled | bool | `true` |  |
+| keycloak.externalDatabase.database | string | `"keycloak"` |  |
+| keycloak.externalDatabase.enabled | bool | `false` |  |
+| keycloak.externalDatabase.host | string | `nil` |  |
+| keycloak.externalDatabase.password.secretKeyRef.key | string | `nil` |  |
+| keycloak.externalDatabase.password.secretKeyRef.name | string | `nil` |  |
+| keycloak.externalDatabase.port | int | `5432` |  |
+| keycloak.externalDatabase.username | string | `"keycloak"` |  |
+| keycloak.externalDatabase.vendor | string | `"postgres"` |  |
 | keycloak.githubIdp.clientId.secretKeyRef.key | string | `"GITHUB_CLIENT_ID"` |  |
 | keycloak.githubIdp.clientId.secretKeyRef.name | string | `"{{ include \"lifecycle-keycloak.parentChartPrefix\" . }}-bootstrap"` |  |
 | keycloak.githubIdp.clientSecret.secretKeyRef.key | string | `"GITHUB_CLIENT_SECRET"` |  |
 | keycloak.githubIdp.clientSecret.secretKeyRef.name | string | `"{{ include \"lifecycle-keycloak.parentChartPrefix\" . }}-bootstrap"` |  |
 | keycloak.hostname | string | `"https://auth.example.com"` |  |
+| keycloak.keycloakPostgres.enabled | bool | `true` |  |
 | keycloak.keycloakPostgres.nameOverride | string | `"keycloak-postgres"` |  |
+| keycloak.secrets.postgres.enabled | bool | `true` |  |
 | postgres.auth.database | string | `"lifecycle"` |  |
 | postgres.auth.existingSecret | string | `"{{ include \"..helper.postgresSecretName\" . }}"` |  |
 | postgres.auth.secretKeys.adminPasswordKey | string | `"POSTGRES_ADMIN_PASSWORD"` |  |
