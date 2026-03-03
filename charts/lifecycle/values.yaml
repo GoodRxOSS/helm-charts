@@ -195,6 +195,17 @@ components:
               type: Utilization
               averageUtilization: 80
 
+externalDatabase:
+  enabled: false
+  host:
+  port: 5432
+  database: lifecycle
+  username: lifecycle
+  password:
+    secretKeyRef:
+      name:
+      key:
+
 rbac:
   create: true
 
@@ -344,8 +355,25 @@ keycloak:
         name: '{{ include "lifecycle-keycloak.parentChartPrefix" . }}-bootstrap'
         key: GITHUB_CLIENT_SECRET
 
+  secrets:
+    postgres:
+      enabled: true
+
   keycloakPostgres:
+    enabled: true
     nameOverride: keycloak-postgres
+
+  externalDatabase:
+    enabled: false
+    vendor: postgres
+    host:
+    port: 5432
+    database: keycloak
+    username: keycloak
+    password:
+      secretKeyRef:
+        name:
+        key:
 
 ui:
   enabled: true
