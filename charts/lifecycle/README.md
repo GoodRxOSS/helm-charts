@@ -67,6 +67,7 @@ helm upgrade -i lifecycle \
 | buildkit.fullnameOverride | string | `""` |  |
 | buildkit.resources.requests.cpu | string | `"500m"` |  |
 | buildkit.resources.requests.memory | string | `"1Gi"` |  |
+| buildkit.terminationGracePeriodSeconds | int | `3600` |  |
 | components.web.container.args | list | `[]` |  |
 | components.web.container.command | list | `[]` |  |
 | components.web.deployment.affinity | object | `{}` |  |

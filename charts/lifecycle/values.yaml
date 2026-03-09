@@ -328,6 +328,7 @@ distribution:
 
 buildkit:
   enabled: true
+  terminationGracePeriodSeconds: 3600
   fullnameOverride: ""
   buildkitdToml: |
     debug = true
