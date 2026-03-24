@@ -219,6 +219,7 @@ secrets:
     enabled: true
     fullnameOverride: ""
     annotations: []
+    encryptionKey: ""
 
   bootstrap:
     enabled: true
