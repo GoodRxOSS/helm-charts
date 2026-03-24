@@ -281,6 +281,7 @@ helm upgrade -i lifecycle \
 | secrets.bootstrap.githubWebhookSecret | string | `""` |  |
 | secrets.common.annotations | list | `[]` |  |
 | secrets.common.enabled | bool | `true` |  |
+| secrets.common.encryptionKey | string | `""` |  |
 | secrets.common.fullnameOverride | string | `""` |  |
 | secrets.objectStore.accessKey | string | `""` |  |
 | secrets.objectStore.annotations | list | `[]` |  |
