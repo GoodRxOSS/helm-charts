@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.11](https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square)
+![Version: 0.9.1](https://img.shields.io/badge/Version-0.9.1-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.11](https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.0 \
+  --version 0.9.1 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -50,7 +50,7 @@ helm upgrade -i lifecycle \
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 0.10.0 |
+| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 1.4.0 |
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |

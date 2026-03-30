@@ -16,7 +16,7 @@ apiVersion: v2
 name: lifecycle
 description: A Helm umbrella chart for full Lifecycle stack
 type: application
-version: 0.9.0
+version: 0.9.1
 appVersion: 0.1.11
 
 dependencies:
@@ -44,7 +44,7 @@ dependencies:
   # BuildKit (Buildx) Dependency
   - name: buildkit-service
     alias: buildkit
-    version: 0.10.0
+    version: 1.4.0
     repository: "https://andrcuns.github.io/charts"
     condition: buildkit.enabled
 
