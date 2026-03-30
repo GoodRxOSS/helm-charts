@@ -50,7 +50,7 @@ helm upgrade -i lifecycle \
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 0.10.0 |
+| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 1.4.0 |
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |

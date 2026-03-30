@@ -44,7 +44,7 @@ dependencies:
   # BuildKit (Buildx) Dependency
   - name: buildkit-service
     alias: buildkit
-    version: 0.10.0
+    version: 1.4.0
     repository: "https://andrcuns.github.io/charts"
     condition: buildkit.enabled
 
