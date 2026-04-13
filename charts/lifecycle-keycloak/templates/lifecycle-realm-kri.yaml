@@ -40,6 +40,46 @@ spec:
     adminTheme: "keycloak"
     emailTheme: "keycloak"
 
+    # --- REALM ROLES ---
+    roles:
+      realm:
+        - name: "user"
+          description: "Default role assigned to all new users"
+          composite: false
+          clientRole: false
+        - name: "admin"
+          description: "Administrator role with elevated privileges"
+          composite: false
+          clientRole: false
+        - name: "default-roles-{{ .Values.realm }}"
+          description: "Composite role containing default realm roles"
+          composite: true
+          clientRole: false
+          composites:
+            realm:
+              - "user"
+            client:
+              account:
+                - "manage-account"
+                - "view-profile"
+              broker:
+                - "read-token"
+
+    defaultRole:
+      name: "default-roles-{{ .Values.realm }}"
+      description: "Composite role containing default realm roles"
+      composites:
+        realm:
+          - "user"
+          - "offline_access"
+          - "uma_authorization"
+        client:
+          account:
+            - "manage-account"
+            - "view-profile"
+          broker:
+            - "read-token"
+
     # --- CLIENTS ---
     clients:
       - clientId: "broker"
