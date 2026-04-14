@@ -40,6 +40,17 @@ spec:
     adminTheme: "keycloak"
     emailTheme: "keycloak"
 
+    # --- REALM ROLES ---
+    roles:
+      realm:
+        - name: "user"
+          description: "Default role assigned to all new users"
+        - name: "admin"
+          description: "Administrator role with elevated privileges"
+
+    defaultRoles:
+      - "user"
+
     # --- CLIENTS ---
     clients:
       - clientId: "broker"
