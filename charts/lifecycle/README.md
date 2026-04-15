@@ -54,8 +54,8 @@ helm upgrade -i lifecycle \
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
-| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.1 |
-| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.1 |
+| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.0 |
+| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.0 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
