@@ -51,7 +51,7 @@ dependencies:
   # lifecycle-keycloak (Keycloak instance for Lifecycle) Dependency
   - name: lifecycle-keycloak
     alias: keycloak
-    version: 0.7.0
+    version: 0.7.1
     repository: "https://goodrxoss.github.io/helm-charts"
     condition: keycloak.enabled
 
