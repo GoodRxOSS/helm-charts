@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.1](https://img.shields.io/badge/Version-0.9.1-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.11](https://img.shields.io/badge/AppVersion-0.1.11-informational?style=flat-square)
+![Version: 0.9.2](https://img.shields.io/badge/Version-0.9.2-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.14](https://img.shields.io/badge/AppVersion-0.1.14-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.1 \
+  --version 0.9.2 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -55,7 +55,7 @@ helm upgrade -i lifecycle \
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
 | https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.1 |
-| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.0 |
+| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.1 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
