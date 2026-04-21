@@ -275,7 +275,7 @@ postgres:
   primary:
     persistence:
       enabled: true
-      size: 11Gi
+      size: 8Gi
 #   resources:
 #     requests:
 #       cpu: 100m
