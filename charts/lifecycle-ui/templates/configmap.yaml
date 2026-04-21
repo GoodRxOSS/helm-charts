@@ -15,25 +15,24 @@ limitations under the License.
 */}}
 
 {{- if .Values.config.enabled }}
+{{- $namespace := .Release.Namespace -}}
+{{- $cmName := include "lifecycle-ui.helper.configName" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "lifecycle-ui.helper.configName" . }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ $cmName }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "lifecycle-ui.helper.labels" . | nindent 4 }}
-  annotations:
-    "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "0"
-    "helm.sh/resource-policy": keep
   {{- with .Values.config.annotations }}
+  annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 data:
-  NEXT_PUBLIC_APP_URL: {{ .Values.config.appUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
-  NEXTAUTH_URL: {{ .Values.config.appUrl | default (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) | quote }}
-  NEXT_PUBLIC_API_URL: {{ .Values.config.apiUrl | quote }}
-  NEXT_PUBLIC_KEYCLOAK_BASE_URL: {{ .Values.config.authBaseUrl | quote }}
-  NEXT_PUBLIC_KEYCLOAK_REALM: {{ .Values.config.authRealm | quote }}
-  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: {{ .Values.config.authClientId | quote }}
+  NEXT_PUBLIC_APP_URL: {{ include "lifecycle-ui.helper.getValueFromConfigMap" (list $cmName "NEXT_PUBLIC_APP_URL" .Values.config.appUrl (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) $namespace) | quote }}
+  NEXTAUTH_URL: {{ include "lifecycle-ui.helper.getValueFromConfigMap" (list $cmName "NEXTAUTH_URL" .Values.config.appUrl (printf "https://%s.%s" .Values.global.uiSubDomain .Values.global.domain) $namespace) | quote }}
+  NEXT_PUBLIC_API_URL: {{ include "lifecycle-ui.helper.getValueFromConfigMap" (list $cmName "NEXT_PUBLIC_API_URL" .Values.config.apiUrl "" $namespace) | quote }}
+  NEXT_PUBLIC_KEYCLOAK_BASE_URL: {{ include "lifecycle-ui.helper.getValueFromConfigMap" (list $cmName "NEXT_PUBLIC_KEYCLOAK_BASE_URL" .Values.config.authBaseUrl "" $namespace) | quote }}
+  NEXT_PUBLIC_KEYCLOAK_REALM: {{ include "lifecycle-ui.helper.getValueFromConfigMap" (list $cmName "NEXT_PUBLIC_KEYCLOAK_REALM" .Values.config.authRealm "" $namespace) | quote }}
+  NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: {{ include "lifecycle-ui.helper.getValueFromConfigMap" (list $cmName "NEXT_PUBLIC_KEYCLOAK_CLIENT_ID" .Values.config.authClientId "" $namespace) | quote }}
 {{- end }}
