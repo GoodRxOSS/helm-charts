@@ -123,3 +123,33 @@ Namespace Hostname
     {{- printf "%s-%s" .Release.Name .Values.parentChartName -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Get a value from a secret if it exists, otherwise generate/use a default value
+Usage: {{ include "lifecycle-keycloak.getValueFromSecret" (list "secret-name" "key-name" "provided-value" "generated-value" .Release.Namespace) }}
+*/}}
+{{- define "lifecycle-keycloak.getValueFromSecret" -}}
+{{- $secretName := index . 0 -}}
+{{- $keyName := index . 1 -}}
+{{- $providedValue := index . 2 -}}
+{{- $generatedValue := index . 3 -}}
+{{- $namespace := index . 4 -}}
+{{- if $providedValue -}}
+    {{- $providedValue | b64enc -}}
+{{- else -}}
+    {{- $obj := (lookup "v1" "Secret" $namespace $secretName) -}}
+    {{- if $obj -}}
+        {{- if index $obj "data" -}}
+            {{- if hasKey (index $obj "data") $keyName -}}
+                {{- index (index $obj "data") $keyName -}}
+            {{- else -}}
+                {{- $generatedValue | b64enc -}}
+            {{- end -}}
+        {{- else -}}
+            {{- $generatedValue | b64enc -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $generatedValue | b64enc -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
