@@ -132,7 +132,7 @@ config:
   apiUrl: ""
 
   authBaseUrl: ""
-  authRealm: ""
+  authRealm: "lifecycle"
   authSecret:
     secretKeyRef:
       name:  # fallback to "{{ include "lifecycle-ui.helper.authSecretName" . }}"
