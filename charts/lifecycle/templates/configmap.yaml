@@ -1,59 +1,60 @@
-# Copyright 2025 GoodRx, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+{{- /*
+Copyright 2025 GoodRx, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
 
 {{- if .Values.config.enabled }}
+{{- $namespace := .Release.Namespace -}}
+{{- $cmName := "" -}}
+{{- if and .Values.config.fullnameOverride (ne .Values.config.fullnameOverride "") -}}
+  {{- $cmName = .Values.config.fullnameOverride -}}
+{{- else -}}
+  {{- $cmName = printf "%s-config" (include "..helper.fullname" $) -}}
+{{- end -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-{{- if and .Values.config.fullnameOverride (ne .Values.config.fullnameOverride "") }}
-  name: {{ .Values.config.fullnameOverride }}
-{{- else }}
-  name: {{ include "..helper.fullname" $ }}-config
-{{- end }}
-  namespace: {{ .Release.Namespace }}
-  annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "0"
-    "helm.sh/resource-policy": keep
+  name: {{ $cmName }}
+  namespace: {{ $namespace }}
 data:
-  APP_HOST: https://app.{{ .Values.global.domain }}
-  DISTRIBUTION_HOST: distribution.{{ .Values.global.domain }}
-  BUILDKIT_HOST: {{ include "..helper.buildkitSvcUrl" $ }}
+  APP_HOST: {{ include "..helper.getValueFromConfigMap" (list $cmName "APP_HOST" "" (printf "https://app.%s" .Values.global.domain) $namespace) }}
+  DISTRIBUTION_HOST: {{ include "..helper.getValueFromConfigMap" (list $cmName "DISTRIBUTION_HOST" "" (printf "distribution.%s" .Values.global.domain) $namespace) }}
+  BUILDKIT_HOST: {{ include "..helper.getValueFromConfigMap" (list $cmName "BUILDKIT_HOST" "" (include "..helper.buildkitSvcUrl" $) $namespace) }}
 {{- if and .Values.secrets.bootstrap.fullnameOverride (ne .Values.secrets.bootstrap.fullnameOverride "") }}
-  SECRET_BOOTSTRAP_NAME: {{ .Values.secrets.bootstrap.fullnameOverride }}
+  SECRET_BOOTSTRAP_NAME: {{ include "..helper.getValueFromConfigMap" (list $cmName "SECRET_BOOTSTRAP_NAME" "" .Values.secrets.bootstrap.fullnameOverride $namespace) }}
 {{- else }}
-  SECRET_BOOTSTRAP_NAME: {{ include "..helper.fullname" $ }}-bootstrap
+  SECRET_BOOTSTRAP_NAME: {{ include "..helper.getValueFromConfigMap" (list $cmName "SECRET_BOOTSTRAP_NAME" "" (printf "%s-bootstrap" (include "..helper.fullname" $)) $namespace) }}
 {{- end }}
 {{- if and .Values.secrets.common.fullnameOverride (ne .Values.secrets.common.fullnameOverride "") }}
-  SECRET_COMMON_NAME: {{ .Values.secrets.common.fullnameOverride }}
+  SECRET_COMMON_NAME: {{ include "..helper.getValueFromConfigMap" (list $cmName "SECRET_COMMON_NAME" "" .Values.secrets.common.fullnameOverride $namespace) }}
 {{- else }}
-  SECRET_COMMON_NAME: {{ include "..helper.fullname" $ }}-common
+  SECRET_COMMON_NAME: {{ include "..helper.getValueFromConfigMap" (list $cmName "SECRET_COMMON_NAME" "" (printf "%s-common" (include "..helper.fullname" $)) $namespace) }}
 {{- end }}
 {{- if and (eq .Values.objectStore.type "minio") .Values.minio.enabled }}
-  OBJECT_STORE_TYPE: minio
-  OBJECT_STORE_ENDPOINT: {{ .Values.objectStore.endpoint | default (include "..helper.minioSvcEndpoint" $) | quote }}
-  OBJECT_STORE_PORT: {{ .Values.objectStore.port | default "9000" | quote }}
-  OBJECT_STORE_BUCKET: {{ .Values.minio.defaultBuckets | quote }}
-  OBJECT_STORE_USE_SSL: {{ .Values.objectStore.useSSL | default "false" | quote }}
+  OBJECT_STORE_TYPE: {{ include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_TYPE" "" "minio" $namespace) }}
+  OBJECT_STORE_ENDPOINT: {{ include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_ENDPOINT" "" (default (include "..helper.minioSvcEndpoint" $) .Values.objectStore.endpoint) $namespace) | quote }}
+  OBJECT_STORE_PORT: {{ include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_PORT" "" (default "9000" .Values.objectStore.port) $namespace) | quote }}
+  OBJECT_STORE_BUCKET: {{ include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_BUCKET" "" .Values.minio.defaultBuckets $namespace) | quote }}
+  OBJECT_STORE_USE_SSL: {{ include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_USE_SSL" "" (default "false" .Values.objectStore.useSSL) $namespace) | quote }}
 {{- if and .Values.secrets.objectStore.fullnameOverride (ne .Values.secrets.objectStore.fullnameOverride "") }}
-  SECRET_OBJECT_STORE_NAME: {{ .Values.secrets.objectStore.fullnameOverride }}
+  SECRET_OBJECT_STORE_NAME: {{ include "..helper.getValueFromConfigMap" (list $cmName "SECRET_OBJECT_STORE_NAME" "" .Values.secrets.objectStore.fullnameOverride $namespace) }}
 {{- else }}
-  SECRET_OBJECT_STORE_NAME: {{ include "..helper.objectStoreSecretName" $ }}
+  SECRET_OBJECT_STORE_NAME: {{ include "..helper.getValueFromConfigMap" (list $cmName "SECRET_OBJECT_STORE_NAME" "" (include "..helper.objectStoreSecretName" $) $namespace) }}
 {{- end }}
 {{- else if eq .Values.objectStore.type "s3" }}
-  OBJECT_STORE_TYPE: s3
-  OBJECT_STORE_REGION: {{ required "objectStore.region is required when objectStore.type is s3" .Values.objectStore.region | quote }}
-  OBJECT_STORE_BUCKET: {{ .Values.objectStore.bucket | quote }}
+  OBJECT_STORE_TYPE: {{ include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_TYPE" "" "s3" $namespace) }}
+  OBJECT_STORE_REGION: {{ required "objectStore.region is required when objectStore.type is s3" (include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_REGION" "" .Values.objectStore.region $namespace)) | quote }}
+  OBJECT_STORE_BUCKET: {{ include "..helper.getValueFromConfigMap" (list $cmName "OBJECT_STORE_BUCKET" "" .Values.objectStore.bucket $namespace) | quote }}
 {{- end }}
 {{- end -}}

@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.3](https://img.shields.io/badge/Version-0.9.3-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.14](https://img.shields.io/badge/AppVersion-0.1.14-informational?style=flat-square)
+![Version: 0.10.0](https://img.shields.io/badge/Version-0.10.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.14](https://img.shields.io/badge/AppVersion-0.1.14-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.3 \
+  --version 0.10.0 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -258,7 +258,7 @@ helm upgrade -i lifecycle \
 | postgres.fullnameOverride | string | `""` |  |
 | postgres.image.repository | string | `"bitnamilegacy/postgresql"` |  |
 | postgres.primary.persistence.enabled | bool | `true` |  |
-| postgres.primary.persistence.size | string | `"11Gi"` |  |
+| postgres.primary.persistence.size | string | `"8Gi"` |  |
 | rbac.create | bool | `true` |  |
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `true` |  |
