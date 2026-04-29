@@ -354,7 +354,6 @@ keycloak:
       url: https://ui.example.com
 
   githubIdp:
-    githubJsonFormat: true
     clientId:
       secretKeyRef:
         name: '{{ include "lifecycle-keycloak.parentChartPrefix" . }}-bootstrap'
