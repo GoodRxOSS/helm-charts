@@ -50,6 +50,7 @@ companyIdp:
 
 githubIdp:
   enabled: true
+  githubJsonFormat: true
   clientId:
     secretKeyRef:
       name:  # fallback to "{{ include "lifecycle-keycloak.githubIdpSecretName" . }}"

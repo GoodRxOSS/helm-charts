@@ -45,8 +45,18 @@ spec:
       realm:
         - name: "user"
           description: "Default role assigned to all new users"
+          composite: true
+          composites:
+            client:
+              broker:
+                - "read-token"
         - name: "admin"
           description: "Administrator role with elevated privileges"
+      client:
+        broker:
+          - name: "read-token"
+            description: "Read broker tokens from linked identity providers"
+            clientRole: true
 
     defaultRoles:
       - "user"
@@ -131,11 +141,11 @@ spec:
           clientId: {{ .Values.internalIdp.clientId | quote }}
           clientAuthMethod: "private_key_jwt"
           clientAssertionSigningAlg: "RS256"
-          tokenUrl: {{ printf "%s/realms/%s/protocol/openid-connect/token" .Values.hostname .Values.internalIdp.realm | quote }}
-          jwksUrl: {{ printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.internalIdp.realm | quote }}
-          authorizationUrl: {{ printf "%s/realms/%s/protocol/openid-connect/auth" .Values.hostname .Values.internalIdp.realm | quote }}
-          logoutUrl: {{ printf "%s/realms/%s/protocol/openid-connect/logout" .Values.hostname .Values.internalIdp.realm | quote }}
-          clientAssertionAudience: {{ printf "%s/realms/%s" .Values.hostname .Values.internalIdp.realm | quote }}
+          tokenUrl: {{ .Values.companyIdp.tokenUrl | default (printf "%s/realms/%s/protocol/openid-connect/token" .Values.hostname .Values.internalIdp.realm) | quote }}
+          jwksUrl: {{ .Values.companyIdp.jwksUrl | default (printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.internalIdp.realm) | quote }}
+          authorizationUrl: {{ .Values.companyIdp.authorizationUrl | default (printf "%s/realms/%s/protocol/openid-connect/auth" .Values.hostname .Values.internalIdp.realm) | quote }}
+          logoutUrl: {{ .Values.companyIdp.logoutUrl | default (printf "%s/realms/%s/protocol/openid-connect/logout" .Values.hostname .Values.internalIdp.realm) | quote }}
+          clientAssertionAudience: {{ .Values.companyIdp.issuer | default (printf "%s/realms/%s" .Values.hostname .Values.internalIdp.realm) | quote }}
           defaultScope: "openid profile email"
           syncMode: "LEGACY"
           useJwksUrl: "true"
@@ -161,6 +171,7 @@ spec:
         config:
           clientId: "${GITHUB_CLIENT_ID}" # {{ .Values.githubIdp.clientId | default .Values.secrets.githubClientId | quote }}
           clientSecret: "${vault.github-client-secret}" # {{ .Values.githubIdp.clientSecret | default .Values.secrets.githubClientSecret | quote }}
+          githubJsonFormat: {{ .Values.githubIdp.githubJsonFormat | quote }}
           syncMode: "LEGACY"
 
     identityProviderMappers:
