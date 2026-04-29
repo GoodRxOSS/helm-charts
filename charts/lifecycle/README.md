@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.3](https://img.shields.io/badge/Version-0.9.3-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.14](https://img.shields.io/badge/AppVersion-0.1.14-informational?style=flat-square)
+![Version: 0.9.4](https://img.shields.io/badge/Version-0.9.4-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.14](https://img.shields.io/badge/AppVersion-0.1.14-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.3 \
+  --version 0.9.4 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -221,6 +221,7 @@ helm upgrade -i lifecycle \
 | keycloak.githubIdp.clientId.secretKeyRef.name | string | `"{{ include \"lifecycle-keycloak.parentChartPrefix\" . }}-bootstrap"` |  |
 | keycloak.githubIdp.clientSecret.secretKeyRef.key | string | `"GITHUB_CLIENT_SECRET"` |  |
 | keycloak.githubIdp.clientSecret.secretKeyRef.name | string | `"{{ include \"lifecycle-keycloak.parentChartPrefix\" . }}-bootstrap"` |  |
+| keycloak.githubIdp.githubJsonFormat | bool | `true` |  |
 | keycloak.hostname | string | `"https://auth.example.com"` |  |
 | keycloak.keycloakPostgres.enabled | bool | `true` |  |
 | keycloak.keycloakPostgres.nameOverride | string | `"keycloak-postgres"` |  |
