@@ -45,8 +45,18 @@ spec:
       realm:
         - name: "user"
           description: "Default role assigned to all new users"
+          composite: true
+          composites:
+            client:
+              broker:
+                - "read-token"
         - name: "admin"
           description: "Administrator role with elevated privileges"
+      client:
+        broker:
+          - name: "read-token"
+            description: "Read broker tokens from linked identity providers"
+            clientRole: true
 
     defaultRoles:
       - "user"
@@ -161,6 +171,7 @@ spec:
         config:
           clientId: "${GITHUB_CLIENT_ID}" # {{ .Values.githubIdp.clientId | default .Values.secrets.githubClientId | quote }}
           clientSecret: "${vault.github-client-secret}" # {{ .Values.githubIdp.clientSecret | default .Values.secrets.githubClientSecret | quote }}
+          githubJsonFormat: {{ .Values.githubIdp.githubJsonFormat | quote }}
           syncMode: "LEGACY"
 
     identityProviderMappers:
