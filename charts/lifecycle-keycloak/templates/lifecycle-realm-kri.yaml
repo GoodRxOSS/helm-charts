@@ -141,11 +141,11 @@ spec:
           clientId: {{ .Values.internalIdp.clientId | quote }}
           clientAuthMethod: "private_key_jwt"
           clientAssertionSigningAlg: "RS256"
-          tokenUrl: {{ .Values.companyIdp.tokenUrl | default (printf "%s/realms/%s/protocol/openid-connect/token" .Values.hostname .Values.internalIdp.realm) | quote }}
-          jwksUrl: {{ .Values.companyIdp.jwksUrl | default (printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.internalIdp.realm) | quote }}
-          authorizationUrl: {{ .Values.companyIdp.authorizationUrl | default (printf "%s/realms/%s/protocol/openid-connect/auth" .Values.hostname .Values.internalIdp.realm) | quote }}
-          logoutUrl: {{ .Values.companyIdp.logoutUrl | default (printf "%s/realms/%s/protocol/openid-connect/logout" .Values.hostname .Values.internalIdp.realm) | quote }}
-          clientAssertionAudience: {{ .Values.companyIdp.issuer | default (printf "%s/realms/%s" .Values.hostname .Values.internalIdp.realm) | quote }}
+          tokenUrl: {{ printf "%s/realms/%s/protocol/openid-connect/token" .Values.hostname .Values.internalIdp.realm | quote }}
+          jwksUrl: {{ printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.internalIdp.realm | quote }}
+          authorizationUrl: {{ printf "%s/realms/%s/protocol/openid-connect/auth" .Values.hostname .Values.internalIdp.realm | quote }}
+          logoutUrl: {{ printf "%s/realms/%s/protocol/openid-connect/logout" .Values.hostname .Values.internalIdp.realm | quote }}
+          clientAssertionAudience: {{ printf "%s/realms/%s" .Values.hostname .Values.internalIdp.realm | quote }}
           defaultScope: "openid profile email"
           syncMode: "LEGACY"
           useJwksUrl: "true"
