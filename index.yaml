@@ -618,6 +618,27 @@ entries:
       lifecycle.io/requires-operator: keycloak-operator
     apiVersion: v2
     appVersion: 0.0.0
+    created: "2026-04-29T22:53:47.577302186Z"
+    dependencies:
+    - alias: keycloakPostgres
+      condition: keycloakPostgres.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.5.19
+    description: Keycloak instance for Lifecycle stack with automated Operator-driven
+      setup and imports
+    digest: 236ddcce04a79a4dfd39efb0e5af320a9ed1e8b869dd0efb9ede0af360e07b18
+    home: https://goodrxoss.github.io/helm-charts/charts/lifecycle-keycloak/
+    name: lifecycle-keycloak
+    type: application
+    urls:
+    - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-keycloak-0.7.2/lifecycle-keycloak-0.7.2.tgz
+    version: 0.7.2
+  - annotations:
+      lifecycle.io/requires-crd: keycloaks.k8s.keycloak.org/v2alpha1
+      lifecycle.io/requires-operator: keycloak-operator
+    apiVersion: v2
+    appVersion: 0.0.0
     created: "2026-04-15T21:03:12.477703641Z"
     dependencies:
     - alias: keycloakPostgres
@@ -898,4 +919,4 @@ entries:
     urls:
     - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-ui-0.1.0/lifecycle-ui-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-15T21:16:55.066912593Z"
+generated: "2026-04-29T22:53:47.577393373Z"
