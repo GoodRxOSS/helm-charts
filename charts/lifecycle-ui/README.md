@@ -1,6 +1,6 @@
 # lifecycle-ui
 
-![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.3](https://img.shields.io/badge/AppVersion-0.1.3-informational?style=flat-square)
+![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.4](https://img.shields.io/badge/AppVersion-0.1.4-informational?style=flat-square)
 
 A Helm chart for Lifecycle UI (Next.js)
 
@@ -41,7 +41,7 @@ config:
 ```bash
 helm upgrade -i lifecycle-ui \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-ui \
-  --version 0.3.1 \
+  --version 0.3.2 \
   -f values.yaml \
   -n lifecycle-ui \
   --create-namespace
@@ -152,7 +152,7 @@ deployment:
 | hpa.minReplicas | int | `1` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"lifecycleoss/lifecycle-ui"` |  |
-| image.tag | string | `"latest"` |  |
+| image.tag | string | `""` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `"nginx"` |  |
