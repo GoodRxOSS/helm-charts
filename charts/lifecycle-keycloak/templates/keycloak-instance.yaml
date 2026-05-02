@@ -42,12 +42,9 @@ spec:
     host: {{ include "lifecycle-keycloak.postgresSvcPrefix" . | quote }}
     port: 5432
     database: {{ .Values.keycloakPostgres.auth.database | quote }}
-    usernameSecret:
-      name: {{ include "lifecycle-keycloak.postgresSecretName" . | quote }}
-      key: POSTGRES_USERNAME
     passwordSecret:
-      name: {{ include "lifecycle-keycloak.postgresSecretName" . | quote }}
-      key: POSTGRES_USER_PASSWORD
+      name: {{ printf "%s" (tpl .Values.keycloakPostgres.auth.existingSecret $) }}
+      key: {{ .Values.keycloakPostgres.auth.secretKeys.userPasswordKey | quote }}
   {{- end }}
 
   http:
@@ -62,6 +59,9 @@ spec:
   {{- if .Values.externalDatabase.enabled }}
     - name: db-username
       value: {{ .Values.externalDatabase.username | quote }}
+  {{- else }}
+    - name: db-username
+      value: {{ .Values.keycloakPostgres.auth.username | quote }}
   {{- end }}
     - name: hostname-strict-backchannel
       value: "false"
