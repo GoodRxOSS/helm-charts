@@ -32,7 +32,11 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "..helper.fullname" $ }}
+    {{- if and $component.fullnameOverride (ne $component.fullnameOverride "") }}
+    name: {{ $component.fullnameOverride }}
+    {{- else }}
+    name: {{ include "..helper.fullname" $ }}-{{ $name }}
+    {{- end }}
   minReplicas: {{ $component.hpa.minReplicas }}
   maxReplicas: {{ $component.hpa.maxReplicas }}
   metrics:

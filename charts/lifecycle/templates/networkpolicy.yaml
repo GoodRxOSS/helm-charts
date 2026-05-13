@@ -32,6 +32,7 @@ spec:
   podSelector:
     matchLabels:
       {{- include "..helper.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $name }}
   policyTypes:
     - Ingress
     - Egress
