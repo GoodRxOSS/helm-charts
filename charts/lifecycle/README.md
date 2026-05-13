@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.6](https://img.shields.io/badge/Version-0.9.6-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.15](https://img.shields.io/badge/AppVersion-0.1.15-informational?style=flat-square)
+![Version: 0.9.7](https://img.shields.io/badge/Version-0.9.7-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.15](https://img.shields.io/badge/AppVersion-0.1.15-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.6 \
+  --version 0.9.7 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -67,6 +67,63 @@ helm upgrade -i lifecycle \
 | buildkit.fullnameOverride | string | `""` |  |
 | buildkit.resources.requests.cpu | string | `"500m"` |  |
 | buildkit.resources.requests.memory | string | `"1Gi"` |  |
+| components.gateway.container.args | list | `[]` |  |
+| components.gateway.container.command | list | `[]` |  |
+| components.gateway.deployment.affinity | object | `{}` |  |
+| components.gateway.deployment.envFrom | object | `{}` |  |
+| components.gateway.deployment.extraEnv[0].name | string | `"LIFECYCLE_MODE"` |  |
+| components.gateway.deployment.extraEnv[0].value | string | `"gateway"` |  |
+| components.gateway.deployment.livenessProbe.failureThreshold | int | `6` |  |
+| components.gateway.deployment.livenessProbe.httpGet.path | string | `"/api/health"` |  |
+| components.gateway.deployment.livenessProbe.httpGet.port | string | `"http"` |  |
+| components.gateway.deployment.livenessProbe.initialDelaySeconds | int | `60` |  |
+| components.gateway.deployment.livenessProbe.periodSeconds | int | `10` |  |
+| components.gateway.deployment.nodeSelector | object | `{}` |  |
+| components.gateway.deployment.ports[0].containerPort | int | `80` |  |
+| components.gateway.deployment.ports[0].name | string | `"http"` |  |
+| components.gateway.deployment.ports[0].protocol | string | `"TCP"` |  |
+| components.gateway.deployment.readinessProbe.failureThreshold | int | `3` |  |
+| components.gateway.deployment.readinessProbe.httpGet.path | string | `"/api/health"` |  |
+| components.gateway.deployment.readinessProbe.httpGet.port | string | `"http"` |  |
+| components.gateway.deployment.readinessProbe.periodSeconds | int | `5` |  |
+| components.gateway.deployment.replicaCount | int | `2` |  |
+| components.gateway.deployment.resources.limits.cpu | string | `"2000m"` |  |
+| components.gateway.deployment.resources.limits.ephemeral-storage | string | `"1Gi"` |  |
+| components.gateway.deployment.resources.limits.memory | string | `"4000Mi"` |  |
+| components.gateway.deployment.resources.requests.cpu | string | `"200m"` |  |
+| components.gateway.deployment.resources.requests.ephemeral-storage | string | `"400Mi"` |  |
+| components.gateway.deployment.resources.requests.memory | string | `"512Mi"` |  |
+| components.gateway.deployment.startupProbe | object | `{}` |  |
+| components.gateway.deployment.tolerations | list | `[]` |  |
+| components.gateway.deployment.volumeMounts | list | `[]` |  |
+| components.gateway.deployment.volumes | list | `[]` |  |
+| components.gateway.enabled | bool | `false` |  |
+| components.gateway.extraLabels | object | `{}` |  |
+| components.gateway.fullnameOverride | string | `""` |  |
+| components.gateway.hpa.enabled | bool | `false` |  |
+| components.gateway.hpa.maxReplicas | int | `10` |  |
+| components.gateway.hpa.metrics[0].resource.name | string | `"cpu"` |  |
+| components.gateway.hpa.metrics[0].resource.target.averageUtilization | int | `80` |  |
+| components.gateway.hpa.metrics[0].resource.target.type | string | `"Utilization"` |  |
+| components.gateway.hpa.metrics[0].type | string | `"Resource"` |  |
+| components.gateway.hpa.minReplicas | int | `2` |  |
+| components.gateway.ingress.annotations | object | `{}` |  |
+| components.gateway.ingress.defaultBackend | object | `{}` |  |
+| components.gateway.ingress.enabled | bool | `false` |  |
+| components.gateway.ingress.hosts[0].host | string | `"*.sites.example.com"` |  |
+| components.gateway.ingress.hosts[0].paths[0] | string | `"/"` |  |
+| components.gateway.ingress.ingressClassName | string | `"nginx"` |  |
+| components.gateway.networkPolicy.egress | list | `[]` |  |
+| components.gateway.networkPolicy.enabled | bool | `false` |  |
+| components.gateway.networkPolicy.ingress | list | `[]` |  |
+| components.gateway.pdb.enabled | bool | `false` |  |
+| components.gateway.pdb.minAvailable | int | `1` |  |
+| components.gateway.service.clusterIP | string | `""` |  |
+| components.gateway.service.enabled | bool | `true` |  |
+| components.gateway.service.externalTrafficPolicy | string | `""` |  |
+| components.gateway.service.port | int | `80` |  |
+| components.gateway.service.targetPort | int | `80` |  |
+| components.gateway.service.type | string | `"ClusterIP"` |  |
 | components.web.container.args | list | `[]` |  |
 | components.web.container.command | list | `[]` |  |
 | components.web.deployment.affinity | object | `{}` |  |
