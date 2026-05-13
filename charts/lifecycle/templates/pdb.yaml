@@ -30,6 +30,7 @@ spec:
   selector:
     matchLabels:
       {{- include "..helper.selectorLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: {{ $name }}
   {{- if $component.pdb.minAvailable }}
   minAvailable: {{ $component.pdb.minAvailable }}
   {{- end }}
