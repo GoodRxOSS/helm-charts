@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lifecycle Keycloak MCP Auth Setup</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: oklch(0.976 0.006 250);
+      --surface: oklch(0.995 0.004 250);
+      --surface-2: oklch(0.956 0.008 250);
+      --ink: oklch(0.205 0.022 255);
+      --muted: oklch(0.47 0.025 255);
+      --line: oklch(0.88 0.012 250);
+      --blue: oklch(0.47 0.15 252);
+      --green: oklch(0.48 0.12 155);
+      --amber: oklch(0.63 0.13 72);
+      --red: oklch(0.54 0.15 28);
+      --violet: oklch(0.52 0.14 300);
+      --shadow: 0 18px 45px oklch(0.2 0.02 255 / 0.09);
+      --radius: 8px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, oklch(0.96 0.012 250), var(--page) 320px),
+        var(--page);
+      color: var(--ink);
+      font: 15px/1.58 var(--sans);
+    }
+
+    main {
+      width: min(1180px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 34px 0 56px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 28px;
+      align-items: end;
+      padding: 30px 0 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 780px;
+      font-size: clamp(30px, 5vw, 54px);
+      font-weight: 760;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0 0 12px;
+      max-width: 76ch;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    code {
+      padding: 2px 5px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--surface-2);
+      font: 0.92em/1.4 var(--mono);
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 15px;
+      overflow-x: auto;
+      border: 1px solid oklch(0.31 0.03 255);
+      border-radius: var(--radius);
+      background: oklch(0.19 0.02 255);
+      color: oklch(0.94 0.006 250);
+      font: 13px/1.48 var(--mono);
+    }
+
+    pre code {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+    }
+
+    section {
+      margin-top: 28px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 10px 28px oklch(0.22 0.02 255 / 0.05);
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 0 20px;
+      padding: 0;
+    }
+
+    li {
+      margin: 6px 0;
+      max-width: 78ch;
+    }
+
+    .lede {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: oklch(0.99 0.006 250);
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .toc a,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .pill.blue { border-color: oklch(0.78 0.08 252); background: oklch(0.96 0.026 252); color: oklch(0.38 0.14 252); }
+    .pill.green { border-color: oklch(0.78 0.08 155); background: oklch(0.96 0.025 155); color: oklch(0.37 0.12 155); }
+    .pill.amber { border-color: oklch(0.82 0.08 72); background: oklch(0.97 0.035 72); color: oklch(0.43 0.12 72); }
+    .pill.red { border-color: oklch(0.78 0.08 28); background: oklch(0.97 0.025 28); color: oklch(0.42 0.13 28); }
+    .pill.violet { border-color: oklch(0.78 0.08 300); background: oklch(0.97 0.025 300); color: oklch(0.42 0.13 300); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .panel {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: oklch(0.985 0.004 250);
+    }
+
+    .panel h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel p {
+      color: var(--muted);
+    }
+
+    .diagram {
+      margin-top: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, oklch(0.985 0.006 250), oklch(0.965 0.01 250));
+      overflow-x: auto;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: minmax(170px, 1fr) 38px minmax(170px, 1fr) 38px minmax(170px, 1fr);
+      align-items: center;
+      gap: 10px;
+      min-width: 760px;
+    }
+
+    .node {
+      min-height: 94px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .node span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-size: 26px;
+      text-align: center;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(190px, 0.42fr) minmax(0, 0.58fr);
+      gap: 14px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .row:first-child {
+      border-top: 0;
+    }
+
+    .row strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .row p {
+      margin: 3px 0 0;
+      color: var(--muted);
+    }
+
+    .claim-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 14px;
+    }
+
+    .claim-table th,
+    .claim-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .claim-table th {
+      background: var(--surface-2);
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .claim-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .split-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .sequence {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(130px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .step {
+      position: relative;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .step-num {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      margin-bottom: 10px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--surface);
+      font-size: 12px;
+      font-weight: 780;
+    }
+
+    .note {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px solid oklch(0.82 0.08 72);
+      border-radius: var(--radius);
+      background: oklch(0.975 0.035 72);
+      color: oklch(0.35 0.08 72);
+    }
+
+    .note strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .status {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .status b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .status strong {
+      font-size: 18px;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      main {
+        width: min(100% - 24px, 760px);
+      }
+
+      header,
+      .grid,
+      .grid.three,
+      .row,
+      .status-strip,
+      .sequence {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 20px;
+      }
+
+      .meta-row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <div class="pill blue">Lifecycle Keycloak MCP Auth</div>
+        <h1>Existing Keycloak setup and the MCP additions</h1>
+        <p class="lede">
+          This explains how Lifecycle uses Keycloak today, what the MCP chart patch adds, and why the additions are needed for URL-first MCP clients like Codex, VS Code, Cursor, Claude Code, and MCP Inspector.
+        </p>
+        <nav class="toc" aria-label="Page sections">
+          <a href="#today">Current Setup</a>
+          <a href="#new">What We Add</a>
+          <a href="#flows">Auth Flows</a>
+          <a href="#values">Values</a>
+          <a href="#risks">Compatibility</a>
+        </nav>
+      </div>
+      <div class="meta">
+        <div class="meta-row">
+          <span class="meta-label">Prod runtime</span>
+          <span><code>quay/keycloak/keycloak:26.4.7</code></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Prod chart</span>
+          <span><code>lifecycle-keycloak 0.7.3</code></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Patch branch</span>
+          <span><code>init-mcp-keycloak-chart</code></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">PR</span>
+          <span><a href="https://github.com/GoodRxOSS/helm-charts/pull/54">GoodRxOSS/helm-charts#54</a></span>
+        </div>
+      </div>
+    </header>
+
+    <section id="today">
+      <div class="split-title">
+        <h2>Current Setup</h2>
+        <span class="pill amber">Before MCP</span>
+      </div>
+      <p>
+        The current chart imports a single Lifecycle realm and configures browser login for the UI plus token validation for Lifecycle Core. It does not currently define a dedicated MCP public client or Dynamic Client Registration policy.
+      </p>
+
+      <div class="diagram" aria-label="Current Lifecycle Keycloak setup diagram">
+        <div class="flow">
+          <div class="node">
+            <strong>User browser</strong>
+            <span>Signs in through Lifecycle UI using Keycloak authorization code flow.</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <strong>Keycloak realm: <code>lifecycle</code></strong>
+            <span>Hosts roles, clients, IdP broker config, and user profile attributes.</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <strong>Lifecycle app APIs</strong>
+            <span>Verify access tokens with issuer, JWKS, and existing audience rules.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid three" style="margin-top: 18px;">
+        <div class="panel">
+          <h3><span class="pill blue">Client</span> <code>lifecycle-ui</code></h3>
+          <p>Confidential OIDC client. Uses a client secret and fixed UI redirect URLs.</p>
+          <ul>
+            <li><code>standardFlowEnabled: true</code></li>
+            <li>Redirects to <code>clients.lifecycleUi.url</code> and <code>/*</code></li>
+            <li>Audience mapper includes <code>lifecycle-core</code></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3><span class="pill green">Client</span> <code>lifecycle-core</code></h3>
+          <p>Public bearer-style client used as the existing API audience target.</p>
+          <ul>
+            <li><code>standardFlowEnabled: false</code></li>
+            <li><code>directAccessGrantsEnabled: false</code></li>
+            <li>Included as audience on UI tokens</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3><span class="pill violet">IdP</span> GitHub</h3>
+          <p>Linked GitHub identity provider stores GitHub data as Keycloak user attributes.</p>
+          <ul>
+            <li><code>githubUsername</code> user attribute</li>
+            <li><code>githubProfilePicture</code> user attribute</li>
+            <li>UI client maps <code>github_username</code> into tokens</li>
+          </ul>
+        </div>
+      </div>
+
+      <table class="claim-table">
+        <thead>
+          <tr>
+            <th>Current piece</th>
+            <th>Where it lives</th>
+            <th>What it means for MCP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>lifecycle-ui</code> client</td>
+            <td><code>templates/lifecycle-realm-kri.yaml</code></td>
+            <td>Not a good MCP client. It is confidential and tied to UI redirects.</td>
+          </tr>
+          <tr>
+            <td><code>lifecycle-core</code> audience</td>
+            <td>UI protocol mapper</td>
+            <td>MCP clients increasingly expect <code>aud</code> to equal the MCP resource URL, not the existing core client id.</td>
+          </tr>
+          <tr>
+            <td><code>githubUsername</code> user attribute</td>
+            <td>GitHub IdP mapper and user profile</td>
+            <td>Good source of ownership identity, but MCP access tokens must also include <code>github_username</code>.</td>
+          </tr>
+          <tr>
+            <td>Client registration policies</td>
+            <td>Not currently rendered</td>
+            <td>URL-only MCP OAuth needs DCR, so the chart needs explicit policy support.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="new">
+      <div class="split-title">
+        <h2>What We Are Adding</h2>
+        <span class="pill green">Disabled by default</span>
+      </div>
+      <p>
+        The chart patch adds an optional MCP auth surface. Nothing changes unless custom values enable it. The new blocks are intentionally separate so operators can override clients, scopes, claims, and DCR policy behavior independently.
+      </p>
+
+      <div class="diagram" aria-label="New MCP Keycloak setup diagram">
+        <div class="flow">
+          <div class="node">
+            <strong>MCP client</strong>
+            <span>Codex, VS Code, Cursor, Claude Code, Inspector, or another agent harness.</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <strong>Keycloak additions</strong>
+            <span><code>lifecycle-mcp</code> client, <code>lifecycle-mcp</code> scope, and anonymous DCR policies.</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <strong>Lifecycle MCP endpoint</strong>
+            <span><code>https://app.../mcp</code> verifies tokens with MCP resource audience.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top: 18px;">
+        <div class="panel">
+          <h3><span class="pill blue">1</span> Public MCP client</h3>
+          <p>
+            Adds <code>clients.lifecycleMcp</code>, a public PKCE client for fallback OAuth when a client cannot complete DCR.
+          </p>
+          <ul>
+            <li><code>clientId: lifecycle-mcp</code></li>
+            <li><code>standardFlowEnabled: true</code></li>
+            <li><code>pkce.code.challenge.method: S256</code></li>
+            <li>Loopback redirect defaults for local CLI clients</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3><span class="pill green">2</span> MCP client scope</h3>
+          <p>
+            Adds <code>clientScopes.lifecycleMcp</code>, which emits the claims the Lifecycle MCP server expects.
+          </p>
+          <ul>
+            <li><code>aud</code> includes the MCP resource URL</li>
+            <li><code>github_username</code> maps from <code>githubUsername</code></li>
+            <li>Extra protocol mappers can be supplied from custom values</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3><span class="pill violet">3</span> DCR policies</h3>
+          <p>
+            Adds <code>clientRegistrationPolicies.anonymous</code> so URL-only clients can dynamically register.
+          </p>
+          <ul>
+            <li>Trusted hosts: <code>127.0.0.1</code>, <code>localhost</code></li>
+            <li>Registration web origins for MCP Inspector</li>
+            <li>Allowed client scopes and max client limit</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3><span class="pill amber">4</span> Extension points</h3>
+          <p>
+            Keeps the template maintainable by exposing common override lists rather than hardcoding every future client detail.
+          </p>
+          <ul>
+            <li><code>clients.lifecycleMcp.attributes</code></li>
+            <li><code>clients.lifecycleMcp.protocolMappers</code></li>
+            <li><code>clientScopes.lifecycleMcp.protocolMappers</code></li>
+            <li><code>clientRegistrationPolicies.anonymous.extraPolicies</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="flows">
+      <h2>Auth Flows</h2>
+      <p>
+        MCP clients can either use Dynamic Client Registration or fall back to the preconfigured public client. Both flows end with a token that the Lifecycle MCP endpoint validates.
+      </p>
+
+      <h3>URL-first OAuth with Dynamic Client Registration</h3>
+      <div class="sequence">
+        <div class="step">
+          <div class="step-num">1</div>
+          <strong>User adds URL</strong>
+          <p><code>https://app.lifecycle.lfc.goodrx.com/mcp</code></p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <strong>MCP endpoint challenges</strong>
+          <p><code>WWW-Authenticate</code> points at protected-resource metadata.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <strong>Client discovers Keycloak</strong>
+          <p>Reads authorization server metadata and registration endpoint.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <strong>DCR registers client</strong>
+          <p>Keycloak policy checks trusted host, origins, and allowed scopes.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <strong>Token is validated</strong>
+          <p>Lifecycle checks issuer, JWKS, resource audience, and user access.</p>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>Why DCR matters</strong>
+        URL-only setup means the user does not manually copy a client id or bearer token. The MCP client must be able to register a safe OAuth client automatically, then launch browser login with PKCE.
+      </div>
+
+      <h3 style="margin-top: 22px;">Fallback using the preconfigured <code>lifecycle-mcp</code> client</h3>
+      <div class="diagram" aria-label="Fallback MCP auth flow">
+        <div class="flow">
+          <div class="node">
+            <strong>MCP client</strong>
+            <span>Uses configured or discovered <code>client_id=lifecycle-mcp</code>.</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <strong>Keycloak browser login</strong>
+            <span>PKCE with loopback redirect URI from <code>redirectUris</code>.</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="node">
+            <strong>Lifecycle MCP server</strong>
+            <span>Accepts token only when <code>aud</code> includes the MCP resource URL.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="values">
+      <h2>Custom Values Shape</h2>
+      <p>
+        For the umbrella <code>lifecycle</code> chart, the MCP Keycloak values sit under the existing <code>keycloak:</code> subchart key. The chart defaults stay off; production turns them on explicitly.
+      </p>
+      <div class="note">
+        <strong>Single-environment rollout posture</strong>
+        Lifecycle currently has one production Keycloak environment. These values are additive and do not delete the existing realm, clients, users, roles, secrets, or IdP configuration. They still change the auth surface by enabling a new public client and optional DCR policies, so rollout should use rendered manifest review, <code>helm diff</code>, and Keycloak CR status checks rather than relying on a lower environment.
+      </div>
+
+      <pre><code>keycloak:
+  clients:
+    lifecycleMcp:
+      enabled: true
+      resourceUrl: 'https://app.lifecycle.lfc.goodrx.com/mcp'
+
+  clientScopes:
+    lifecycleMcp:
+      enabled: true
+      audienceMapper:
+        audience: 'https://app.lifecycle.lfc.goodrx.com/mcp'
+
+  clientRegistrationPolicies:
+    anonymous:
+      enabled: true
+      trustedHosts:
+        hosts:
+          - 127.0.0.1
+          - localhost
+      allowedRegistrationWebOrigins:
+        origins:
+          - 'http://localhost:6274'
+          - 'http://127.0.0.1:6274'</code></pre>
+
+      <table class="claim-table">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Default</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>clients.lifecycleMcp.enabled</code></td>
+            <td><code>false</code></td>
+            <td>Backward compatible. Existing Keycloak installs do not render the MCP client until a release enables it.</td>
+          </tr>
+          <tr>
+            <td><code>clients.lifecycleMcp.resourceUrl</code></td>
+            <td><code>http://localhost:3000/mcp</code></td>
+            <td>Feeds the MCP audience mapper unless a custom audience override is supplied.</td>
+          </tr>
+          <tr>
+            <td><code>clientScopes.lifecycleMcp.enabled</code></td>
+            <td><code>false</code></td>
+            <td>Can be enabled with the client, or independently if another client should attach the same scope.</td>
+          </tr>
+          <tr>
+            <td><code>clientRegistrationPolicies.anonymous.enabled</code></td>
+            <td><code>false</code></td>
+            <td>DCR is additive, but it has security impact, so it is opt-in and tightly configured by values.</td>
+          </tr>
+          <tr>
+            <td><code>extraPolicies</code>, <code>attributes</code>, <code>protocolMappers</code></td>
+            <td>empty lists or objects</td>
+            <td>Lets operators extend without editing the template for every future MCP client need.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="risks">
+      <h2>Compatibility And Access Notes</h2>
+      <div class="status-strip">
+        <div class="status">
+          <b>Running version</b>
+          <strong>26.4.7</strong>
+        </div>
+        <div class="status">
+          <b>Docs checked</b>
+          <strong>26.6.1</strong>
+        </div>
+        <div class="status">
+          <b>Chart default</b>
+          <strong>Off</strong>
+        </div>
+        <div class="status">
+          <b>PR chart</b>
+          <strong>0.7.4</strong>
+        </div>
+      </div>
+
+      <div class="grid" style="margin-top: 18px;">
+        <div class="panel">
+          <h3><span class="pill green">Likely supported</span></h3>
+          <p>These are standard Keycloak OIDC features and should work on the current runtime.</p>
+          <ul>
+            <li>Public OAuth client with authorization code and PKCE</li>
+            <li>Client scopes</li>
+            <li>Audience protocol mapper</li>
+            <li>User attribute mapper for <code>github_username</code></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3><span class="pill red">Needs environment proof</span></h3>
+          <p>The risky part is the exact DCR policy representation accepted by Keycloak 26.4.7 realm import.</p>
+          <ul>
+            <li><code>trusted-hosts</code> policy provider id</li>
+            <li><code>registration-web-origins</code> policy provider id</li>
+            <li><code>allowed-client-templates</code> policy provider id</li>
+            <li>Policy config key names in imported realm components</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>Users without <code>github_username</code></strong>
+        They can authenticate and can use MCP capabilities that only require an authenticated Lifecycle identity. They should not be able to use build-owner capabilities when ownership depends on GitHub PR author matching <code>github_username</code>. For those owner-scoped tools, resources, and prompts, the correct result is an empty owned-build list or <code>403</code>, not broader access.
+      </div>
+
+      <table class="claim-table">
+        <thead>
+          <tr>
+            <th>MCP capability type</th>
+            <th>Requires <code>github_username</code>?</th>
+            <th>Expected behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>General authenticated account, docs, schema, or user-profile capabilities</td>
+            <td>No</td>
+            <td>Allow any valid authenticated Lifecycle user, subject to ordinary role checks.</td>
+          </tr>
+          <tr>
+            <td>Admin operations</td>
+            <td>No, if the token has the admin role</td>
+            <td>Admin role is sufficient. GitHub ownership is not needed for admin-scoped access.</td>
+          </tr>
+          <tr>
+            <td>Build-owner tools and resources, such as v0.1 build lookup, pods, webhooks, metadata, and redeploy</td>
+            <td>Yes, unless admin</td>
+            <td>Non-admin users without <code>github_username</code> fail closed for owner-scoped build access.</td>
+          </tr>
+          <tr>
+            <td>Prompts that call owner-scoped tools or resources</td>
+            <td>Indirectly yes</td>
+            <td>The prompt can be listed, but execution should only succeed when the underlying tools and resources pass access checks.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top: 22px;">Validation checklist</h3>
+      <ol>
+        <li>Render the exact production values with <code>helm template</code> and review the diff for additive-only realm changes.</li>
+        <li>Run <code>helm diff</code> against the production release before applying.</li>
+        <li>Confirm the realm import creates the <code>lifecycle-mcp</code> client and <code>lifecycle-mcp</code> client scope.</li>
+        <li>Confirm a token for MCP includes <code>aud: https://app.../mcp</code> and <code>github_username</code> when the user has the attribute.</li>
+        <li>Confirm a non-admin user without <code>github_username</code> can authenticate but cannot access owner-scoped build capabilities.</li>
+        <li>Confirm anonymous DCR accepts loopback MCP clients and rejects untrusted hosts.</li>
+        <li>Run MCP Inspector and Codex login against the MCP endpoint.</li>
+      </ol>
+    </section>
+
+    <footer>
+      Generated for the Lifecycle MCP auth rollout. Source branch: <code>init-mcp-keycloak-chart</code>.
+    </footer>
+  </main>
+</body>
+</html>
