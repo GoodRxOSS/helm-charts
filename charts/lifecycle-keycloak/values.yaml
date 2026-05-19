@@ -71,6 +71,7 @@ clientScopes:
     enabled: false
     name: lifecycle-mcp
     description: Claims required by Lifecycle MCP clients.
+    realmDefault: true
     audienceMapper:
       enabled: true
       name: Lifecycle MCP resource audience

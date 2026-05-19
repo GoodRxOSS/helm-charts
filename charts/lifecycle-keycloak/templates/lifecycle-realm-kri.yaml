@@ -71,6 +71,11 @@ spec:
 {{- if and (or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled) $lifecycleMcpClientScope.audienceMapper.enabled (not $lifecycleMcpAudience) }}
 {{- fail "clientScopes.lifecycleMcp.audienceMapper.audience or clients.lifecycleMcp.resourceUrl is required when the Lifecycle MCP audience mapper is enabled" }}
 {{- end }}
+{{- if and (or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled) $lifecycleMcpClientScope.realmDefault }}
+    defaultDefaultClientScopes:
+      - {{ $lifecycleMcpClientScope.name | quote }}
+
+{{- end }}
 {{- if or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled }}
     # --- CLIENT SCOPES ---
     clientScopes:
@@ -331,13 +336,13 @@ spec:
           subType: "anonymous"
           subComponents: {}
           config:
-            allowed-protocol-mappers:
 {{- if .mappers }}
+            allowed-protocol-mappers:
 {{- range .mappers }}
               - {{ . | quote }}
 {{- end }}
 {{- else }}
-              []
+            allowed-protocol-mappers: []
 {{- end }}
 {{- end }}
 {{- end }}

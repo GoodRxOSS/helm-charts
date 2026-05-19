@@ -121,6 +121,10 @@ clients:
     enabled: true
     resourceUrl: "https://app.example.com/mcp"
 
+clientScopes:
+  lifecycleMcp:
+    realmDefault: true
+
 clientRegistrationPolicies:
   anonymous:
     enabled: true
@@ -141,9 +145,13 @@ clientRegistrationPolicies:
 
 The MCP client scope emits the configured resource URL as the access-token audience and maps the `githubUsername` user attribute into the `github_username` claim.
 
+By default, the MCP client scope is added to `defaultDefaultClientScopes` when the MCP client or scope is enabled. This makes DCR-registered clients receive the MCP audience and `github_username` claim without requiring every client harness to request `scope=lifecycle-mcp` correctly. Operators can set `clientScopes.lifecycleMcp.realmDefault=false` if they prefer to require explicit scope requests.
+
 `clients.lifecycleMcp.resourceUrl` is required when the MCP client is enabled. It should be the externally reachable MCP resource URL, for example `https://app.example.com/mcp`; do not leave it as a localhost value in shared environments.
 
 The pre-registered MCP client is public and uses PKCE with loopback redirect URI wildcards for CLI clients. Anonymous DCR is constrained to loopback client/redirect URI hosts, public clients (`none` authenticator), configured client scopes, and no caller-supplied protocol mappers by default. Registration web origins are for browser-based testing tools such as MCP Inspector; CLI OAuth flows do not use them.
+
+Registration web origins and redirect URIs are different controls: registration web origins are CORS origins for browser-based DCR callers, while redirect URIs are OAuth callback URLs for the authorization flow.
 
 MCP tokens are expected to use the MCP resource URL as `aud`. The existing Lifecycle API middleware validates the existing core audience (`lifecycle-core`) and should not be reused for MCP traffic without a separate MCP audience validator.
 
@@ -219,6 +227,7 @@ helm upgrade -i lifecycle-keycloak \
 | clientScopes.lifecycleMcp.githubUsernameMapper.userAttribute | string | `"githubUsername"` |  |
 | clientScopes.lifecycleMcp.name | string | `"lifecycle-mcp"` |  |
 | clientScopes.lifecycleMcp.protocolMappers | list | `[]` |  |
+| clientScopes.lifecycleMcp.realmDefault | bool | `true` |  |
 | clients.lifecycleCore.clientId | string | `"lifecycle-core"` |  |
 | clients.lifecycleCore.enabled | bool | `true` |  |
 | clients.lifecycleMcp.attributes | object | `{}` |  |

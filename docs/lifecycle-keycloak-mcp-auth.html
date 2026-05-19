@@ -730,6 +730,7 @@
   clientScopes:
     lifecycleMcp:
       enabled: true
+      realmDefault: true
       audienceMapper:
         audience: 'https://app.lifecycle.lfc.goodrx.com/mcp'
 
@@ -775,6 +776,11 @@
             <td><code>clientScopes.lifecycleMcp.enabled</code></td>
             <td><code>false</code></td>
             <td>Can be enabled with the client, or independently if another client should attach the same scope.</td>
+          </tr>
+          <tr>
+            <td><code>clientScopes.lifecycleMcp.realmDefault</code></td>
+            <td><code>true</code></td>
+            <td>Adds the MCP scope to realm default scopes when the MCP client or scope is enabled, so DCR clients get the MCP audience and <code>github_username</code> claim automatically.</td>
           </tr>
           <tr>
             <td><code>clientRegistrationPolicies.anonymous.enabled</code></td>
@@ -878,6 +884,7 @@
         <li>Render the exact production values with <code>helm template</code> and review the diff for additive-only realm changes.</li>
         <li>Run <code>helm diff</code> against the production release before applying.</li>
         <li>Confirm the realm import creates the <code>lifecycle-mcp</code> client and <code>lifecycle-mcp</code> client scope.</li>
+        <li>Confirm <code>defaultDefaultClientScopes</code> includes <code>lifecycle-mcp</code> when the MCP client or scope is enabled.</li>
         <li>Confirm a token for MCP includes <code>aud: https://app.../mcp</code> and <code>github_username</code> when the user has the attribute.</li>
         <li>Confirm a non-admin user without <code>github_username</code> can authenticate but cannot access owner-scoped build capabilities.</li>
         <li>Confirm anonymous DCR accepts loopback MCP clients and rejects untrusted hosts.</li>
@@ -886,8 +893,8 @@
 
       <h3 style="margin-top: 22px;">Open items to revisit</h3>
       <div class="note">
-        <strong>DCR client default scopes</strong>
-        Do not add <code>lifecycle-mcp</code> to realm-wide <code>defaultDefaultClientScopes</code> until we prove it is necessary. A realm default could put the MCP resource audience and <code>github_username</code> mapper on unrelated clients. First validate whether MCP clients request the advertised scope, whether RFC 8707 <code>resource=</code> gives the right audience, or whether Keycloak 26.4.7 supports a narrower DCR profile/template that applies the MCP scope only to dynamically registered MCP clients.
+        <strong>Realm-default scope blast radius</strong>
+        The chart now defaults <code>clientScopes.lifecycleMcp.realmDefault</code> to <code>true</code> so URL-only DCR clients work without per-client scope configuration. Validate whether unrelated clients in this realm also receive the MCP audience and <code>github_username</code> claim, and consider a narrower DCR profile/template later if Keycloak 26.4.7 supports one cleanly.
       </div>
       <div class="note">
         <strong>DCR lifecycle management</strong>
