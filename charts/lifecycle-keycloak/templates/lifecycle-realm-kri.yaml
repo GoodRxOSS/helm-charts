@@ -61,6 +61,60 @@ spec:
     defaultRoles:
       - "user"
 
+{{- $lifecycleMcpClient := .Values.clients.lifecycleMcp }}
+{{- $lifecycleMcpClientScope := .Values.clientScopes.lifecycleMcp }}
+{{- $lifecycleMcpResourceUrl := $lifecycleMcpClient.resourceUrl }}
+{{- if and $lifecycleMcpClient.enabled (not $lifecycleMcpResourceUrl) }}
+{{- fail "clients.lifecycleMcp.resourceUrl is required when clients.lifecycleMcp.enabled=true" }}
+{{- end }}
+{{- $lifecycleMcpAudience := $lifecycleMcpClientScope.audienceMapper.audience | default $lifecycleMcpResourceUrl }}
+{{- if and (or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled) $lifecycleMcpClientScope.audienceMapper.enabled (not $lifecycleMcpAudience) }}
+{{- fail "clientScopes.lifecycleMcp.audienceMapper.audience or clients.lifecycleMcp.resourceUrl is required when the Lifecycle MCP audience mapper is enabled" }}
+{{- end }}
+{{- if and (or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled) $lifecycleMcpClientScope.realmDefault }}
+    defaultDefaultClientScopes:
+      - {{ $lifecycleMcpClientScope.name | quote }}
+
+{{- end }}
+{{- if or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled }}
+    # --- CLIENT SCOPES ---
+    clientScopes:
+      - name: {{ $lifecycleMcpClientScope.name | quote }}
+        description: {{ $lifecycleMcpClientScope.description | quote }}
+        protocol: "openid-connect"
+        attributes:
+          include.in.token.scope: "true"
+          display.on.consent.screen: "false"
+{{- if or $lifecycleMcpClientScope.audienceMapper.enabled $lifecycleMcpClientScope.githubUsernameMapper.enabled $lifecycleMcpClientScope.protocolMappers }}
+        protocolMappers:
+{{- if $lifecycleMcpClientScope.audienceMapper.enabled }}
+          - name: {{ $lifecycleMcpClientScope.audienceMapper.name | quote }}
+            protocol: "openid-connect"
+            protocolMapper: "oidc-audience-mapper"
+            config:
+              included.custom.audience: {{ $lifecycleMcpAudience | quote }}
+              access.token.claim: "true"
+              introspection.token.claim: "true"
+{{- end }}
+{{- if $lifecycleMcpClientScope.githubUsernameMapper.enabled }}
+          - name: {{ $lifecycleMcpClientScope.githubUsernameMapper.name | quote }}
+            protocol: "openid-connect"
+            protocolMapper: "oidc-usermodel-attribute-mapper"
+            config:
+              user.attribute: {{ $lifecycleMcpClientScope.githubUsernameMapper.userAttribute | quote }}
+              claim.name: {{ $lifecycleMcpClientScope.githubUsernameMapper.claimName | quote }}
+              id.token.claim: "true"
+              access.token.claim: "true"
+              userinfo.token.claim: "true"
+              introspection.token.claim: "true"
+              jsonType.label: "String"
+{{- end }}
+{{- with $lifecycleMcpClientScope.protocolMappers }}
+{{ toYaml . | nindent 10 }}
+{{- end }}
+{{- end }}
+{{- end }}
+
     # --- CLIENTS ---
     clients:
       - clientId: "broker"
@@ -129,6 +183,43 @@ spec:
               jsonType.label: "String"
               introspection.token.claim: "true"
 
+{{- if $lifecycleMcpClient.enabled }}
+      - clientId: {{ $lifecycleMcpClient.clientId | quote }}
+        name: {{ $lifecycleMcpClient.name | quote }}
+        enabled: true
+        publicClient: {{ $lifecycleMcpClient.publicClient }}
+        standardFlowEnabled: {{ $lifecycleMcpClient.standardFlowEnabled }}
+        directAccessGrantsEnabled: {{ $lifecycleMcpClient.directAccessGrantsEnabled }}
+        serviceAccountsEnabled: {{ $lifecycleMcpClient.serviceAccountsEnabled }}
+        fullScopeAllowed: {{ $lifecycleMcpClient.fullScopeAllowed }}
+        protocol: "openid-connect"
+        redirectUris:
+{{- range $lifecycleMcpClient.redirectUris }}
+          - {{ . | quote }}
+{{- end }}
+        webOrigins:
+{{- range $lifecycleMcpClient.webOrigins }}
+          - {{ . | quote }}
+{{- end }}
+        defaultClientScopes:
+{{- range $lifecycleMcpClient.defaultClientScopes }}
+          - {{ . | quote }}
+{{- end }}
+        optionalClientScopes:
+{{- range $lifecycleMcpClient.optionalClientScopes }}
+          - {{ . | quote }}
+{{- end }}
+        attributes:
+          pkce.code.challenge.method: {{ $lifecycleMcpClient.pkceCodeChallengeMethod | quote }}
+{{- with $lifecycleMcpClient.attributes }}
+{{ toYaml . | nindent 10 }}
+{{- end }}
+{{- with $lifecycleMcpClient.protocolMappers }}
+        protocolMappers:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+{{- end }}
+
     # --- IDENTITY PROVIDERS ---
     identityProviders:
       - alias: "company-sso"
@@ -193,6 +284,98 @@ spec:
 
     # --- COMPONENTS (USER PROFILE) ---
     components:
+{{- if .Values.clientRegistrationPolicies.anonymous.enabled }}
+      org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy:
+{{- with .Values.clientRegistrationPolicies.anonymous.trustedHosts }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "trusted-hosts"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+            host-sending-registration-request-must-match:
+              - {{ .hostSendingRegistrationRequestMustMatch | quote }}
+            trusted-hosts:
+{{- range .hosts }}
+              - {{ . | quote }}
+{{- end }}
+            client-uris-must-match:
+              - {{ .clientUrisMustMatch | quote }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "registration-web-origins"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+            web-origins:
+{{- range .origins }}
+              - {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.allowedClientAuthenticatorTypes }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "allowed-client-authenticator-types"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+            allowed-client-authenticator-types:
+{{- range .types }}
+              - {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.allowedProtocolMappers }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "allowed-protocol-mappers"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+{{- if .mappers }}
+            allowed-protocol-mappers:
+{{- range .mappers }}
+              - {{ . | quote }}
+{{- end }}
+{{- else }}
+            allowed-protocol-mappers: []
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.allowedClientScopes }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "allowed-client-templates"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+            allow-default-scopes:
+              - "true"
+            allowed-client-scopes:
+{{- range .scopes }}
+              - {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.maxClients }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "max-clients"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+            max-clients:
+              - {{ .count | quote }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.extraPolicies }}
+{{ toYaml . | nindent 8 }}
+{{- end }}
+{{- end }}
       org.keycloak.userprofile.UserProfileProvider:
         - providerId: "declarative-user-profile"
           config:

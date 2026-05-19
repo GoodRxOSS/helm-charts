@@ -39,6 +39,96 @@ clients:
         name:  # fallback to "{{ include "lifecycle-keycloak.lifecycleUiSecretName" . }}"
         key:  # default "clientSecret"
 
+  lifecycleMcp:
+    enabled: false
+    clientId: lifecycle-mcp
+    name: Lifecycle MCP
+    resourceUrl:
+    publicClient: true
+    standardFlowEnabled: true
+    directAccessGrantsEnabled: false
+    serviceAccountsEnabled: false
+    fullScopeAllowed: true
+    pkceCodeChallengeMethod: S256
+    redirectUris:
+      - http://127.0.0.1/*
+      - http://localhost/*
+    webOrigins:
+      - "+"
+    defaultClientScopes:
+      - roles
+      - profile
+      - basic
+      - email
+      - lifecycle-mcp
+    optionalClientScopes:
+      - offline_access
+    attributes: {}
+    protocolMappers: []
+
+clientScopes:
+  lifecycleMcp:
+    enabled: false
+    name: lifecycle-mcp
+    description: Claims required by Lifecycle MCP clients.
+    realmDefault: true
+    audienceMapper:
+      enabled: true
+      name: Lifecycle MCP resource audience
+      audience:  # fallback to clients.lifecycleMcp.resourceUrl
+    githubUsernameMapper:
+      enabled: true
+      name: Github username
+      userAttribute: githubUsername
+      claimName: github_username
+    protocolMappers: []
+
+clientRegistrationPolicies:
+  anonymous:
+    enabled: false
+    trustedHosts:
+      enabled: true
+      name: Trusted Hosts
+      hostSendingRegistrationRequestMustMatch: false
+      clientUrisMustMatch: true
+      hosts:
+        - 127.0.0.1
+        - localhost
+    allowedRegistrationWebOrigins:
+      enabled: true
+      name: Allowed Registration Web Origins
+      origins:
+        - http://localhost:6274
+        - http://127.0.0.1:6274
+        - http://localhost:5173
+        - http://127.0.0.1:5173
+        - http://localhost:3000
+        - http://127.0.0.1:3000
+    allowedClientAuthenticatorTypes:
+      enabled: true
+      name: Allowed Client Authenticator Types
+      types:
+        - none
+    allowedProtocolMappers:
+      enabled: true
+      name: Allowed Protocol Mappers
+      mappers: []
+    allowedClientScopes:
+      enabled: true
+      name: Allowed Client Scopes
+      scopes:
+        - roles
+        - profile
+        - basic
+        - email
+        - offline_access
+        - lifecycle-mcp
+    maxClients:
+      enabled: true
+      name: Max Clients Limit
+      count: 1000
+    extraPolicies: []
+
 
 companyIdp:
   enabled: true
