@@ -109,6 +109,31 @@ clients:
 
 > **Important:** These values act as **bootstrap** values. After the initial creation, if you change them in the Keycloak Admin UI, the values in Helm will no longer stay in sync.
 
+### 4. Lifecycle MCP OAuth Client
+
+The chart can configure a public PKCE client and anonymous Dynamic Client Registration policies for the Lifecycle MCP endpoint. These values are disabled by default and can be enabled when the Lifecycle app exposes `/mcp`.
+
+```yaml
+clients:
+  lifecycleMcp:
+    enabled: true
+    resourceUrl: "https://app.example.com/mcp"
+
+clientRegistrationPolicies:
+  anonymous:
+    enabled: true
+    trustedHosts:
+      hosts:
+        - 127.0.0.1
+        - localhost
+    allowedRegistrationWebOrigins:
+      origins:
+        - "http://localhost:6274"
+        - "http://127.0.0.1:6274"
+```
+
+The MCP client scope emits the configured resource URL as the access-token audience and maps the `githubUsername` user attribute into the `github_username` claim.
+
 ---
 
 ## Life-cycle Management & Realm Import

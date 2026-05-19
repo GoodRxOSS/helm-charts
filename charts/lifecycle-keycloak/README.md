@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.7.3](https://img.shields.io/badge/Version-0.7.3-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.7.4](https://img.shields.io/badge/Version-0.7.4-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -111,6 +111,31 @@ clients:
 
 > **Important:** These values act as **bootstrap** values. After the initial creation, if you change them in the Keycloak Admin UI, the values in Helm will no longer stay in sync.
 
+### 4. Lifecycle MCP OAuth Client
+
+The chart can configure a public PKCE client and anonymous Dynamic Client Registration policies for the Lifecycle MCP endpoint. These values are disabled by default and can be enabled when the Lifecycle app exposes `/mcp`.
+
+```yaml
+clients:
+  lifecycleMcp:
+    enabled: true
+    resourceUrl: "https://app.example.com/mcp"
+
+clientRegistrationPolicies:
+  anonymous:
+    enabled: true
+    trustedHosts:
+      hosts:
+        - 127.0.0.1
+        - localhost
+    allowedRegistrationWebOrigins:
+      origins:
+        - "http://localhost:6274"
+        - "http://127.0.0.1:6274"
+```
+
+The MCP client scope emits the configured resource URL as the access-token audience and maps the `githubUsername` user attribute into the `github_username` claim.
+
 ---
 
 ## Life-cycle Management & Realm Import
@@ -128,7 +153,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.7.3 \
+  --version 0.7.4 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -139,8 +164,64 @@ helm upgrade -i lifecycle-keycloak \
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | annotations | object | `{}` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.enabled | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.name | string | `"Allowed Client Scopes"` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[0] | string | `"roles"` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[1] | string | `"profile"` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[2] | string | `"basic"` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[3] | string | `"email"` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[4] | string | `"offline_access"` |  |
+| clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[5] | string | `"lifecycle-mcp"` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.enabled | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.name | string | `"Allowed Registration Web Origins"` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[0] | string | `"http://localhost:6274"` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[1] | string | `"http://127.0.0.1:6274"` |  |
+| clientRegistrationPolicies.anonymous.enabled | bool | `false` |  |
+| clientRegistrationPolicies.anonymous.extraPolicies | list | `[]` |  |
+| clientRegistrationPolicies.anonymous.maxClients.count | int | `200` |  |
+| clientRegistrationPolicies.anonymous.maxClients.enabled | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.maxClients.name | string | `"Max Clients Limit"` |  |
+| clientRegistrationPolicies.anonymous.trustedHosts.clientUrisMustMatch | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.trustedHosts.enabled | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.trustedHosts.hostSendingRegistrationRequestMustMatch | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.trustedHosts.hosts[0] | string | `"127.0.0.1"` |  |
+| clientRegistrationPolicies.anonymous.trustedHosts.hosts[1] | string | `"localhost"` |  |
+| clientRegistrationPolicies.anonymous.trustedHosts.name | string | `"Trusted Hosts"` |  |
+| clientScopes.lifecycleMcp.audienceMapper.audience | string | `nil` |  |
+| clientScopes.lifecycleMcp.audienceMapper.enabled | bool | `true` |  |
+| clientScopes.lifecycleMcp.audienceMapper.name | string | `"Lifecycle MCP resource audience"` |  |
+| clientScopes.lifecycleMcp.description | string | `"Claims required by Lifecycle MCP clients."` |  |
+| clientScopes.lifecycleMcp.enabled | bool | `false` |  |
+| clientScopes.lifecycleMcp.githubUsernameMapper.claimName | string | `"github_username"` |  |
+| clientScopes.lifecycleMcp.githubUsernameMapper.enabled | bool | `true` |  |
+| clientScopes.lifecycleMcp.githubUsernameMapper.name | string | `"Github username"` |  |
+| clientScopes.lifecycleMcp.githubUsernameMapper.userAttribute | string | `"githubUsername"` |  |
+| clientScopes.lifecycleMcp.name | string | `"lifecycle-mcp"` |  |
+| clientScopes.lifecycleMcp.protocolMappers | list | `[]` |  |
 | clients.lifecycleCore.clientId | string | `"lifecycle-core"` |  |
 | clients.lifecycleCore.enabled | bool | `true` |  |
+| clients.lifecycleMcp.attributes | object | `{}` |  |
+| clients.lifecycleMcp.clientId | string | `"lifecycle-mcp"` |  |
+| clients.lifecycleMcp.defaultClientScopes[0] | string | `"roles"` |  |
+| clients.lifecycleMcp.defaultClientScopes[1] | string | `"profile"` |  |
+| clients.lifecycleMcp.defaultClientScopes[2] | string | `"basic"` |  |
+| clients.lifecycleMcp.defaultClientScopes[3] | string | `"email"` |  |
+| clients.lifecycleMcp.defaultClientScopes[4] | string | `"lifecycle-mcp"` |  |
+| clients.lifecycleMcp.directAccessGrantsEnabled | bool | `false` |  |
+| clients.lifecycleMcp.enabled | bool | `false` |  |
+| clients.lifecycleMcp.fullScopeAllowed | bool | `true` |  |
+| clients.lifecycleMcp.name | string | `"Lifecycle MCP"` |  |
+| clients.lifecycleMcp.optionalClientScopes[0] | string | `"offline_access"` |  |
+| clients.lifecycleMcp.pkceCodeChallengeMethod | string | `"S256"` |  |
+| clients.lifecycleMcp.protocolMappers | list | `[]` |  |
+| clients.lifecycleMcp.publicClient | bool | `true` |  |
+| clients.lifecycleMcp.redirectUris[0] | string | `"http://127.0.0.1"` |  |
+| clients.lifecycleMcp.redirectUris[1] | string | `"http://localhost:3000/callback"` |  |
+| clients.lifecycleMcp.redirectUris[2] | string | `"http://localhost:8080/callback"` |  |
+| clients.lifecycleMcp.resourceUrl | string | `"http://localhost:3000/mcp"` |  |
+| clients.lifecycleMcp.serviceAccountsEnabled | bool | `false` |  |
+| clients.lifecycleMcp.standardFlowEnabled | bool | `true` |  |
+| clients.lifecycleMcp.webOrigins[0] | string | `"+"` |  |
 | clients.lifecycleUi.clientId | string | `"lifecycle-ui"` |  |
 | clients.lifecycleUi.clientSecret.secretKeyRef.key | string | `nil` |  |
 | clients.lifecycleUi.clientSecret.secretKeyRef.name | string | `nil` |  |
