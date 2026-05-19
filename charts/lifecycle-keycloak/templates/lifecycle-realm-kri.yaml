@@ -64,7 +64,13 @@ spec:
 {{- $lifecycleMcpClient := .Values.clients.lifecycleMcp }}
 {{- $lifecycleMcpClientScope := .Values.clientScopes.lifecycleMcp }}
 {{- $lifecycleMcpResourceUrl := $lifecycleMcpClient.resourceUrl }}
+{{- if and $lifecycleMcpClient.enabled (not $lifecycleMcpResourceUrl) }}
+{{- fail "clients.lifecycleMcp.resourceUrl is required when clients.lifecycleMcp.enabled=true" }}
+{{- end }}
 {{- $lifecycleMcpAudience := $lifecycleMcpClientScope.audienceMapper.audience | default $lifecycleMcpResourceUrl }}
+{{- if and (or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled) $lifecycleMcpClientScope.audienceMapper.enabled (not $lifecycleMcpAudience) }}
+{{- fail "clientScopes.lifecycleMcp.audienceMapper.audience or clients.lifecycleMcp.resourceUrl is required when the Lifecycle MCP audience mapper is enabled" }}
+{{- end }}
 {{- if or $lifecycleMcpClient.enabled $lifecycleMcpClientScope.enabled }}
     # --- CLIENT SCOPES ---
     clientScopes:
@@ -302,6 +308,36 @@ spec:
             web-origins:
 {{- range .origins }}
               - {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.allowedClientAuthenticatorTypes }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "allowed-client-authenticator-types"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+            allowed-client-authenticator-types:
+{{- range .types }}
+              - {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.clientRegistrationPolicies.anonymous.allowedProtocolMappers }}
+{{- if .enabled }}
+        - name: {{ .name | quote }}
+          providerId: "allowed-protocol-mappers"
+          subType: "anonymous"
+          subComponents: {}
+          config:
+            allowed-protocol-mappers:
+{{- if .mappers }}
+{{- range .mappers }}
+              - {{ . | quote }}
+{{- end }}
+{{- else }}
+              []
 {{- end }}
 {{- end }}
 {{- end }}

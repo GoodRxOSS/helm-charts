@@ -43,7 +43,7 @@ clients:
     enabled: false
     clientId: lifecycle-mcp
     name: Lifecycle MCP
-    resourceUrl: http://localhost:3000/mcp
+    resourceUrl:
     publicClient: true
     standardFlowEnabled: true
     directAccessGrantsEnabled: false
@@ -51,9 +51,8 @@ clients:
     fullScopeAllowed: true
     pkceCodeChallengeMethod: S256
     redirectUris:
-      - http://127.0.0.1
-      - http://localhost:3000/callback
-      - http://localhost:8080/callback
+      - http://127.0.0.1/*
+      - http://localhost/*
     webOrigins:
       - "+"
     defaultClientScopes:
@@ -89,7 +88,7 @@ clientRegistrationPolicies:
     trustedHosts:
       enabled: true
       name: Trusted Hosts
-      hostSendingRegistrationRequestMustMatch: true
+      hostSendingRegistrationRequestMustMatch: false
       clientUrisMustMatch: true
       hosts:
         - 127.0.0.1
@@ -100,6 +99,19 @@ clientRegistrationPolicies:
       origins:
         - http://localhost:6274
         - http://127.0.0.1:6274
+        - http://localhost:5173
+        - http://127.0.0.1:5173
+        - http://localhost:3000
+        - http://127.0.0.1:3000
+    allowedClientAuthenticatorTypes:
+      enabled: true
+      name: Allowed Client Authenticator Types
+      types:
+        - none
+    allowedProtocolMappers:
+      enabled: true
+      name: Allowed Protocol Mappers
+      mappers: []
     allowedClientScopes:
       enabled: true
       name: Allowed Client Scopes
@@ -113,7 +125,7 @@ clientRegistrationPolicies:
     maxClients:
       enabled: true
       name: Max Clients Limit
-      count: 200
+      count: 1000
     extraPolicies: []
 
 

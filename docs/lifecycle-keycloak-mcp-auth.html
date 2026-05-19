@@ -1,4 +1,20 @@
 <!doctype html>
+<!--
+ Copyright 2026 GoodRx, Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -593,7 +609,7 @@
             <li><code>clientId: lifecycle-mcp</code></li>
             <li><code>standardFlowEnabled: true</code></li>
             <li><code>pkce.code.challenge.method: S256</code></li>
-            <li>Loopback redirect defaults for local CLI clients</li>
+            <li>Loopback redirect wildcards for local CLI clients on random ports</li>
           </ul>
         </div>
         <div class="panel">
@@ -614,8 +630,9 @@
           </p>
           <ul>
             <li>Trusted hosts: <code>127.0.0.1</code>, <code>localhost</code></li>
-            <li>Registration web origins for MCP Inspector</li>
-            <li>Allowed client scopes and max client limit</li>
+            <li>Client URI host checks without requiring the request source IP to be loopback</li>
+            <li>Public-client-only DCR, no caller-supplied protocol mappers, allowed client scopes, and max client limit</li>
+            <li>Registration web origins for browser-based tools such as MCP Inspector</li>
           </ul>
         </div>
         <div class="panel">
@@ -726,7 +743,14 @@
       allowedRegistrationWebOrigins:
         origins:
           - 'http://localhost:6274'
-          - 'http://127.0.0.1:6274'</code></pre>
+          - 'http://127.0.0.1:6274'
+          - 'http://localhost:5173'
+          - 'http://127.0.0.1:5173'
+          - 'http://localhost:3000'
+          - 'http://127.0.0.1:3000'
+      allowedClientAuthenticatorTypes:
+        types:
+          - none</code></pre>
 
       <table class="claim-table">
         <thead>
@@ -744,8 +768,8 @@
           </tr>
           <tr>
             <td><code>clients.lifecycleMcp.resourceUrl</code></td>
-            <td><code>http://localhost:3000/mcp</code></td>
-            <td>Feeds the MCP audience mapper unless a custom audience override is supplied.</td>
+            <td>empty</td>
+            <td>Required when the MCP client is enabled. Feeds the MCP audience mapper unless a custom audience override is supplied.</td>
           </tr>
           <tr>
             <td><code>clientScopes.lifecycleMcp.enabled</code></td>
@@ -783,7 +807,7 @@
         </div>
         <div class="status">
           <b>PR chart</b>
-          <strong>0.7.4</strong>
+          <strong>0.8.0</strong>
         </div>
       </div>
 
@@ -804,6 +828,8 @@
           <ul>
             <li><code>trusted-hosts</code> policy provider id</li>
             <li><code>registration-web-origins</code> policy provider id</li>
+            <li><code>allowed-client-authenticator-types</code> policy provider id</li>
+            <li><code>allowed-protocol-mappers</code> policy provider id</li>
             <li><code>allowed-client-templates</code> policy provider id</li>
             <li>Policy config key names in imported realm components</li>
           </ul>
@@ -857,6 +883,16 @@
         <li>Confirm anonymous DCR accepts loopback MCP clients and rejects untrusted hosts.</li>
         <li>Run MCP Inspector and Codex login against the MCP endpoint.</li>
       </ol>
+
+      <h3 style="margin-top: 22px;">Open items to revisit</h3>
+      <div class="note">
+        <strong>DCR client default scopes</strong>
+        Do not add <code>lifecycle-mcp</code> to realm-wide <code>defaultDefaultClientScopes</code> until we prove it is necessary. A realm default could put the MCP resource audience and <code>github_username</code> mapper on unrelated clients. First validate whether MCP clients request the advertised scope, whether RFC 8707 <code>resource=</code> gives the right audience, or whether Keycloak 26.4.7 supports a narrower DCR profile/template that applies the MCP scope only to dynamically registered MCP clients.
+      </div>
+      <div class="note">
+        <strong>DCR lifecycle management</strong>
+        Anonymous DCR is intentionally constrained, but it can still accumulate registered clients over time. Decide whether we need a cleanup job, a higher/lower client ceiling, client expiration, or an admin-approval flow after the first MCP client smoke tests.
+      </div>
     </section>
 
     <footer>

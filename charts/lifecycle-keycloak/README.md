@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.7.4](https://img.shields.io/badge/Version-0.7.4-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -125,6 +125,8 @@ clientRegistrationPolicies:
   anonymous:
     enabled: true
     trustedHosts:
+      hostSendingRegistrationRequestMustMatch: false
+      clientUrisMustMatch: true
       hosts:
         - 127.0.0.1
         - localhost
@@ -132,9 +134,18 @@ clientRegistrationPolicies:
       origins:
         - "http://localhost:6274"
         - "http://127.0.0.1:6274"
+    allowedClientAuthenticatorTypes:
+      types:
+        - none
 ```
 
 The MCP client scope emits the configured resource URL as the access-token audience and maps the `githubUsername` user attribute into the `github_username` claim.
+
+`clients.lifecycleMcp.resourceUrl` is required when the MCP client is enabled. It should be the externally reachable MCP resource URL, for example `https://app.example.com/mcp`; do not leave it as a localhost value in shared environments.
+
+The pre-registered MCP client is public and uses PKCE with loopback redirect URI wildcards for CLI clients. Anonymous DCR is constrained to loopback client/redirect URI hosts, public clients (`none` authenticator), configured client scopes, and no caller-supplied protocol mappers by default. Registration web origins are for browser-based testing tools such as MCP Inspector; CLI OAuth flows do not use them.
+
+MCP tokens are expected to use the MCP resource URL as `aud`. The existing Lifecycle API middleware validates the existing core audience (`lifecycle-core`) and should not be reused for MCP traffic without a separate MCP audience validator.
 
 ---
 
@@ -153,7 +164,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.7.4 \
+  --version 0.8.0 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -164,6 +175,9 @@ helm upgrade -i lifecycle-keycloak \
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | annotations | object | `{}` |  |
+| clientRegistrationPolicies.anonymous.allowedClientAuthenticatorTypes.enabled | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.allowedClientAuthenticatorTypes.name | string | `"Allowed Client Authenticator Types"` |  |
+| clientRegistrationPolicies.anonymous.allowedClientAuthenticatorTypes.types[0] | string | `"none"` |  |
 | clientRegistrationPolicies.anonymous.allowedClientScopes.enabled | bool | `true` |  |
 | clientRegistrationPolicies.anonymous.allowedClientScopes.name | string | `"Allowed Client Scopes"` |  |
 | clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[0] | string | `"roles"` |  |
@@ -172,18 +186,25 @@ helm upgrade -i lifecycle-keycloak \
 | clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[3] | string | `"email"` |  |
 | clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[4] | string | `"offline_access"` |  |
 | clientRegistrationPolicies.anonymous.allowedClientScopes.scopes[5] | string | `"lifecycle-mcp"` |  |
+| clientRegistrationPolicies.anonymous.allowedProtocolMappers.enabled | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.allowedProtocolMappers.mappers | list | `[]` |  |
+| clientRegistrationPolicies.anonymous.allowedProtocolMappers.name | string | `"Allowed Protocol Mappers"` |  |
 | clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.enabled | bool | `true` |  |
 | clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.name | string | `"Allowed Registration Web Origins"` |  |
 | clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[0] | string | `"http://localhost:6274"` |  |
 | clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[1] | string | `"http://127.0.0.1:6274"` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[2] | string | `"http://localhost:5173"` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[3] | string | `"http://127.0.0.1:5173"` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[4] | string | `"http://localhost:3000"` |  |
+| clientRegistrationPolicies.anonymous.allowedRegistrationWebOrigins.origins[5] | string | `"http://127.0.0.1:3000"` |  |
 | clientRegistrationPolicies.anonymous.enabled | bool | `false` |  |
 | clientRegistrationPolicies.anonymous.extraPolicies | list | `[]` |  |
-| clientRegistrationPolicies.anonymous.maxClients.count | int | `200` |  |
+| clientRegistrationPolicies.anonymous.maxClients.count | int | `1000` |  |
 | clientRegistrationPolicies.anonymous.maxClients.enabled | bool | `true` |  |
 | clientRegistrationPolicies.anonymous.maxClients.name | string | `"Max Clients Limit"` |  |
 | clientRegistrationPolicies.anonymous.trustedHosts.clientUrisMustMatch | bool | `true` |  |
 | clientRegistrationPolicies.anonymous.trustedHosts.enabled | bool | `true` |  |
-| clientRegistrationPolicies.anonymous.trustedHosts.hostSendingRegistrationRequestMustMatch | bool | `true` |  |
+| clientRegistrationPolicies.anonymous.trustedHosts.hostSendingRegistrationRequestMustMatch | bool | `false` |  |
 | clientRegistrationPolicies.anonymous.trustedHosts.hosts[0] | string | `"127.0.0.1"` |  |
 | clientRegistrationPolicies.anonymous.trustedHosts.hosts[1] | string | `"localhost"` |  |
 | clientRegistrationPolicies.anonymous.trustedHosts.name | string | `"Trusted Hosts"` |  |
@@ -215,10 +236,9 @@ helm upgrade -i lifecycle-keycloak \
 | clients.lifecycleMcp.pkceCodeChallengeMethod | string | `"S256"` |  |
 | clients.lifecycleMcp.protocolMappers | list | `[]` |  |
 | clients.lifecycleMcp.publicClient | bool | `true` |  |
-| clients.lifecycleMcp.redirectUris[0] | string | `"http://127.0.0.1"` |  |
-| clients.lifecycleMcp.redirectUris[1] | string | `"http://localhost:3000/callback"` |  |
-| clients.lifecycleMcp.redirectUris[2] | string | `"http://localhost:8080/callback"` |  |
-| clients.lifecycleMcp.resourceUrl | string | `"http://localhost:3000/mcp"` |  |
+| clients.lifecycleMcp.redirectUris[0] | string | `"http://127.0.0.1/*"` |  |
+| clients.lifecycleMcp.redirectUris[1] | string | `"http://localhost/*"` |  |
+| clients.lifecycleMcp.resourceUrl | string | `nil` |  |
 | clients.lifecycleMcp.serviceAccountsEnabled | bool | `false` |  |
 | clients.lifecycleMcp.standardFlowEnabled | bool | `true` |  |
 | clients.lifecycleMcp.webOrigins[0] | string | `"+"` |  |

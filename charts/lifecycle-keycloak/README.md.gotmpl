@@ -123,6 +123,8 @@ clientRegistrationPolicies:
   anonymous:
     enabled: true
     trustedHosts:
+      hostSendingRegistrationRequestMustMatch: false
+      clientUrisMustMatch: true
       hosts:
         - 127.0.0.1
         - localhost
@@ -130,9 +132,18 @@ clientRegistrationPolicies:
       origins:
         - "http://localhost:6274"
         - "http://127.0.0.1:6274"
+    allowedClientAuthenticatorTypes:
+      types:
+        - none
 ```
 
 The MCP client scope emits the configured resource URL as the access-token audience and maps the `githubUsername` user attribute into the `github_username` claim.
+
+`clients.lifecycleMcp.resourceUrl` is required when the MCP client is enabled. It should be the externally reachable MCP resource URL, for example `https://app.example.com/mcp`; do not leave it as a localhost value in shared environments.
+
+The pre-registered MCP client is public and uses PKCE with loopback redirect URI wildcards for CLI clients. Anonymous DCR is constrained to loopback client/redirect URI hosts, public clients (`none` authenticator), configured client scopes, and no caller-supplied protocol mappers by default. Registration web origins are for browser-based testing tools such as MCP Inspector; CLI OAuth flows do not use them.
+
+MCP tokens are expected to use the MCP resource URL as `aud`. The existing Lifecycle API middleware validates the existing core audience (`lifecycle-core`) and should not be reused for MCP traffic without a separate MCP audience validator.
 
 ---
 
