@@ -64,6 +64,8 @@ internalIdp:
   realm: internal
   displayName: "Internal SSO"
   clientId: internal-sso-client
+  internalUrl: ""
+  mapAdminRole: false
   users:
     bootstrapUser:
       username: lifecycle
@@ -72,6 +74,7 @@ internalIdp:
       lastName: Bootstrap
       password: lifecycle
       credsTemp: true
+
 
 instances: 1
 
