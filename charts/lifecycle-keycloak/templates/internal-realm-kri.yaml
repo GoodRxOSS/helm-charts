@@ -35,9 +35,16 @@ spec:
     sslRequired: "external"
     registrationAllowed: false
     duplicateEmailsAllowed: false
-    resetPasswordAllowed": false
+    resetPasswordAllowed: false
     loginWithEmailAllowed: true
     loginTheme: "lifecycle"  # ref for login-theme-configmap.yaml
+    {{- if .Values.internalIdp.mapAdminRole }}
+    # --- REALM ROLES ---
+    roles:
+      realm:
+        - name: "admin"
+          description: "Administrator role with elevated privileges"
+    {{- end }}
     accountTheme: "keycloak"
     adminTheme: "keycloak"
     emailTheme: "keycloak"
@@ -50,6 +57,10 @@ spec:
         emailVerified: true
         firstName: {{ .Values.internalIdp.users.bootstrapUser.firstName | quote }}
         lastName: {{ .Values.internalIdp.users.bootstrapUser.lastName | quote }}
+        {{- if .Values.internalIdp.mapAdminRole }}
+        realmRoles:
+          - "admin"
+        {{- end }}
         credentials:
           - type: "password"
             value: {{ .Values.internalIdp.users.bootstrapUser.password | quote }}
@@ -65,7 +76,7 @@ spec:
         clientAuthenticatorType: "client-jwt"
         attributes:
           use.jwks.url: "true"
-          jwks.url: {{ printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.realm | quote }}
+          jwks.url: {{ printf "%s/realms/%s/protocol/openid-connect/certs" ( .Values.internalIdp.internalUrl | default .Values.hostname ) .Values.realm | quote }}
           token.endpoint.auth.signing.alg: "RS256"
         publicClient: false
         redirectUris:
@@ -78,3 +89,16 @@ spec:
         authorizationServicesEnabled: false
         defaultClientScopes: ["web-origins", "acr", "roles", "profile", "basic", "email"]
         optionalClientScopes: ["address", "phone", "offline_access", "organization", "microprofile-jwt"]
+        {{- if .Values.internalIdp.mapAdminRole }}
+        protocolMappers:
+          - name: "realm roles"
+            protocol: "openid-connect"
+            protocolMapper: "oidc-usermodel-realm-role-mapper"
+            config:
+              claim.name: "realm_access.roles"
+              jsonType.label: "String"
+              multivalued: "true"
+              id.token.claim: "true"
+              access.token.claim: "true"
+              userinfo.token.claim: "true"
+        {{- end }}
