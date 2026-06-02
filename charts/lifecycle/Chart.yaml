@@ -16,7 +16,7 @@ apiVersion: v2
 name: lifecycle
 description: A Helm umbrella chart for full Lifecycle stack
 type: application
-version: 0.9.7
+version: 0.9.8
 appVersion: 0.1.15
 
 dependencies:
@@ -58,7 +58,7 @@ dependencies:
   # lifecycle-ui (Lifecycle UI) Dependency
   - name: lifecycle-ui
     alias: ui
-    version: 0.3.2
+    version: 0.3.3
     repository: "https://goodrxoss.github.io/helm-charts"
     condition: ui.enabled
 
