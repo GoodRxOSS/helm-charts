@@ -1,6 +1,6 @@
 # lifecycle-ui
 
-![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.4](https://img.shields.io/badge/AppVersion-0.1.4-informational?style=flat-square)
+![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.5](https://img.shields.io/badge/AppVersion-0.1.5-informational?style=flat-square)
 
 A Helm chart for Lifecycle UI (Next.js)
 
@@ -41,7 +41,7 @@ config:
 ```bash
 helm upgrade -i lifecycle-ui \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-ui \
-  --version 0.3.2 \
+  --version 0.3.3 \
   -f values.yaml \
   -n lifecycle-ui \
   --create-namespace
