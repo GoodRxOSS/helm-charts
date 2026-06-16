@@ -139,6 +139,8 @@ helm upgrade -i lifecycle-keycloak \
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | annotations | object | `{}` |  |
+| clients.lifecycleCli.clientId | string | `"lifecycle-cli"` |  |
+| clients.lifecycleCli.enabled | bool | `true` |  |
 | clients.lifecycleCore.clientId | string | `"lifecycle-core"` |  |
 | clients.lifecycleCore.enabled | bool | `true` |  |
 | clients.lifecycleUi.clientId | string | `"lifecycle-ui"` |  |
