@@ -39,6 +39,12 @@ clients:
         name:  # fallback to "{{ include "lifecycle-keycloak.lifecycleUiSecretName" . }}"
         key:  # default "clientSecret"
 
+  # Public client for the lfc command-line tool (Authorization Code + PKCE on a
+  # localhost loopback redirect, and the OAuth Device Code flow for headless use).
+  lifecycleCli:
+    enabled: true
+    clientId: lifecycle-cli
+
 
 companyIdp:
   enabled: true
