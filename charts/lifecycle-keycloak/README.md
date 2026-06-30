@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.7.3](https://img.shields.io/badge/Version-0.7.3-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.7.4](https://img.shields.io/badge/Version-0.7.4-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -128,7 +128,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.7.3 \
+  --version 0.7.4 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -152,7 +152,9 @@ helm upgrade -i lifecycle-keycloak \
 | companyIdp.clientId | string | `nil` |  |
 | companyIdp.clientSecret | string | `nil` |  |
 | companyIdp.enabled | bool | `true` |  |
+| companyIdp.issuer | string | `nil` |  |
 | companyIdp.jwksUrl | string | `nil` |  |
+| companyIdp.logoutUrl | string | `nil` |  |
 | companyIdp.tokenUrl | string | `nil` |  |
 | externalDatabase.database | string | `"keycloak"` |  |
 | externalDatabase.enabled | bool | `false` |  |
@@ -168,6 +170,7 @@ helm upgrade -i lifecycle-keycloak \
 | githubIdp.clientId.secretKeyRef.name | string | `nil` |  |
 | githubIdp.clientSecret.secretKeyRef.key | string | `nil` |  |
 | githubIdp.clientSecret.secretKeyRef.name | string | `nil` |  |
+| githubIdp.defaultScope | string | `"repo user:email"` |  |
 | githubIdp.enabled | bool | `true` |  |
 | githubIdp.githubJsonFormat | bool | `true` |  |
 | hostname | string | `"http://localhost:8080"` |  |
@@ -182,6 +185,8 @@ helm upgrade -i lifecycle-keycloak \
 | instances | int | `1` |  |
 | internalIdp.clientId | string | `"internal-sso-client"` |  |
 | internalIdp.displayName | string | `"Internal SSO"` |  |
+| internalIdp.internalUrl | string | `nil` |  |
+| internalIdp.mapAdminRole | bool | `false` |  |
 | internalIdp.realm | string | `"internal"` |  |
 | internalIdp.users.bootstrapUser.credsTemp | bool | `true` |  |
 | internalIdp.users.bootstrapUser.email | string | `"lifecycle@example.com"` |  |
