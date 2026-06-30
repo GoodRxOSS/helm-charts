@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.8](https://img.shields.io/badge/Version-0.9.8-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.15](https://img.shields.io/badge/AppVersion-0.1.15-informational?style=flat-square)
+![Version: 0.9.9](https://img.shields.io/badge/Version-0.9.9-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.15](https://img.shields.io/badge/AppVersion-0.1.15-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.8 \
+  --version 0.9.9 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -50,11 +50,11 @@ helm upgrade -i lifecycle \
 
 | Repository | Name | Version |
 |------------|------|---------|
+| file://../lifecycle-keycloak | keycloak(lifecycle-keycloak) | 0.7.4 |
 | https://andrcuns.github.io/charts | buildkit(buildkit-service) | 1.4.0 |
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
-| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.3 |
 | https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.3 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
@@ -278,6 +278,7 @@ helm upgrade -i lifecycle \
 | keycloak.githubIdp.clientId.secretKeyRef.name | string | `"{{ include \"lifecycle-keycloak.parentChartPrefix\" . }}-bootstrap"` |  |
 | keycloak.githubIdp.clientSecret.secretKeyRef.key | string | `"GITHUB_CLIENT_SECRET"` |  |
 | keycloak.githubIdp.clientSecret.secretKeyRef.name | string | `"{{ include \"lifecycle-keycloak.parentChartPrefix\" . }}-bootstrap"` |  |
+| keycloak.githubIdp.defaultScope | string | `"repo user:email"` |  |
 | keycloak.githubIdp.githubJsonFormat | bool | `true` |  |
 | keycloak.hostname | string | `"https://auth.example.com"` |  |
 | keycloak.keycloakPostgres.enabled | bool | `true` |  |

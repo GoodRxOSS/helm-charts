@@ -1,0 +1,93 @@
+{{- /*
+Copyright 2026 GoodRx, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/}}
+
+{{- if and .Values.githubIdp.enabled .Values.githubIdp.scopeSync.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "lifecycle-keycloak.fullname" . }}-github-idp-scope-sync
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "lifecycle-keycloak.labels" (merge (dict "component" "keycloak") .) | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "20"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.githubIdp.scopeSync.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.githubIdp.scopeSync.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        {{- include "lifecycle-keycloak.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: keycloak
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: github-idp-scope-sync
+          image: "{{ .Values.githubIdp.scopeSync.image.repository }}:{{ .Values.githubIdp.scopeSync.image.tag }}"
+          imagePullPolicy: {{ .Values.githubIdp.scopeSync.image.pullPolicy }}
+          env:
+            - name: KEYCLOAK_URL
+              value: {{ printf "http://%s-service:8080" (include "lifecycle-keycloak.fullname" .) | quote }}
+            - name: KEYCLOAK_REALM
+              value: {{ .Values.realm | quote }}
+            - name: GITHUB_DEFAULT_SCOPE
+              value: {{ .Values.githubIdp.defaultScope | quote }}
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lifecycle-keycloak.bootstrapAdminSecretName" . | quote }}
+                  key: username
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "lifecycle-keycloak.bootstrapAdminSecretName" . | quote }}
+                  key: password
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              for attempt in $(seq 1 60); do
+                if /opt/keycloak/bin/kcadm.sh config credentials \
+                  --server "$KEYCLOAK_URL" \
+                  --realm master \
+                  --user "$KEYCLOAK_ADMIN" \
+                  --password "$KEYCLOAK_ADMIN_PASSWORD" >/tmp/kcadm-auth.out 2>&1; then
+                  break
+                fi
+                if [ "$attempt" = "60" ]; then
+                  cat /tmp/kcadm-auth.out
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              for attempt in $(seq 1 60); do
+                if /opt/keycloak/bin/kcadm.sh get "identity-provider/instances/github" -r "$KEYCLOAK_REALM" >/tmp/github-idp.json 2>/tmp/github-idp.err; then
+                  /opt/keycloak/bin/kcadm.sh update "identity-provider/instances/github" \
+                    -r "$KEYCLOAK_REALM" \
+                    -s "config.defaultScope=$GITHUB_DEFAULT_SCOPE"
+                  echo "Keycloak: GitHub IdP defaultScope synced"
+                  exit 0
+                fi
+                if [ "$attempt" = "60" ]; then
+                  cat /tmp/github-idp.err
+                  exit 1
+                fi
+                sleep 5
+              done
+{{- end }}

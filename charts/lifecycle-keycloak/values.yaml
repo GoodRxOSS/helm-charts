@@ -50,13 +50,24 @@ companyIdp:
   enabled: true
   clientId:  # fallback to "${vault.company_idp_client_id}"
   clientSecret:  # fallback to "${vault.company_idp_client_secret}"
-  tokenUrl:  # fallback to "{{ .Values.hostname }}/realms/{{ .Values.realm }}/protocol/openid-connect/token"
-  authorizationUrl:  # fallback to "{{ .Values.hostname }}/realms/{{ .Values.realm }}/protocol/openid-connect/auth"
-  jwksUrl:  # fallback to "{{ .Values.hostname }}/realms/{{ .Values.realm }}/protocol/openid-connect/certs"
+  tokenUrl:  # fallback to "{{ .Values.internalIdp.internalUrl | default .Values.hostname }}/realms/{{ .Values.internalIdp.realm }}/protocol/openid-connect/token"
+  authorizationUrl:  # fallback to "{{ .Values.hostname }}/realms/{{ .Values.internalIdp.realm }}/protocol/openid-connect/auth"
+  jwksUrl:  # fallback to "{{ .Values.internalIdp.internalUrl | default .Values.hostname }}/realms/{{ .Values.internalIdp.realm }}/protocol/openid-connect/certs"
+  logoutUrl:  # fallback to "{{ .Values.hostname }}/realms/{{ .Values.internalIdp.realm }}/protocol/openid-connect/logout"
+  issuer:  # fallback to "{{ .Values.hostname }}/realms/{{ .Values.internalIdp.realm }}"
 
 githubIdp:
   enabled: true
   githubJsonFormat: true
+  defaultScope: "repo user:email"
+  scopeSync:
+    enabled: true
+    image:
+      repository: quay.io/keycloak/keycloak
+      tag: "26.4.7"
+      pullPolicy: IfNotPresent
+    backoffLimit: 3
+    activeDeadlineSeconds: 900
   clientId:
     secretKeyRef:
       name:  # fallback to "{{ include "lifecycle-keycloak.githubIdpSecretName" . }}"
@@ -69,6 +80,8 @@ githubIdp:
 internalIdp:
   realm: internal
   displayName: "Internal SSO"
+  internalUrl:
+  mapAdminRole: false
   clientId: internal-sso-client
   users:
     bootstrapUser:
