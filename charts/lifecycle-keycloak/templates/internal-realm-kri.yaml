@@ -35,7 +35,7 @@ spec:
     sslRequired: "external"
     registrationAllowed: false
     duplicateEmailsAllowed: false
-    resetPasswordAllowed": false
+    resetPasswordAllowed: false
     loginWithEmailAllowed: true
     loginTheme: "lifecycle"  # ref for login-theme-configmap.yaml
     accountTheme: "keycloak"
@@ -65,7 +65,7 @@ spec:
         clientAuthenticatorType: "client-jwt"
         attributes:
           use.jwks.url: "true"
-          jwks.url: {{ printf "%s/realms/%s/protocol/openid-connect/certs" .Values.hostname .Values.realm | quote }}
+          jwks.url: {{ printf "%s/realms/%s/protocol/openid-connect/certs" (.Values.internalIdp.internalUrl | default .Values.hostname) .Values.realm | quote }}
           token.endpoint.auth.signing.alg: "RS256"
         publicClient: false
         redirectUris:
