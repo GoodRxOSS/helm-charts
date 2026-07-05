@@ -79,6 +79,9 @@ spec:
                     --realm {{ .Values.realm | quote }} \
                     --admin-user "$KEYCLOAK_ADMIN_USER" \
                     --mcp-resource-url {{ .Values.mcp.resourceUrl | quote }} \
+                    {{- range .Values.mcp.extraAudiences }}
+                    --mcp-resource-url {{ . | quote }} \
+                    {{- end }}
                     --max-clients {{ .Values.mcp.dcr.maxClients }} \
                     {{- if not .Values.mcp.dcr.enabled }}
                     --skip-dcr \

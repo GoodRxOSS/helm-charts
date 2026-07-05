@@ -180,6 +180,9 @@ mcp:
   # -- Canonical MCP resource URL (required when enabled), e.g. https://app.lifecycle.example.com/mcp.
   # Must equal the MCP_RESOURCE_URL configured on the lifecycle web deployment.
   resourceUrl: ""
+  # -- Additional audience URLs when several MCP deployments share this realm
+  # (e.g. local in-cluster web and a host dev server).
+  extraAudiences: []
   dcr:
     # -- Enable anonymous Dynamic Client Registration (paste-the-URL-only onboarding).
     # Removes the anonymous Trusted Hosts policy and raises the max-clients cap; the
