@@ -307,6 +307,8 @@ secrets:
     enabled: true
     fullnameOverride: ""
     annotations: []
+    # Must be a 64-character hex string. If empty, one is generated on install
+    # and kept in the lifecycle-common Secret.
     encryptionKey: ""
 
   bootstrap:
@@ -443,6 +445,7 @@ keycloak:
 
   githubIdp:
     githubJsonFormat: true
+    defaultScope: "repo user:email"
     clientId:
       secretKeyRef:
         name: '{{ include "lifecycle-keycloak.parentChartPrefix" . }}-bootstrap'

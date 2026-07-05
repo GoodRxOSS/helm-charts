@@ -52,8 +52,10 @@ jobs:
             mapfile -t current_chart_repos < <(yq '.dependencies[] | .repository' "${chart_yaml_path}")
 
             for repo_url in "${current_chart_repos[@]}"; do
-              if [[ -n "$repo_url" && ! "$repo_url" =~ ^\s*# ]]; then
+              if [[ -n "$repo_url" && ! "$repo_url" =~ ^\s*# && "$repo_url" =~ ^https?:// ]]; then
                 repos_to_add["$repo_url"]=1
+              elif [[ -n "$repo_url" && ! "$repo_url" =~ ^\s*# ]]; then
+                echo "Skipping non-HTTP chart dependency repository for helm repo add: ${repo_url}"
               fi
             done
           done
