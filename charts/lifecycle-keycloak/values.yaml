@@ -188,6 +188,8 @@ mcp:
     # Removes the anonymous Trusted Hosts policy and raises the max-clients cap; the
     # consent-required, allowed-scopes and allowed-protocol-mappers policies stay active.
     # Intended for deployments where Keycloak is not reachable from the public internet.
+    # NOTE: removing the Trusted Hosts policy is one-way — disabling this later does not
+    # recreate it. Export the realm (or the policy component) first if you may want to revert.
     enabled: true
     maxClients: 1000
   setupJob:

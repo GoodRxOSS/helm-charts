@@ -40,7 +40,7 @@ metadata:
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "5"
-    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 data:
   mcp-realm-setup.py: |
 {{ .Files.Get "files/mcp-realm-setup.py" | indent 4 }}
@@ -69,24 +69,17 @@ spec:
         - name: mcp-realm-setup
           image: {{ .Values.mcp.setupJob.image | quote }}
           command: ["/bin/sh", "-c"]
+          # Values reach the script via env vars only, never shell interpolation.
           args:
             - |
               set -eu
+              set -- --keycloak-url "$KEYCLOAK_URL" --realm "$KEYCLOAK_REALM" \
+                --admin-user "$KEYCLOAK_ADMIN_USER" --max-clients "$MCP_MAX_CLIENTS"
+              for url in $MCP_RESOURCE_URLS; do set -- "$@" --mcp-resource-url "$url"; done
+              [ "$MCP_DCR_ENABLED" = "true" ] || set -- "$@" --skip-dcr
               # Keycloak (and the realm import) may still be converging right after install.
               for attempt in $(seq 1 60); do
-                if python3 /scripts/mcp-realm-setup.py \
-                    --keycloak-url "$KEYCLOAK_URL" \
-                    --realm {{ .Values.realm | quote }} \
-                    --admin-user "$KEYCLOAK_ADMIN_USER" \
-                    --mcp-resource-url {{ .Values.mcp.resourceUrl | quote }} \
-                    {{- range .Values.mcp.extraAudiences }}
-                    --mcp-resource-url {{ . | quote }} \
-                    {{- end }}
-                    --max-clients {{ .Values.mcp.dcr.maxClients }} \
-                    {{- if not .Values.mcp.dcr.enabled }}
-                    --skip-dcr \
-                    {{- end }}
-                  ; then
+                if python3 /scripts/mcp-realm-setup.py "$@"; then
                   exit 0
                 fi
                 echo "mcp realm setup attempt ${attempt} failed; retrying in 10s"
@@ -97,6 +90,14 @@ spec:
           env:
             - name: KEYCLOAK_URL
               value: "http://{{ include "lifecycle-keycloak.fullname" . }}-service.{{ .Release.Namespace }}.svc.cluster.local:8080"
+            - name: KEYCLOAK_REALM
+              value: {{ .Values.realm | quote }}
+            - name: MCP_RESOURCE_URLS
+              value: {{ prepend .Values.mcp.extraAudiences .Values.mcp.resourceUrl | uniq | join " " | quote }}
+            - name: MCP_MAX_CLIENTS
+              value: {{ .Values.mcp.dcr.maxClients | quote }}
+            - name: MCP_DCR_ENABLED
+              value: {{ .Values.mcp.dcr.enabled | quote }}
             - name: KEYCLOAK_ADMIN_USER
               valueFrom:
                 secretKeyRef:
