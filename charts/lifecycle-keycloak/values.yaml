@@ -188,10 +188,24 @@ mcp:
     # Removes the anonymous Trusted Hosts policy and raises the max-clients cap; the
     # consent-required, allowed-scopes and allowed-protocol-mappers policies stay active.
     # Intended for deployments where Keycloak is not reachable from the public internet.
-    # NOTE: removing the Trusted Hosts policy is one-way — disabling this later does not
-    # recreate it. Export the realm (or the policy component) first if you may want to revert.
-    enabled: true
+    # Defaults to false: enabling it deletes the realm's anonymous Trusted Hosts policy,
+    # which is ONE-WAY — disabling this later does not recreate it. Export the realm (or the
+    # policy component) first if you may want to revert. Only enable when Keycloak is not
+    # reachable from the public internet.
+    enabled: false
     maxClients: 1000
   setupJob:
     image: python:3.12-alpine
-    backoffLimit: 10
+    # The script retries the Keycloak API internally, so keep the Job's own retry small —
+    # a failed setup fails the Helm release, and a large budget makes that hang for many minutes.
+    backoffLimit: 2
+    # -- Hard ceiling on the setup Job (seconds). Bounds how long a broken setup can block
+    # `helm upgrade` before the release is reported failed.
+    activeDeadlineSeconds: 600
+    # -- Kubernetes Secret the Job reads Keycloak admin credentials from. Defaults to the
+    # chart's bootstrap-admin secret; override (e.g. a dedicated admin) if the bootstrap
+    # admin may be rotated or disabled, since this Job runs on every matching upgrade.
+    adminSecret:
+      name: ""
+      usernameKey: username
+      passwordKey: password

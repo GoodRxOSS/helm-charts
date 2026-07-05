@@ -58,7 +58,7 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   backoffLimit: {{ .Values.mcp.setupJob.backoffLimit }}
-  activeDeadlineSeconds: 1800
+  activeDeadlineSeconds: {{ .Values.mcp.setupJob.activeDeadlineSeconds }}
   template:
     metadata:
       labels:
@@ -72,9 +72,10 @@ spec:
           # Values reach the script via env vars only, never shell interpolation.
           args:
             - |
-              set -eu
+              set -euf
               set -- --keycloak-url "$KEYCLOAK_URL" --realm "$KEYCLOAK_REALM" \
                 --admin-user "$KEYCLOAK_ADMIN_USER" --max-clients "$MCP_MAX_CLIENTS"
+              # -f (set above) disables globbing so audience URLs aren't pathname-expanded.
               for url in $MCP_RESOURCE_URLS; do set -- "$@" --mcp-resource-url "$url"; done
               [ "$MCP_DCR_ENABLED" != "true" ] || set -- "$@" --enable-anonymous-dcr
               # Keycloak (and the realm import) may still be converging right after install.
@@ -98,16 +99,17 @@ spec:
               value: {{ .Values.mcp.dcr.maxClients | quote }}
             - name: MCP_DCR_ENABLED
               value: {{ .Values.mcp.dcr.enabled | quote }}
+            {{- $adminSecret := .Values.mcp.setupJob.adminSecret.name | default (include "lifecycle-keycloak.bootstrapAdminSecretName" .) }}
             - name: KEYCLOAK_ADMIN_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "lifecycle-keycloak.bootstrapAdminSecretName" . }}
-                  key: username
+                  name: {{ $adminSecret }}
+                  key: {{ .Values.mcp.setupJob.adminSecret.usernameKey | quote }}
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "lifecycle-keycloak.bootstrapAdminSecretName" . }}
-                  key: password
+                  name: {{ $adminSecret }}
+                  key: {{ .Values.mcp.setupJob.adminSecret.passwordKey | quote }}
           volumeMounts:
             - name: setup-script
               mountPath: /scripts
