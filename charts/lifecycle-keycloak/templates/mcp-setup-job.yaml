@@ -76,7 +76,7 @@ spec:
               set -- --keycloak-url "$KEYCLOAK_URL" --realm "$KEYCLOAK_REALM" \
                 --admin-user "$KEYCLOAK_ADMIN_USER" --max-clients "$MCP_MAX_CLIENTS"
               for url in $MCP_RESOURCE_URLS; do set -- "$@" --mcp-resource-url "$url"; done
-              [ "$MCP_DCR_ENABLED" = "true" ] || set -- "$@" --skip-dcr
+              [ "$MCP_DCR_ENABLED" != "true" ] || set -- "$@" --enable-anonymous-dcr
               # Keycloak (and the realm import) may still be converging right after install.
               for attempt in $(seq 1 60); do
                 if python3 /scripts/mcp-realm-setup.py "$@"; then
