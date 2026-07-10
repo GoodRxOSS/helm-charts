@@ -23,7 +23,9 @@ Applies, idempotently, via the admin REST API (no reinstall / realm re-import):
        - Trusted Hosts: relaxed so MCP clients on arbitrary (VPN) hosts can register
        - Allowed Client Scopes: extended with `mcp`
        - Max Clients: raised
-     Consent Required and Allowed Protocol Mappers policies are left in place.
+     Missing Allowed Client Scopes / Consent Required policies are created (reconciled)
+     before the Trusted Hosts policy is removed, so anonymous DCR is never enabled
+     without those safeguards. Allowed Protocol Mappers policies are left in place.
      NOTE: removing the Trusted Hosts policy is one-way — re-running with --skip-dcr
      (or disabling later) does not recreate it; restore from a realm backup if needed.
 
@@ -250,18 +252,27 @@ def ensure_dcr_policies(admin: KeycloakAdmin, max_clients: int) -> None:
     def find(provider_id):
         return next((c for c in anonymous if c.get('providerId') == provider_id), None)
 
-    # Keycloak rejects a Trusted Hosts policy with both host and client-URI checks
-    # disabled, and MCP clients register from arbitrary VPN hosts with localhost or
-    # vendor-scheme redirect URIs that can never match a host allowlist. Removing the
-    # anonymous policy component is the supported way to lift the restriction; consent,
-    # allowed-scopes/mappers and max-clients policies continue to govern registration.
-    trusted = find('trusted-hosts')
-    if trusted:
-        admin.request('DELETE', f'/components/{trusted["id"]}')
-        admin.record('removed anonymous Trusted Hosts policy — VPN-only deployment assumption')
-    else:
-        admin.record('anonymous Trusted Hosts policy already absent')
+    def create_policy(name, provider_id, config):
+        realm_rep = admin.get('') or {}
+        realm_id = realm_rep.get('id')
+        if not realm_id:
+            raise SystemExit(f'cannot create {name} policy: realm internal id not found')
+        admin.request(
+            'POST',
+            '/components',
+            {
+                'name': name,
+                'providerId': provider_id,
+                'providerType': POLICY_COMPONENT_TYPE,
+                'parentId': realm_id,
+                'subType': 'anonymous',
+                'config': config,
+            },
+        )
+        admin.record(f'created anonymous {name} policy')
 
+    # Safeguard policies are reconciled BEFORE the Trusted Hosts policy is removed, so a
+    # customized realm missing them never ends up with anonymous DCR enabled unguarded.
     # providerId `allowed-client-templates` is the client-scopes policy (legacy name).
     # allow-default-scopes=true permits realm default + optional scopes, which now
     # includes `mcp` (registered as a realm optional scope above).
@@ -275,7 +286,25 @@ def ensure_dcr_policies(admin: KeycloakAdmin, max_clients: int) -> None:
         else:
             admin.record('Allowed Client Scopes policy already permits realm default/optional scopes (incl. mcp)')
     else:
-        admin.record('WARNING: no anonymous Allowed Client Scopes policy found')
+        create_policy('Allowed Client Scopes', 'allowed-client-templates', {'allow-default-scopes': ['true']})
+
+    consent = find('consent-required')
+    if consent:
+        admin.record('Consent Required policy present (kept)')
+    else:
+        create_policy('Consent Required', 'consent-required', {})
+
+    # Keycloak rejects a Trusted Hosts policy with both host and client-URI checks
+    # disabled, and MCP clients register from arbitrary VPN hosts with localhost or
+    # vendor-scheme redirect URIs that can never match a host allowlist. Removing the
+    # anonymous policy component is the supported way to lift the restriction; consent,
+    # allowed-scopes/mappers and max-clients policies continue to govern registration.
+    trusted = find('trusted-hosts')
+    if trusted:
+        admin.request('DELETE', f'/components/{trusted["id"]}')
+        admin.record('removed anonymous Trusted Hosts policy — VPN-only deployment assumption')
+    else:
+        admin.record('anonymous Trusted Hosts policy already absent')
 
     max_clients_component = find('max-clients')
     if max_clients_component:
@@ -292,9 +321,6 @@ def ensure_dcr_policies(admin: KeycloakAdmin, max_clients: int) -> None:
             admin.record(f'Max Clients policy already >= {max_clients} ({current})')
     else:
         admin.record('no anonymous Max Clients policy found')
-
-    consent = find('consent-required')
-    admin.record('Consent Required policy present (kept)' if consent else 'WARNING: no Consent Required policy found')
 
 
 def main() -> None:
