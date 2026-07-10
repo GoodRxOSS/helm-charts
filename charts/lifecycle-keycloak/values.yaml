@@ -168,3 +168,45 @@ keycloakPostgres:
       limits:
         cpu: 200m
         memory: 256Mi
+
+# -- MCP server realm setup: configures a `mcp` client scope whose audience mapper
+# binds access tokens to the canonical MCP resource URL, registers it as a realm
+# optional scope, and (optionally) enables anonymous Dynamic Client Registration
+# policies so MCP clients (Cursor, Claude Code, VS Code, Codex) can self-register.
+# Applied via an idempotent post-install/post-upgrade admin-API Job because realm
+# imports never update an existing realm.
+mcp:
+  enabled: false
+  # -- Canonical MCP resource URL (required when enabled), e.g. https://app.lifecycle.example.com/mcp.
+  # Must equal the MCP_RESOURCE_URL configured on the lifecycle web deployment.
+  resourceUrl: ""
+  # -- Additional audience URLs when several MCP deployments share this realm
+  # (e.g. local in-cluster web and a host dev server).
+  extraAudiences: []
+  dcr:
+    # -- Enable anonymous Dynamic Client Registration (paste-the-URL-only onboarding).
+    # Removes the anonymous Trusted Hosts policy and raises the max-clients cap; the
+    # consent-required, allowed-scopes, allowed-protocol-mappers (Keycloak default
+    # whitelist) and max-clients safeguard policies are created if missing / stay active.
+    # Intended for deployments where Keycloak is not reachable from the public internet.
+    # Defaults to false: enabling it deletes the realm's anonymous Trusted Hosts policy,
+    # which is ONE-WAY — disabling this later does not recreate it. Export the realm (or the
+    # policy component) first if you may want to revert. Only enable when Keycloak is not
+    # reachable from the public internet.
+    enabled: false
+    maxClients: 1000
+  setupJob:
+    image: python:3.12-alpine
+    # The script retries the Keycloak API internally, so keep the Job's own retry small —
+    # a failed setup fails the Helm release, and a large budget makes that hang for many minutes.
+    backoffLimit: 2
+    # -- Hard ceiling on the setup Job (seconds). Bounds how long a broken setup can block
+    # `helm upgrade` before the release is reported failed.
+    activeDeadlineSeconds: 600
+    # -- Kubernetes Secret the Job reads Keycloak admin credentials from. Defaults to the
+    # chart's bootstrap-admin secret; override (e.g. a dedicated admin) if the bootstrap
+    # admin may be rotated or disabled, since this Job runs on every matching upgrade.
+    adminSecret:
+      name: ""
+      usernameKey: username
+      passwordKey: password

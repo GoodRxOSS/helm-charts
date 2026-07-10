@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.7.4](https://img.shields.io/badge/Version-0.7.4-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -128,7 +128,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.7.4 \
+  --version 0.8.0 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -209,6 +209,12 @@ helm upgrade -i lifecycle-keycloak \
 | keycloakPostgres.primary.resources.limits.memory | string | `"256Mi"` |  |
 | keycloakPostgres.primary.resources.requests.cpu | string | `"100m"` |  |
 | keycloakPostgres.primary.resources.requests.memory | string | `"128Mi"` |  |
+| mcp | object | `{"dcr":{"enabled":false,"maxClients":1000},"enabled":false,"extraAudiences":[],"resourceUrl":"","setupJob":{"activeDeadlineSeconds":600,"adminSecret":{"name":"","passwordKey":"password","usernameKey":"username"},"backoffLimit":2,"image":"python:3.12-alpine"}}` | MCP server realm setup: configures a `mcp` client scope whose audience mapper binds access tokens to the canonical MCP resource URL, registers it as a realm optional scope, and (optionally) enables anonymous Dynamic Client Registration policies so MCP clients (Cursor, Claude Code, VS Code, Codex) can self-register. Applied via an idempotent post-install/post-upgrade admin-API Job because realm imports never update an existing realm. |
+| mcp.dcr.enabled | bool | `false` | Enable anonymous Dynamic Client Registration (paste-the-URL-only onboarding). Removes the anonymous Trusted Hosts policy and raises the max-clients cap; the consent-required, allowed-scopes, allowed-protocol-mappers (Keycloak default whitelist) and max-clients safeguard policies are created if missing / stay active. Intended for deployments where Keycloak is not reachable from the public internet. Defaults to false: enabling it deletes the realm's anonymous Trusted Hosts policy, which is ONE-WAY — disabling this later does not recreate it. Export the realm (or the policy component) first if you may want to revert. Only enable when Keycloak is not reachable from the public internet. |
+| mcp.extraAudiences | list | `[]` | Additional audience URLs when several MCP deployments share this realm (e.g. local in-cluster web and a host dev server). |
+| mcp.resourceUrl | string | `""` | Canonical MCP resource URL (required when enabled), e.g. https://app.lifecycle.example.com/mcp. Must equal the MCP_RESOURCE_URL configured on the lifecycle web deployment. |
+| mcp.setupJob.activeDeadlineSeconds | int | `600` | Hard ceiling on the setup Job (seconds). Bounds how long a broken setup can block `helm upgrade` before the release is reported failed. |
+| mcp.setupJob.adminSecret | object | `{"name":"","passwordKey":"password","usernameKey":"username"}` | Kubernetes Secret the Job reads Keycloak admin credentials from. Defaults to the chart's bootstrap-admin secret; override (e.g. a dedicated admin) if the bootstrap admin may be rotated or disabled, since this Job runs on every matching upgrade. |
 | nameOverride | string | `""` |  |
 | parentChartName | string | `"lifecycle"` |  |
 | realm | string | `"lifecycle"` |  |
