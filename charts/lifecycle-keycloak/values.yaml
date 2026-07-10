@@ -186,8 +186,8 @@ mcp:
   dcr:
     # -- Enable anonymous Dynamic Client Registration (paste-the-URL-only onboarding).
     # Removes the anonymous Trusted Hosts policy and raises the max-clients cap; the
-    # consent-required and allowed-scopes policies are created if missing / stay active,
-    # and allowed-protocol-mappers policies stay active.
+    # the consent-required, allowed-scopes, allowed-protocol-mappers (Keycloak default
+    # whitelist) and max-clients safeguard policies are created if missing / stay active.
     # Intended for deployments where Keycloak is not reachable from the public internet.
     # Defaults to false: enabling it deletes the realm's anonymous Trusted Hosts policy,
     # which is ONE-WAY — disabling this later does not recreate it. Export the realm (or the

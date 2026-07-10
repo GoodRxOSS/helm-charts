@@ -23,9 +23,10 @@ Applies, idempotently, via the admin REST API (no reinstall / realm re-import):
        - Trusted Hosts: relaxed so MCP clients on arbitrary (VPN) hosts can register
        - Allowed Client Scopes: extended with `mcp`
        - Max Clients: raised
-     Missing Allowed Client Scopes / Consent Required policies are created (reconciled)
-     before the Trusted Hosts policy is removed, so anonymous DCR is never enabled
-     without those safeguards. Allowed Protocol Mappers policies are left in place.
+     Missing safeguard policies (Allowed Client Scopes, Consent Required, Allowed
+     Protocol Mapper Types with Keycloak's default whitelist, Max Clients with the
+     configured limit) are created (reconciled) before the Trusted Hosts policy is
+     removed, so anonymous DCR is never enabled without them.
      NOTE: removing the Trusted Hosts policy is one-way — re-running with --skip-dcr
      (or disabling later) does not recreate it; restore from a realm backup if needed.
 
@@ -294,17 +295,27 @@ def ensure_dcr_policies(admin: KeycloakAdmin, max_clients: int) -> None:
     else:
         create_policy('Consent Required', 'consent-required', {})
 
-    # Keycloak rejects a Trusted Hosts policy with both host and client-URI checks
-    # disabled, and MCP clients register from arbitrary VPN hosts with localhost or
-    # vendor-scheme redirect URIs that can never match a host allowlist. Removing the
-    # anonymous policy component is the supported way to lift the restriction; consent,
-    # allowed-scopes/mappers and max-clients policies continue to govern registration.
-    trusted = find('trusted-hosts')
-    if trusted:
-        admin.request('DELETE', f'/components/{trusted["id"]}')
-        admin.record('removed anonymous Trusted Hosts policy — VPN-only deployment assumption')
+    mappers_policy = find('allowed-protocol-mappers')
+    if mappers_policy:
+        admin.record('Allowed Protocol Mapper Types policy present (kept)')
     else:
-        admin.record('anonymous Trusted Hosts policy already absent')
+        # Keycloak's built-in default whitelist (DefaultClientRegistrationPolicies).
+        create_policy(
+            'Allowed Protocol Mapper Types',
+            'allowed-protocol-mappers',
+            {
+                'allowed-protocol-mapper-types': [
+                    'oidc-full-name-mapper',
+                    'oidc-sha256-pairwise-sub-mapper',
+                    'oidc-address-mapper',
+                    'oidc-usermodel-property-mapper',
+                    'oidc-usermodel-attribute-mapper',
+                    'saml-user-attribute-mapper',
+                    'saml-user-property-mapper',
+                    'saml-role-list-mapper',
+                ]
+            },
+        )
 
     max_clients_component = find('max-clients')
     if max_clients_component:
@@ -320,7 +331,19 @@ def ensure_dcr_policies(admin: KeycloakAdmin, max_clients: int) -> None:
         else:
             admin.record(f'Max Clients policy already >= {max_clients} ({current})')
     else:
-        admin.record('no anonymous Max Clients policy found')
+        create_policy('Max Clients Limit', 'max-clients', {'max-clients': [str(max_clients)]})
+
+    # Keycloak rejects a Trusted Hosts policy with both host and client-URI checks
+    # disabled, and MCP clients register from arbitrary VPN hosts with localhost or
+    # vendor-scheme redirect URIs that can never match a host allowlist. Removing the
+    # anonymous policy component is the supported way to lift the restriction; consent,
+    # allowed-scopes/mappers and max-clients policies continue to govern registration.
+    trusted = find('trusted-hosts')
+    if trusted:
+        admin.request('DELETE', f'/components/{trusted["id"]}')
+        admin.record('removed anonymous Trusted Hosts policy — VPN-only deployment assumption')
+    else:
+        admin.record('anonymous Trusted Hosts policy already absent')
 
 
 def main() -> None:
