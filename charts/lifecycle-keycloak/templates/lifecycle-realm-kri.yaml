@@ -185,6 +185,43 @@ spec:
               introspection.token.claim: "true"
       {{- end }}
 
+      {{- if .Values.clients.lifecycleApiPrincipalSync.enabled }}
+      - clientId: {{ .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
+        name: "Lifecycle API principal sync"
+        description: "Confidential service-account client the Lifecycle API uses to detect disabled or deleted owners of personal API keys"
+        enabled: true
+        publicClient: false
+        clientAuthenticatorType: "client-secret"
+        secret: "${LIFECYCLE_API_PRINCIPAL_SYNC_CLIENT_SECRET}"
+        protocol: "openid-connect"
+        serviceAccountsEnabled: true
+        standardFlowEnabled: false
+        implicitFlowEnabled: false
+        directAccessGrantsEnabled: false
+        fullScopeAllowed: false
+        defaultClientScopes: ["roles", "basic"]
+      {{- end }}
+
+    {{- if .Values.clients.lifecycleApiPrincipalSync.enabled }}
+    # --- SERVICE ACCOUNTS ---
+    users:
+      - username: {{ printf "service-account-%s" .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
+        enabled: true
+        serviceAccountClientId: {{ .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
+        clientRoles:
+          realm-management:
+            - "view-users"
+            - "query-users"
+
+    # fullScopeAllowed is off, so this scope mapping is what lets the two roles into the token.
+    clientScopeMappings:
+      realm-management:
+        - client: {{ .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
+          roles:
+            - "view-users"
+            - "query-users"
+    {{- end }}
+
     # --- IDENTITY PROVIDERS ---
     identityProviders:
       - alias: "company-sso"

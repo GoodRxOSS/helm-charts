@@ -107,6 +107,15 @@ Namespace Hostname
 {{- end -}}
 {{- end -}}
 
+{{- define "lifecycle-keycloak.apiPrincipalSyncSecretName" -}}
+{{- if .Values.secrets.apiPrincipalSync.fullnameOverride -}}
+    {{- .Values.secrets.apiPrincipalSync.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{- $prefix := include "lifecycle-keycloak.fullname" . -}}
+    {{- printf "%s-%s" $prefix "api-principal-sync" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "lifecycle-keycloak.postgresSvcPrefix" -}}
 {{- if .Values.keycloakPostgres.fullnameOverride }}
     {{- printf "%s.%s" .Values.keycloakPostgres.fullnameOverride (include "lifecycle-keycloak.namespaceHostname" .) }}
