@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.7.4](https://img.shields.io/badge/Version-0.7.4-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.7.5](https://img.shields.io/badge/Version-0.7.5-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -128,7 +128,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.7.4 \
+  --version 0.7.5 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -139,6 +139,10 @@ helm upgrade -i lifecycle-keycloak \
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | annotations | object | `{}` |  |
+| clients.lifecycleApiPrincipalSync.clientId | string | `"lifecycle-api-principal-sync"` |  |
+| clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key | string | `nil` |  |
+| clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name | string | `nil` |  |
+| clients.lifecycleApiPrincipalSync.enabled | bool | `true` |  |
 | clients.lifecycleCli.clientId | string | `"lifecycle-cli"` |  |
 | clients.lifecycleCli.enabled | bool | `true` |  |
 | clients.lifecycleCore.clientId | string | `"lifecycle-core"` |  |
@@ -213,6 +217,10 @@ helm upgrade -i lifecycle-keycloak \
 | parentChartName | string | `"lifecycle"` |  |
 | realm | string | `"lifecycle"` |  |
 | realmDisplayName | string | `"Lifecycle"` |  |
+| secrets.apiPrincipalSync.annotations | list | `[]` |  |
+| secrets.apiPrincipalSync.clientSecret | string | `nil` |  |
+| secrets.apiPrincipalSync.enabled | bool | `true` |  |
+| secrets.apiPrincipalSync.fullnameOverride | string | `""` |  |
 | secrets.bootstrapAdmin.annotations | list | `[]` |  |
 | secrets.bootstrapAdmin.enabled | bool | `true` |  |
 | secrets.bootstrapAdmin.fullnameOverride | string | `""` |  |

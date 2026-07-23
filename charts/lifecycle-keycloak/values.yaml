@@ -45,6 +45,16 @@ clients:
     enabled: true
     clientId: lifecycle-cli
 
+  # Confidential service-account client the Lifecycle API uses to revoke personal
+  # API keys of disabled/deleted owners (realm-management view-users + query-users only).
+  lifecycleApiPrincipalSync:
+    enabled: true
+    clientId: lifecycle-api-principal-sync
+    clientSecret:
+      secretKeyRef:
+        name:  # fallback to "{{ include "lifecycle-keycloak.apiPrincipalSyncSecretName" . }}"
+        key:  # default "clientSecret"
+
 
 companyIdp:
   enabled: true
@@ -133,6 +143,12 @@ secrets:
     clientSecret:
 
   lifecycleUi:
+    enabled: true
+    fullnameOverride: ""
+    annotations: []
+    clientSecret:
+
+  apiPrincipalSync:
     enabled: true
     fullnameOverride: ""
     annotations: []
