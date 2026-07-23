@@ -18,6 +18,52 @@ entries:
   lifecycle:
   - apiVersion: v2
     appVersion: 0.1.15
+    created: "2026-07-23T22:29:32.275472713Z"
+    dependencies:
+    - alias: postgres
+      condition: postgres.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.5.19
+    - alias: redis
+      condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 19.6.3
+    - alias: distribution
+      condition: distribution.enabled
+      name: distribution
+      repository: https://jouve.github.io/charts
+      version: 0.1.7
+    - alias: buildkit
+      condition: buildkit.enabled
+      name: buildkit-service
+      repository: https://andrcuns.github.io/charts
+      version: 1.4.0
+    - alias: keycloak
+      condition: keycloak.enabled
+      name: lifecycle-keycloak
+      repository: https://goodrxoss.github.io/helm-charts
+      version: 0.7.5
+    - alias: ui
+      condition: ui.enabled
+      name: lifecycle-ui
+      repository: https://goodrxoss.github.io/helm-charts
+      version: 0.3.3
+    - alias: minio
+      condition: minio.enabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.0.21
+    description: A Helm umbrella chart for full Lifecycle stack
+    digest: 4571ffff2589b59aa1c8c822ee1929526dcff05209198a8b99d503d7a522b737
+    name: lifecycle
+    type: application
+    urls:
+    - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-0.9.10/lifecycle-0.9.10.tgz
+    version: 0.9.10
+  - apiVersion: v2
+    appVersion: 0.1.15
     created: "2026-07-05T17:11:31.374023008Z"
     dependencies:
     - alias: postgres
@@ -1280,4 +1326,4 @@ entries:
     urls:
     - https://github.com/GoodRxOSS/helm-charts/releases/download/lifecycle-ui-0.1.0/lifecycle-ui-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-23T21:30:29.127471919Z"
+generated: "2026-07-23T22:29:32.275636919Z"
