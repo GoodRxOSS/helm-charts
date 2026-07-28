@@ -16,4 +16,11 @@ jobs:
         with:
           python-version: '3.x'
 
+      - uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+
+      - name: Verify Keycloak credential Secret isolation
+        run: bash scripts/test-keycloak-credential-isolation.sh
+
       - uses: pre-commit/action@v3.0.1
