@@ -474,10 +474,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-client-secrets-bootstrap-only" class="md-nav__link">
+  <a href="#3-lifecycle-api-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Client Secrets (Bootstrap Only)
+        3. Lifecycle API Credentials
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Lifecycle API Credentials">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#existing-realm-mcp-policy-migration-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing-realm MCP policy migration and recovery
       
     </span>
   </a>
@@ -488,17 +500,22 @@
     </nav>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#life-cycle-management-realm-import" class="md-nav__link">
+  <a href="#lifecycle-management-realm-import" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Life-cycle Management &amp; Realm Import
+        Lifecycle Management &amp; Realm Import
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Life-cycle Management &amp; Realm Import">
+    <nav class="md-nav" aria-label="Lifecycle Management &amp; Realm Import">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -728,10 +745,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-client-secrets-bootstrap-only" class="md-nav__link">
+  <a href="#3-lifecycle-api-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Client Secrets (Bootstrap Only)
+        3. Lifecycle API Credentials
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Lifecycle API Credentials">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#existing-realm-mcp-policy-migration-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing-realm MCP policy migration and recovery
       
     </span>
   </a>
@@ -742,17 +771,22 @@
     </nav>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#life-cycle-management-realm-import" class="md-nav__link">
+  <a href="#lifecycle-management-realm-import" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Life-cycle Management &amp; Realm Import
+        Lifecycle Management &amp; Realm Import
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Life-cycle Management &amp; Realm Import">
+    <nav class="md-nav" aria-label="Lifecycle Management &amp; Realm Import">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -800,7 +834,7 @@
 
 
 <h1 id="lifecycle-keycloak">lifecycle-keycloak</h1>
-<p><img alt="Version: 0.7.5" src="https://img.shields.io/badge/Version-0.7.5-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.0.0" src="https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square" /></p>
+<p><img alt="Version: 0.7.6" src="https://img.shields.io/badge/Version-0.7.6-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.0.0" src="https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square" /></p>
 <p>Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports</p>
 <hr />
 <h2 id="important-requirements-dependencies">⚠️ Important: Requirements &amp; Dependencies</h2>
@@ -883,35 +917,124 @@
 <li><code>hostname</code>: The main entry point for Keycloak (e.g., <code>https://keycloak.example.com</code>).</li>
 <li><code>clients.lifecycleUi.url</code>: The frontend application URL (e.g., <code>https://ui.example.com</code>).</li>
 </ul>
-<h3 id="3-client-secrets-bootstrap-only">3. Client Secrets (Bootstrap Only)</h3>
-<p>You can define initial secrets for your clients:</p>
+<h3 id="3-lifecycle-api-credentials">3. Lifecycle API Credentials</h3>
+<p>This chart bootstraps two fixed, confidential service-account clients:</p>
+<ul>
+<li><code>lifecycle-api-keycloak-management</code> is directly assigned only
+  <code>manage-clients</code> and <code>manage-realm</code> for the Lifecycle web process. Keycloak
+  expands the built-in <code>manage-realm</code> composites in its token.</li>
+<li><code>lifecycle-api-principal-sync</code> is directly assigned only <code>view-users</code> and
+  <code>query-users</code> for the Lifecycle worker. On Keycloak 26.4.7, <code>query-users</code>
+  also adds its built-in <code>query-groups</code> composite to the token.</li>
+</ul>
+<p>Their Kubernetes Secrets are lookup-stable and remain in place during rollback.
+<code>KeycloakRealmImport</code> creates the clients during the initial realm import. The
+Lifecycle API, not this chart, configures MCP scopes, audiences, and dynamic
+client registration when an administrator enables MCP.</p>
+<p>Use existing Secrets when another secret manager owns the values:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">clients</span><span class="p">:</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">lifecycleCore</span><span class="p">:</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lifecycle-core-secret&quot;</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">lifecycleUi</span><span class="p">:</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lifecycle-ui-secret&quot;</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="nt">lifecycleUiBackend</span><span class="p">:</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lifecycle-ui-backend-secret&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">lifecycleApiKeycloakManagement</span><span class="p">:</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">      </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lifecycle-api-keycloak-management</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="nt">lifecycleApiPrincipalSync</span><span class="p">:</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">      </span><span class="nt">secretKeyRef</span><span class="p">:</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lifecycle-api-principal-sync</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clientSecret</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nt">secrets</span><span class="p">:</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">  </span><span class="nt">apiKeycloakManagement</span><span class="p">:</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">  </span><span class="nt">apiPrincipalSync</span><span class="p">:</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div>
-<blockquote>
-<p><strong>Important:</strong> These values act as <strong>bootstrap</strong> values. After the initial creation, if you change them in the Keycloak Admin UI, the values in Helm will no longer stay in sync.</p>
-</blockquote>
+<p><code>KeycloakRealmImport</code> is one-shot: upgrading an installation whose Lifecycle
+realm already exists will not add either client. Create the missing clients
+externally before enabling MCP (<code>lifecycle-api-keycloak-management</code>) or relying
+on the API-key owner sweep (<code>lifecycle-api-principal-sync</code>). Each is an enabled
+confidential OpenID Connect service-account client with interactive and
+direct-access flows disabled, <code>fullScopeAllowed: false</code>, and scope mappings for
+exactly its <code>realm-management</code> roles: <code>manage-clients</code> + <code>manage-realm</code> for the
+management client, <code>view-users</code> + <code>query-users</code> for principal sync. Each client
+secret must match the Kubernetes Secret selected by the corresponding
+<code>clients.*.clientSecret.secretKeyRef</code>.</p>
+<h4 id="existing-realm-mcp-policy-migration-and-recovery">Existing-realm MCP policy migration and recovery</h4>
+<p>This chart bootstraps credentials and fresh-realm clients only. The Lifecycle
+web/API process performs MCP Keycloak reconciliation when an administrator
+enables MCP; a Helm install or upgrade does not reconcile or repair dynamic
+client-registration policies.</p>
+<p>On enable, Lifecycle reconciles and verifies its MCP scopes, mappers, profiles,
+policies, and anonymous registration components. It may remove the anonymous
+<code>Trusted Hosts</code> component only when exactly one exists and it matches the stock
+Keycloak posture: both <code>host-sending-registration-request-must-match</code> and
+<code>client-uris-must-match</code> are <code>true</code>. Lifecycle never overwrites, removes, or
+replaces a customized, duplicated, or otherwise drifted <code>Trusted Hosts</code> policy.
+Such a conflict fails enablement safely and requires a Keycloak operator to
+restore an unambiguous compatible posture before the administrator retries.</p>
+<p>Disabling Lifecycle MCP closes Lifecycle MCP access only. It does not delete or
+revert the Keycloak objects created during enablement, and it does not restore a
+stock <code>Trusted Hosts</code> component that enablement removed. Re-enabling MCP runs
+the full reconciliation and verification again. Treat this realm configuration
+as durable; disabling MCP or upgrading this chart is not a Keycloak recovery
+operation.</p>
+<p>With <code>kcadm.sh</code> (repeat the block with <code>C=lifecycle-api-principal-sync</code> and
+<code>ROLES="view-users query-users"</code> for the second client):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">REALM</span><span class="o">=</span>lifecycle
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">C</span><span class="o">=</span>lifecycle-api-keycloak-management
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">ROLES</span><span class="o">=</span><span class="s2">&quot;manage-clients manage-realm&quot;</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">SECRET</span><span class="o">=</span>...<span class="w"> </span><span class="c1"># the value from the client&#39;s Kubernetes Secret</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>kcadm.sh<span class="w"> </span>create<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$C</span><span class="s2">&quot;</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">protocol</span><span class="o">=</span>openid-connect<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span>-s<span class="w"> </span><span class="nv">publicClient</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">serviceAccountsEnabled</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">standardFlowEnabled</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span>-s<span class="w"> </span><span class="nv">implicitFlowEnabled</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">directAccessGrantsEnabled</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span>-s<span class="w"> </span><span class="nv">fullScopeAllowed</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">secret</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SECRET</span><span class="s2">&quot;</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>kcadm.sh<span class="w"> </span>add-roles<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>--uusername<span class="w"> </span><span class="s2">&quot;service-account-</span><span class="nv">$C</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span>--cclientid<span class="w"> </span>realm-management<span class="w"> </span><span class="k">$(</span><span class="nb">printf</span><span class="w"> </span>--<span class="w"> </span><span class="s1">&#39;--rolename %s &#39;</span><span class="w"> </span><span class="nv">$ROLES</span><span class="k">)</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="nv">CID</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-q<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$C</span><span class="s2">&quot;</span><span class="w"> </span>--fields<span class="w"> </span>id<span class="w"> </span>--format<span class="w"> </span>csv<span class="w"> </span>--noquotes<span class="k">)</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nv">RMID</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-q<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span>realm-management<span class="w"> </span>--fields<span class="w"> </span>id<span class="w"> </span>--format<span class="w"> </span>csv<span class="w"> </span>--noquotes<span class="k">)</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="k">for</span><span class="w"> </span>ROLE<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$ROLES</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">  </span><span class="nv">R</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span><span class="s2">&quot;clients/</span><span class="nv">$RMID</span><span class="s2">/roles/</span><span class="nv">$ROLE</span><span class="s2">&quot;</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>--fields<span class="w"> </span>id,name<span class="k">)</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">  </span>kcadm.sh<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;clients/</span><span class="nv">$CID</span><span class="s2">/scope-mappings/clients/</span><span class="nv">$RMID</span><span class="s2">&quot;</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-b<span class="w"> </span><span class="s2">&quot;[</span><span class="nv">$R</span><span class="s2">]&quot;</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="k">done</span>
+</span></code></pre></div>
+<p>The preferred migration path is to let an external secret manager supply the
+Kubernetes Secrets (<code>secrets.apiKeycloakManagement.enabled: false</code>,
+<code>secrets.apiPrincipalSync.enabled: false</code>) and use the same secret source when
+creating the Keycloak clients. This avoids printing or decoding the
+credentials. If the chart-generated Secrets are used instead, the one-time
+administrator automation should read them directly from the Kubernetes API
+without logging them.</p>
+<p>The chart preserves the distinguishing Secret-name suffixes for long release
+names and rejects any configuration that resolves both credentials to the same
+Secret key. External Secrets may hold both credentials under distinct keys.
+Chart-generated credential Secrets use
+<code>helm.sh/resource-policy: keep</code>, so uninstalling the release does not remove
+them. If the Keycloak realm is retained, revoke or delete the matching clients
+before deleting the retained Secrets. Rotate a credential by updating its
+Keycloak client and Kubernetes Secret as one coordinated operation, then
+restart only the owning Lifecycle process (<code>web</code> for management, <code>worker</code> for
+principal sync). <code>KeycloakRealmImport</code> is one-shot, so changing a Helm value
+alone does not rotate an existing client.</p>
 <hr />
-<h2 id="life-cycle-management-realm-import">Life-cycle Management &amp; Realm Import</h2>
+<h2 id="lifecycle-management-realm-import">Lifecycle Management &amp; Realm Import</h2>
 <p>This chart uses the <code>KeycloakRealmImport</code> resource for the initial setup.</p>
 <ul>
-<li><strong>Immutable Configuration:</strong> Some settings (like certain realm links or fundamental structures) are hard to modify via the Operator after the initial import.</li>
-<li><strong>Re-initialization:</strong> If you need to significantly change the realm structure that isn't being picked up by the Operator, you may need to <strong>delete the Helm release and reinstall it</strong>.</li>
-<li><strong>Caution:</strong> Deleting the release might trigger the deletion of the Keycloak instance and its data (PostgreSQL), depending on your <code>persistence</code> and <code>reclaimPolicy</code> settings.</li>
+<li><strong>Initial import only:</strong> Changes to the import do not reconcile an existing realm.</li>
+<li><strong>Existing realms:</strong> Apply required additions through an external Keycloak administration process.</li>
+<li><strong>Caution:</strong> Deleting the release to force a new import can delete the Keycloak instance and its data, depending on persistence and reclaim-policy settings.</li>
 </ul>
 <hr />
 <h3 id="install-the-chart">Install the Chart</h3>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.7.5<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>-f<span class="w"> </span>values.yaml<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span>-n<span class="w"> </span>lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span>--create-namespace
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.7.6<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span>-f<span class="w"> </span>values.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span>-n<span class="w"> </span>lifecycle-keycloak<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span>--create-namespace
 </span></code></pre></div>
 <h2 id="values">Values</h2>
 <table>
@@ -931,10 +1054,34 @@
 <td></td>
 </tr>
 <tr>
+<td>clients.lifecycleApiKeycloakManagement.clientId</td>
+<td>string</td>
+<td><code>"lifecycle-api-keycloak-management"</code></td>
+<td>Keycloak client ID for the web-only management credential.</td>
+</tr>
+<tr>
+<td>clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.key</td>
+<td>string</td>
+<td><code>nil</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name</td>
+<td>string</td>
+<td><code>nil</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clients.lifecycleApiKeycloakManagement.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td>Bootstrap the web-only Lifecycle API Keycloak-management credential.</td>
+</tr>
+<tr>
 <td>clients.lifecycleApiPrincipalSync.clientId</td>
 <td>string</td>
 <td><code>"lifecycle-api-principal-sync"</code></td>
-<td></td>
+<td>Keycloak client ID for the worker-only principal-sync credential.</td>
 </tr>
 <tr>
 <td>clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key</td>
@@ -952,7 +1099,7 @@
 <td>clients.lifecycleApiPrincipalSync.enabled</td>
 <td>bool</td>
 <td><code>true</code></td>
-<td></td>
+<td>Bootstrap the worker-only read-only principal-sync credential.</td>
 </tr>
 <tr>
 <td>clients.lifecycleCli.clientId</td>
@@ -1399,9 +1546,33 @@
 <td></td>
 </tr>
 <tr>
+<td>secrets.apiKeycloakManagement.annotations</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.apiKeycloakManagement.clientSecret</td>
+<td>string</td>
+<td><code>nil</code></td>
+<td></td>
+</tr>
+<tr>
+<td>secrets.apiKeycloakManagement.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td>Create the lookup-stable Keycloak-management client Secret.</td>
+</tr>
+<tr>
+<td>secrets.apiKeycloakManagement.fullnameOverride</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
 <td>secrets.apiPrincipalSync.annotations</td>
-<td>list</td>
-<td><code>[]</code></td>
+<td>object</td>
+<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
@@ -1414,7 +1585,7 @@
 <td>secrets.apiPrincipalSync.enabled</td>
 <td>bool</td>
 <td><code>true</code></td>
-<td></td>
+<td>Create the lookup-stable principal-sync client Secret.</td>
 </tr>
 <tr>
 <td>secrets.apiPrincipalSync.fullnameOverride</td>
