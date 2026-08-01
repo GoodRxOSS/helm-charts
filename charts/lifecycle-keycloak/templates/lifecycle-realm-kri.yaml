@@ -27,6 +27,21 @@ metadata:
   {{- end }}
 spec:
   keycloakCRName: {{ include "lifecycle-keycloak.fullname" . }}
+{{- if or .Values.clients.lifecycleApiKeycloakManagement.enabled .Values.clients.lifecycleApiPrincipalSync.enabled }}
+  placeholders:
+{{- if .Values.clients.lifecycleApiKeycloakManagement.enabled }}
+    LIFECYCLE_API_KEYCLOAK_MANAGEMENT_CLIENT_SECRET:
+      secret:
+        name: {{ tpl (.Values.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name | default (include "lifecycle-keycloak.apiKeycloakManagementSecretName" .)) . | quote }}
+        key: {{ .Values.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.key | default "clientSecret" | quote }}
+{{- end }}
+{{- if .Values.clients.lifecycleApiPrincipalSync.enabled }}
+    LIFECYCLE_API_PRINCIPAL_SYNC_CLIENT_SECRET:
+      secret:
+        name: {{ tpl (.Values.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name | default (include "lifecycle-keycloak.apiPrincipalSyncSecretName" .)) . | quote }}
+        key: {{ .Values.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key | default "clientSecret" | quote }}
+{{- end }}
+{{- end }}
   realm:
     realm: {{ .Values.realm | quote }}
     displayName: {{ .Values.realmDisplayName | quote }}
@@ -185,6 +200,23 @@ spec:
               introspection.token.claim: "true"
       {{- end }}
 
+      {{- if .Values.clients.lifecycleApiKeycloakManagement.enabled }}
+      - clientId: {{ .Values.clients.lifecycleApiKeycloakManagement.clientId | quote }}
+        name: "Lifecycle API Keycloak management"
+        description: "Confidential service-account client the Lifecycle web process uses to manage Lifecycle-owned Keycloak configuration"
+        enabled: true
+        publicClient: false
+        clientAuthenticatorType: "client-secret"
+        secret: "${LIFECYCLE_API_KEYCLOAK_MANAGEMENT_CLIENT_SECRET}"
+        protocol: "openid-connect"
+        serviceAccountsEnabled: true
+        standardFlowEnabled: false
+        implicitFlowEnabled: false
+        directAccessGrantsEnabled: false
+        fullScopeAllowed: false
+        defaultClientScopes: ["roles", "basic"]
+      {{- end }}
+
       {{- if .Values.clients.lifecycleApiPrincipalSync.enabled }}
       - clientId: {{ .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
         name: "Lifecycle API principal sync"
@@ -202,9 +234,19 @@ spec:
         defaultClientScopes: ["roles", "basic"]
       {{- end }}
 
-    {{- if .Values.clients.lifecycleApiPrincipalSync.enabled }}
+    {{- if or .Values.clients.lifecycleApiKeycloakManagement.enabled .Values.clients.lifecycleApiPrincipalSync.enabled }}
     # --- SERVICE ACCOUNTS ---
     users:
+      {{- if .Values.clients.lifecycleApiKeycloakManagement.enabled }}
+      - username: {{ printf "service-account-%s" .Values.clients.lifecycleApiKeycloakManagement.clientId | quote }}
+        enabled: true
+        serviceAccountClientId: {{ .Values.clients.lifecycleApiKeycloakManagement.clientId | quote }}
+        clientRoles:
+          realm-management:
+            - "manage-clients"
+            - "manage-realm"
+      {{- end }}
+      {{- if .Values.clients.lifecycleApiPrincipalSync.enabled }}
       - username: {{ printf "service-account-%s" .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
         enabled: true
         serviceAccountClientId: {{ .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
@@ -212,14 +254,24 @@ spec:
           realm-management:
             - "view-users"
             - "query-users"
+      {{- end }}
 
-    # fullScopeAllowed is off, so this scope mapping is what lets the two roles into the token.
+    # fullScopeAllowed is off, so these mappings put only the assigned
+    # realm-management roles (and Keycloak composites) into each token.
     clientScopeMappings:
       realm-management:
+        {{- if .Values.clients.lifecycleApiKeycloakManagement.enabled }}
+        - client: {{ .Values.clients.lifecycleApiKeycloakManagement.clientId | quote }}
+          roles:
+            - "manage-clients"
+            - "manage-realm"
+        {{- end }}
+        {{- if .Values.clients.lifecycleApiPrincipalSync.enabled }}
         - client: {{ .Values.clients.lifecycleApiPrincipalSync.clientId | quote }}
           roles:
             - "view-users"
             - "query-users"
+        {{- end }}
     {{- end }}
 
     # --- IDENTITY PROVIDERS ---

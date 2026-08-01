@@ -45,10 +45,24 @@ clients:
     enabled: true
     clientId: lifecycle-cli
 
+  # Confidential service-account client used only by the Lifecycle web process
+  # to manage Lifecycle-owned Keycloak configuration.
+  lifecycleApiKeycloakManagement:
+    # -- Bootstrap the web-only Lifecycle API Keycloak-management credential.
+    enabled: true
+    # -- Keycloak client ID for the web-only management credential.
+    clientId: lifecycle-api-keycloak-management
+    clientSecret:
+      secretKeyRef:
+        name:  # fallback to "{{ include "lifecycle-keycloak.apiKeycloakManagementSecretName" . }}"
+        key:  # default "clientSecret"
+
   # Confidential service-account client the Lifecycle API uses to revoke personal
   # API keys of disabled/deleted owners (realm-management view-users + query-users only).
   lifecycleApiPrincipalSync:
+    # -- Bootstrap the worker-only read-only principal-sync credential.
     enabled: true
+    # -- Keycloak client ID for the worker-only principal-sync credential.
     clientId: lifecycle-api-principal-sync
     clientSecret:
       secretKeyRef:
@@ -149,9 +163,17 @@ secrets:
     clientSecret:
 
   apiPrincipalSync:
+    # -- Create the lookup-stable principal-sync client Secret.
     enabled: true
     fullnameOverride: ""
-    annotations: []
+    annotations: {}
+    clientSecret:
+
+  apiKeycloakManagement:
+    # -- Create the lookup-stable Keycloak-management client Secret.
+    enabled: true
+    fullnameOverride: ""
+    annotations: {}
     clientSecret:
 
 keycloakPostgres:

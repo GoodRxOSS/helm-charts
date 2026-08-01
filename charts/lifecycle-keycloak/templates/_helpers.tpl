@@ -107,12 +107,29 @@ Namespace Hostname
 {{- end -}}
 {{- end -}}
 
+{{- define "lifecycle-keycloak.nameWithSuffix" -}}
+{{- $prefix := .prefix -}}
+{{- $suffix := .suffix -}}
+{{- $maxPrefixLength := int (sub 62 (len $suffix)) -}}
+{{- $boundedPrefix := trunc $maxPrefixLength $prefix | trimSuffix "-" -}}
+{{- printf "%s-%s" $boundedPrefix $suffix | trimSuffix "-" -}}
+{{- end -}}
+
 {{- define "lifecycle-keycloak.apiPrincipalSyncSecretName" -}}
 {{- if .Values.secrets.apiPrincipalSync.fullnameOverride -}}
     {{- .Values.secrets.apiPrincipalSync.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
     {{- $prefix := include "lifecycle-keycloak.fullname" . -}}
-    {{- printf "%s-%s" $prefix "api-principal-sync" | trunc 63 | trimSuffix "-" -}}
+    {{- include "lifecycle-keycloak.nameWithSuffix" (dict "prefix" $prefix "suffix" "api-principal-sync") -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "lifecycle-keycloak.apiKeycloakManagementSecretName" -}}
+{{- if .Values.secrets.apiKeycloakManagement.fullnameOverride -}}
+    {{- .Values.secrets.apiKeycloakManagement.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{- $prefix := include "lifecycle-keycloak.fullname" . -}}
+    {{- include "lifecycle-keycloak.nameWithSuffix" (dict "prefix" $prefix "suffix" "api-keycloak-management") -}}
 {{- end -}}
 {{- end -}}
 
