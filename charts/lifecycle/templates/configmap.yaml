@@ -28,6 +28,9 @@ metadata:
     "helm.sh/resource-policy": keep
 data:
   APP_HOST: https://app.{{ .Values.global.domain }}
+{{- if or .Values.ui.enabled .Values.ui.config.appUrl }}
+  LIFECYCLE_UI_URL: {{ .Values.ui.config.appUrl | default (printf "https://%s.%s" (.Values.global.uiSubDomain | default "ui") .Values.global.domain) | quote }}
+{{- end }}
   DISTRIBUTION_HOST: distribution.{{ .Values.global.domain }}
   BUILDKIT_HOST: {{ include "..helper.buildkitSvcUrl" $ }}
 {{- if and .Values.secrets.bootstrap.fullnameOverride (ne .Values.secrets.bootstrap.fullnameOverride "") }}

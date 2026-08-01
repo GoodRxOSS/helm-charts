@@ -136,3 +136,40 @@ Namespace Hostname
     {{- printf "%s-%s" .Release.Name "minio" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end -}}
+
+{{- define "..helper.keycloakFullname" -}}
+{{- if .Values.keycloak.fullnameOverride -}}
+    {{- .Values.keycloak.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{- $name := default "keycloak" .Values.keycloak.nameOverride -}}
+    {{- if contains $name .Release.Name -}}
+        {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+    {{- else -}}
+        {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "..helper.nameWithSuffix" -}}
+{{- $prefix := .prefix -}}
+{{- $suffix := .suffix -}}
+{{- $maxPrefixLength := int (sub 62 (len $suffix)) -}}
+{{- $boundedPrefix := trunc $maxPrefixLength $prefix | trimSuffix "-" -}}
+{{- printf "%s-%s" $boundedPrefix $suffix | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "..helper.apiKeycloakManagementSecretName" -}}
+{{- if .Values.keycloak.secrets.apiKeycloakManagement.fullnameOverride -}}
+    {{- .Values.keycloak.secrets.apiKeycloakManagement.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{- include "..helper.nameWithSuffix" (dict "prefix" (include "..helper.keycloakFullname" .) "suffix" "api-keycloak-management") -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "..helper.apiPrincipalSyncSecretName" -}}
+{{- if .Values.keycloak.secrets.apiPrincipalSync.fullnameOverride -}}
+    {{- .Values.keycloak.secrets.apiPrincipalSync.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{- include "..helper.nameWithSuffix" (dict "prefix" (include "..helper.keycloakFullname" .) "suffix" "api-principal-sync") -}}
+{{- end -}}
+{{- end -}}

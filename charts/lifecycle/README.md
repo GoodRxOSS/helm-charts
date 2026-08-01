@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.10](https://img.shields.io/badge/Version-0.9.10-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.1.15](https://img.shields.io/badge/AppVersion-0.1.15-informational?style=flat-square)
+![Version: 0.9.11](https://img.shields.io/badge/Version-0.9.11-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,11 +40,41 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.10 \
+  --version 0.9.11 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
 ```
+
+## Lifecycle API Keycloak Credentials
+
+The bundled Keycloak chart creates two separate service-account credentials.
+The Lifecycle web Deployment receives only
+`lifecycle-api-keycloak-management`; the worker receives only
+`lifecycle-api-principal-sync`. Neither credential is exposed through a shared
+`envFrom`, the gateway, or Lifecycle UI. The Keycloak server pod receives
+neither secret; the realm-import Job reads both through `KeycloakRealmImport`
+placeholders to substitute them into the two clients at first import.
+
+`KeycloakRealmImport` creates both clients only when the realm is first
+imported. It does not reconcile an existing realm. For an existing
+installation, create a missing `lifecycle-api-keycloak-management` confidential
+service-account client externally with direct assignments only for
+`manage-clients` and `manage-realm`, and make its secret match the configured
+Kubernetes Secret before enabling MCP. Lifecycle API owns all feature-specific
+Keycloak configuration.
+
+The chart preserves the distinguishing Secret-name suffixes for long release
+names and rejects any configuration that resolves both credentials to the same
+Secret key. External Secrets may hold both credentials under distinct keys.
+Chart-generated credential Secrets use
+`helm.sh/resource-policy: keep`, so uninstalling the release does not remove
+them. If the Keycloak realm is retained, revoke or delete the matching Keycloak
+clients before deleting the retained Secrets. Rotate a credential by updating
+the Keycloak client and Kubernetes Secret as one coordinated operation, then
+restart only its owning Deployment (`web` for management, `worker` for
+principal sync). Because realm import is one-shot, changing a Helm value alone
+does not rotate an existing Keycloak client.
 
 ## Requirements
 
@@ -54,8 +84,8 @@ helm upgrade -i lifecycle \
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
-| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.5 |
-| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.3 |
+| https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.6 |
+| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.4 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
@@ -264,6 +294,15 @@ helm upgrade -i lifecycle \
 | global.serviceAccount.annotations | list | `[]` |  |
 | global.serviceAccount.create | bool | `true` |  |
 | global.serviceAccount.name | string | `""` |  |
+| global.uiSubDomain | string | `"ui"` |  |
+| keycloak.clients.lifecycleApiKeycloakManagement.clientId | string | `"lifecycle-api-keycloak-management"` | Keycloak client ID for Lifecycle web. |
+| keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.key | string | `nil` |  |
+| keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name | string | `nil` |  |
+| keycloak.clients.lifecycleApiKeycloakManagement.enabled | bool | `true` | Inject the Keycloak-management credential only into Lifecycle web. |
+| keycloak.clients.lifecycleApiPrincipalSync.clientId | string | `"lifecycle-api-principal-sync"` | Keycloak client ID for Lifecycle worker principal synchronization. |
+| keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key | string | `nil` |  |
+| keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name | string | `nil` |  |
+| keycloak.clients.lifecycleApiPrincipalSync.enabled | bool | `true` | Inject the read-only principal-sync credential only into Lifecycle worker. |
 | keycloak.clients.lifecycleUi.url | string | `"https://ui.example.com"` |  |
 | keycloak.enabled | bool | `true` |  |
 | keycloak.externalDatabase.database | string | `"keycloak"` |  |
@@ -283,6 +322,12 @@ helm upgrade -i lifecycle \
 | keycloak.hostname | string | `"https://auth.example.com"` |  |
 | keycloak.keycloakPostgres.enabled | bool | `true` |  |
 | keycloak.keycloakPostgres.nameOverride | string | `"keycloak-postgres"` |  |
+| keycloak.secrets.apiKeycloakManagement.clientSecret | string | `nil` |  |
+| keycloak.secrets.apiKeycloakManagement.enabled | bool | `true` | Create the lookup-stable Keycloak-management client Secret. |
+| keycloak.secrets.apiKeycloakManagement.fullnameOverride | string | `""` |  |
+| keycloak.secrets.apiPrincipalSync.clientSecret | string | `nil` |  |
+| keycloak.secrets.apiPrincipalSync.enabled | bool | `true` | Create the lookup-stable principal-sync client Secret. |
+| keycloak.secrets.apiPrincipalSync.fullnameOverride | string | `""` |  |
 | keycloak.secrets.postgres.enabled | bool | `true` |  |
 | minio.auth.existingSecret | string | `"{{ include \"..helper.objectStoreSecretName\" . }}"` |  |
 | minio.auth.rootPasswordSecretKey | string | `"OBJECT_STORE_SECRET_KEY"` |  |
@@ -357,6 +402,7 @@ helm upgrade -i lifecycle \
 | secrets.redis.fullnameOverride | string | `""` |  |
 | secrets.redis.redisPassword | string | `""` |  |
 | ui.config.apiUrl | string | `"https://app.example.com"` |  |
+| ui.config.appUrl | string | `""` | Public UI URL used for links in API responses; defaults to https://<uiSubDomain>.<domain>. |
 | ui.config.authBaseUrl | string | `"https://app.example.com"` |  |
 | ui.config.authClientId | string | `"lifecycle-ui"` |  |
 | ui.config.authClientSecret.secretKeyRef.key | string | `"clientSecret"` |  |

@@ -46,6 +46,36 @@ helm upgrade -i {{ template "chart.name" . }} \
   --create-namespace
 ```
 
+## Lifecycle API Keycloak Credentials
+
+The bundled Keycloak chart creates two separate service-account credentials.
+The Lifecycle web Deployment receives only
+`lifecycle-api-keycloak-management`; the worker receives only
+`lifecycle-api-principal-sync`. Neither credential is exposed through a shared
+`envFrom`, the gateway, or Lifecycle UI. The Keycloak server pod receives
+neither secret; the realm-import Job reads both through `KeycloakRealmImport`
+placeholders to substitute them into the two clients at first import.
+
+`KeycloakRealmImport` creates both clients only when the realm is first
+imported. It does not reconcile an existing realm. For an existing
+installation, create a missing `lifecycle-api-keycloak-management` confidential
+service-account client externally with direct assignments only for
+`manage-clients` and `manage-realm`, and make its secret match the configured
+Kubernetes Secret before enabling MCP. Lifecycle API owns all feature-specific
+Keycloak configuration.
+
+The chart preserves the distinguishing Secret-name suffixes for long release
+names and rejects any configuration that resolves both credentials to the same
+Secret key. External Secrets may hold both credentials under distinct keys.
+Chart-generated credential Secrets use
+`helm.sh/resource-policy: keep`, so uninstalling the release does not remove
+them. If the Keycloak realm is retained, revoke or delete the matching Keycloak
+clients before deleting the retained Secrets. Rotate a credential by updating
+the Keycloak client and Kubernetes Secret as one coordinated operation, then
+restart only its owning Deployment (`web` for management, `worker` for
+principal sync). Because realm import is one-shot, changing a Helm value alone
+does not rotate an existing Keycloak client.
+
 {{ template "chart.requirementsSection" . }}
 
 {{ template "chart.valuesSection" . }}

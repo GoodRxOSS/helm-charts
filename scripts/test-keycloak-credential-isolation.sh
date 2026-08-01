@@ -56,6 +56,55 @@ placeholder_secret_name() {
   '
 }
 
+configmap_data_value() {
+  local key=$1
+  awk -v key="${key}:" '
+    $1 == key { print $2; exit }
+  '
+}
+
+deployment_secret_ref() {
+  local env_name=$1
+  awk -v env_name="$env_name" '
+    /^---$/ {
+      kind = ""
+      deployment = ""
+      in_metadata = 0
+      want_secret_name = 0
+    }
+    /^kind: Deployment$/ {
+      kind = "Deployment"
+      next
+    }
+    kind == "Deployment" && /^metadata:$/ {
+      in_metadata = 1
+      next
+    }
+    kind == "Deployment" && in_metadata && /^  name:/ {
+      deployment = $2
+      in_metadata = 0
+      next
+    }
+    kind == "Deployment" && $1 == "-" && $2 == "name:" && $3 == env_name {
+      want_secret_name = 1
+      next
+    }
+    kind == "Deployment" && want_secret_name && $1 == "name:" {
+      gsub(/"/, "", $2)
+      print deployment "|" $2
+      exit
+    }
+  '
+}
+
+env_occurrence_count() {
+  local env_name=$1
+  awk -v env_name="$env_name" '
+    $1 == "-" && $2 == "name:" && $3 == env_name { count++ }
+    END { print count + 0 }
+  '
+}
+
 assert_distinct_suffixes() {
   local context=$1
   local management_name=$2
@@ -142,4 +191,90 @@ render_standalone shared-secret-distinct-keys \
   --set-string clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key=principalSyncSecret \
   >/dev/null
 
-printf 'Keycloak credential Secret isolation render tests passed.\n'
+umbrella_chart="$scratch_root/lifecycle"
+mkdir -p "$umbrella_chart"
+cp "$repo_root/charts/lifecycle/values.yaml" "$umbrella_chart/values.yaml"
+cp -R "$repo_root/charts/lifecycle/templates" "$umbrella_chart/templates"
+
+cat >"$umbrella_chart/Chart.yaml" <<'EOF'
+apiVersion: v2
+name: lifecycle
+description: Minimal dependency-free chart for credential isolation regression tests
+type: application
+version: 0.0.0-test
+appVersion: 0.0.0-test
+EOF
+
+cat >"$umbrella_chart/templates/test-credential-secret-names.yaml" <<'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-credential-secret-names
+data:
+  management: {{ include "..helper.apiKeycloakManagementSecretName" . | quote }}
+  principalSync: {{ include "..helper.apiPrincipalSyncSecretName" . | quote }}
+EOF
+
+render_umbrella() {
+  local release_name=$1
+  shift
+  helm template "$release_name" "$umbrella_chart" "$@"
+}
+
+for release_length in 48 49 53; do
+  release_name=$(repeat_a "$release_length")
+  rendered=$(render_umbrella "$release_name")
+
+  management_name=$(trim_yaml_scalar "$(
+    printf '%s\n' "$rendered" | configmap_data_value management
+  )")
+  principal_sync_name=$(trim_yaml_scalar "$(
+    printf '%s\n' "$rendered" | configmap_data_value principalSync
+  )")
+  assert_distinct_suffixes \
+    "umbrella release length ${release_length}" \
+    "$management_name" \
+    "$principal_sync_name"
+
+  management_ref=$(trim_yaml_scalar "$(
+    printf '%s\n' "$rendered" |
+      deployment_secret_ref KEYCLOAK_MANAGEMENT_CLIENT_SECRET
+  )")
+  principal_sync_ref=$(trim_yaml_scalar "$(
+    printf '%s\n' "$rendered" |
+      deployment_secret_ref KEYCLOAK_PRINCIPAL_SYNC_CLIENT_SECRET
+  )")
+  management_ref_count=$(
+    printf '%s\n' "$rendered" |
+      env_occurrence_count KEYCLOAK_MANAGEMENT_CLIENT_SECRET
+  )
+  principal_sync_ref_count=$(
+    printf '%s\n' "$rendered" |
+      env_occurrence_count KEYCLOAK_PRINCIPAL_SYNC_CLIENT_SECRET
+  )
+
+  [[ "$management_ref_count" == "1" ]] ||
+    fail "umbrella release length ${release_length}: management credential appeared in ${management_ref_count} Deployments"
+  [[ "$principal_sync_ref_count" == "1" ]] ||
+    fail "umbrella release length ${release_length}: principal-sync credential appeared in ${principal_sync_ref_count} Deployments"
+  [[ "$management_ref" == *-lifecycle-web"|${management_name}" ]] ||
+    fail "umbrella release length ${release_length}: management credential was not isolated to web (${management_ref})"
+  [[ "$principal_sync_ref" == *-lifecycle-worker"|${principal_sync_name}" ]] ||
+    fail "umbrella release length ${release_length}: principal-sync credential was not isolated to worker (${principal_sync_ref})"
+done
+
+if render_umbrella collision-check \
+  --set-string keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name=shared-api-credential \
+  --set-string keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name=shared-api-credential \
+  >/dev/null 2>&1; then
+  fail "umbrella chart accepted one Secret identity for both API credentials"
+fi
+
+render_umbrella shared-secret-distinct-keys \
+  --set-string keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name=shared-api-credential \
+  --set-string keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.key=managementSecret \
+  --set-string keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name=shared-api-credential \
+  --set-string keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key=principalSyncSecret \
+  >/dev/null
+
+printf 'Credential Secret isolation render tests passed.\n'
