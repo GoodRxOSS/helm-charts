@@ -15,6 +15,7 @@
 global:
   domain: example.com
   appSubDomain: app
+  uiSubDomain: ui
   scope: core
   image:
     repository: lifecycleoss/app
@@ -443,6 +444,30 @@ keycloak:
     lifecycleUi:
       url: https://ui.example.com
 
+    # Lifecycle web receives this credential for the private, allowlisted
+    # Keycloak-management adapter.
+    lifecycleApiKeycloakManagement:
+      # -- Inject the Keycloak-management credential only into Lifecycle web.
+      enabled: true
+      # -- Keycloak client ID for Lifecycle web.
+      clientId: lifecycle-api-keycloak-management
+      clientSecret:
+        secretKeyRef:
+          name:
+          key:
+
+    # Lifecycle worker receives this separate read-only credential for
+    # principal status synchronization.
+    lifecycleApiPrincipalSync:
+      # -- Inject the read-only principal-sync credential only into Lifecycle worker.
+      enabled: true
+      # -- Keycloak client ID for Lifecycle worker principal synchronization.
+      clientId: lifecycle-api-principal-sync
+      clientSecret:
+        secretKeyRef:
+          name:
+          key:
+
   githubIdp:
     githubJsonFormat: true
     defaultScope: "repo user:email"
@@ -458,6 +483,16 @@ keycloak:
   secrets:
     postgres:
       enabled: true
+    apiKeycloakManagement:
+      # -- Create the lookup-stable Keycloak-management client Secret.
+      enabled: true
+      fullnameOverride: ""
+      clientSecret:
+    apiPrincipalSync:
+      # -- Create the lookup-stable principal-sync client Secret.
+      enabled: true
+      fullnameOverride: ""
+      clientSecret:
 
   keycloakPostgres:
     enabled: true
@@ -479,6 +514,8 @@ ui:
   enabled: true
   nameOverride: ui
   config:
+    # -- Public UI URL used for links in API responses; defaults to https://<uiSubDomain>.<domain>.
+    appUrl: ""
     apiUrl: https://app.example.com
     authBaseUrl: https://app.example.com
     authRealm: lifecycle
