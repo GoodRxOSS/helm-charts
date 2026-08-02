@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.11](https://img.shields.io/badge/Version-0.9.11-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.0](https://img.shields.io/badge/AppVersion-0.2.0-informational?style=flat-square)
+![Version: 0.9.12](https://img.shields.io/badge/Version-0.9.12-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.1](https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.11 \
+  --version 0.9.12 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -85,7 +85,7 @@ does not rotate an existing Keycloak client.
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
 | https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.6 |
-| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.4 |
+| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.5 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
