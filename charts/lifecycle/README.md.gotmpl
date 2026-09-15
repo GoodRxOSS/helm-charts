@@ -46,6 +46,23 @@ helm upgrade -i {{ template "chart.name" . }} \
   --create-namespace
 ```
 
+## Private Sites release and configuration
+
+The umbrella packages its matching sibling UI chart using a local, version-pinned
+dependency. Run `helm dependency update charts/lifecycle` from this repository
+before packaging; the published umbrella archive includes the UI dependency.
+
+Private Sites requires compatible core and UI images. Chart versions do not prove
+image availability; select released ACL-capable image tags before enablement.
+Configure both `sitesPrivate.*` for core and `ui.sitesPrivate.*` for the bundled UI.
+Set `sitesPrivate.uiOAuthClientId` to the UI `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID`.
+For a separately installed UI chart, use that chart's top-level `sitesPrivate.*`.
+Retain configured bridge and directory credentials when disabling the flags so
+existing browser logins can revoke and public Sites management remains available.
+See the [release checks](../../docs/sites-private-release-check.md) for the complete
+values example, packaging order, required identity/storage prerequisites, and
+known optional MinIO chart limitation.
+
 ## Lifecycle API Keycloak Credentials
 
 The bundled Keycloak chart creates two separate service-account credentials.

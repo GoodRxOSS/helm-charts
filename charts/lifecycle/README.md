@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.12](https://img.shields.io/badge/Version-0.9.12-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.1](https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square)
+![Version: 0.9.13](https://img.shields.io/badge/Version-0.9.13-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.1](https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,11 +40,28 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.12 \
+  --version 0.9.13 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
 ```
+
+## Private Sites release and configuration
+
+The umbrella packages its matching sibling UI chart using a local, version-pinned
+dependency. Run `helm dependency update charts/lifecycle` from this repository
+before packaging; the published umbrella archive includes the UI dependency.
+
+Private Sites requires compatible core and UI images. Chart versions do not prove
+image availability; select released ACL-capable image tags before enablement.
+Configure both `sitesPrivate.*` for core and `ui.sitesPrivate.*` for the bundled UI.
+Set `sitesPrivate.uiOAuthClientId` to the UI `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID`.
+For a separately installed UI chart, use that chart's top-level `sitesPrivate.*`.
+Retain configured bridge and directory credentials when disabling the flags so
+existing browser logins can revoke and public Sites management remains available.
+See the [release checks](../../docs/sites-private-release-check.md) for the complete
+values example, packaging order, required identity/storage prerequisites, and
+known optional MinIO chart limitation.
 
 ## Lifecycle API Keycloak Credentials
 
@@ -80,12 +97,12 @@ does not rotate an existing Keycloak client.
 
 | Repository | Name | Version |
 |------------|------|---------|
+| file://../lifecycle-ui | ui(lifecycle-ui) | 0.3.6 |
 | https://andrcuns.github.io/charts | buildkit(buildkit-service) | 1.4.0 |
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
 | https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.6 |
-| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.5 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
@@ -401,6 +418,16 @@ does not rotate an existing Keycloak client.
 | secrets.redis.enabled | bool | `true` |  |
 | secrets.redis.fullnameOverride | string | `""` |  |
 | secrets.redis.redisPassword | string | `""` |  |
+| sitesPrivate.bridgeSecret.key | string | `"sitesBrowserBridgeSecret"` |  |
+| sitesPrivate.bridgeSecret.name | string | `""` |  |
+| sitesPrivate.directory.clientId | string | `"lifecycle-sites-directory"` |  |
+| sitesPrivate.directory.secretKey | string | `"clientSecret"` |  |
+| sitesPrivate.directory.secretName | string | `""` |  |
+| sitesPrivate.enabled | bool | `false` |  |
+| sitesPrivate.gatewayHttps | bool | `false` |  |
+| sitesPrivate.trustedProxyAddresses | string | `""` |  |
+| sitesPrivate.uiOAuthClientId | string | `""` |  |
+| sitesPrivate.uiOrigin | string | `""` |  |
 | ui.config.apiUrl | string | `"https://app.example.com"` |  |
 | ui.config.appUrl | string | `""` | Public UI URL used for links in API responses; defaults to https://<uiSubDomain>.<domain>. |
 | ui.config.authBaseUrl | string | `"https://app.example.com"` |  |
@@ -410,3 +437,8 @@ does not rotate an existing Keycloak client.
 | ui.config.authRealm | string | `"lifecycle"` |  |
 | ui.enabled | bool | `true` |  |
 | ui.nameOverride | string | `"ui"` |  |
+| ui.sitesPrivate.apiInternalUrl | string | `""` |  |
+| ui.sitesPrivate.bridgeSecret.key | string | `"sitesBrowserBridgeSecret"` |  |
+| ui.sitesPrivate.bridgeSecret.name | string | `""` |  |
+| ui.sitesPrivate.enabled | bool | `false` |  |
+| ui.sitesPrivate.uiOrigin | string | `""` |  |

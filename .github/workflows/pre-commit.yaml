@@ -23,4 +23,7 @@ jobs:
       - name: Verify Keycloak credential Secret isolation
         run: bash scripts/test-keycloak-credential-isolation.sh
 
+      - name: Verify Sites private configuration
+        run: bash scripts/test-sites-private-config.sh
+
       - uses: pre-commit/action@v3.0.1

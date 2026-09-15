@@ -14,6 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 
+{{- if and .Values.sitesPrivate.enabled (not .Values.components.gateway.enabled) }}
+{{- fail "sitesPrivate requires the authorization-capable gateway component" }}
+{{- end }}
+{{- if .Values.sitesPrivate.enabled }}
+{{- $_ := required "sitesPrivate.uiOrigin is required" .Values.sitesPrivate.uiOrigin }}
+{{- $_ := required "sitesPrivate.bridgeSecret.name is required" .Values.sitesPrivate.bridgeSecret.name }}
+{{- $_ := required "sitesPrivate.directory.secretName is required" .Values.sitesPrivate.directory.secretName }}
+{{- $_ := required "sitesPrivate.uiOAuthClientId is required" .Values.sitesPrivate.uiOAuthClientId }}
+{{- end }}
 {{- range $name, $component := .Values.components }}
 {{- if $component.enabled }}
 ---
@@ -157,6 +166,42 @@ spec:
                 secretKeyRef:
                   name: {{ tpl ($.Values.keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name | default (include "..helper.apiPrincipalSyncSecretName" $)) $ | quote }}
                   key: {{ $.Values.keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key | default "clientSecret" | quote }}
+            {{- end }}
+            {{- if or (eq $name "web") (eq $name "gateway") }}
+            {{- if $.Values.sitesPrivate.enabled }}
+            - name: SITES_PRIVATE_ENABLED
+              value: "true"
+            {{- end }}
+            {{- if $.Values.sitesPrivate.uiOrigin }}
+            - name: SITES_UI_ORIGIN
+              value: {{ required "sitesPrivate.uiOrigin is required" $.Values.sitesPrivate.uiOrigin | quote }}
+            {{- end }}
+            {{- if $.Values.sitesPrivate.uiOAuthClientId }}
+            - name: SITES_UI_OAUTH_CLIENT_ID
+              value: {{ $.Values.sitesPrivate.uiOAuthClientId | quote }}
+            {{- end }}
+            {{- if $.Values.sitesPrivate.bridgeSecret.name }}
+            - name: SITES_BROWSER_BRIDGE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "sitesPrivate.bridgeSecret.name is required" $.Values.sitesPrivate.bridgeSecret.name | quote }}
+                  key: {{ $.Values.sitesPrivate.bridgeSecret.key | quote }}
+            {{- end }}
+            {{- if $.Values.sitesPrivate.directory.secretName }}
+            - name: KEYCLOAK_PRINCIPAL_SYNC_CLIENT_ID
+              value: {{ $.Values.sitesPrivate.directory.clientId | quote }}
+            - name: KEYCLOAK_PRINCIPAL_SYNC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "sitesPrivate.directory.secretName is required" $.Values.sitesPrivate.directory.secretName | quote }}
+                  key: {{ $.Values.sitesPrivate.directory.secretKey | quote }}
+            {{- end }}
+            {{- if $.Values.sitesPrivate.gatewayHttps }}
+            - name: SITES_GATEWAY_HTTPS
+              value: "true"
+            {{- end }}
+            - name: SITES_TRUSTED_PROXY_ADDRESSES
+              value: {{ $.Values.sitesPrivate.trustedProxyAddresses | quote }}
             {{- end }}
             {{- range $.Values.global.env }}
             - name: {{ .name }}

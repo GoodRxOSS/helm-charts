@@ -142,3 +142,14 @@ config:
     secretKeyRef:
       name:  # fallback to "{{ include "lifecycle-ui.helper.authSecretName" . }}"
       key:  # default "authClientSecret"
+
+# Enable only after the matching core/gateway release is ready. The secret value
+# must match core sitesPrivate.bridgeSecret; it never enters a ConfigMap/browser.
+sitesPrivate:
+  # Preserve secret/origin/API values during disable/rollback: existing logins must revoke.
+  enabled: false
+  uiOrigin: ""
+  apiInternalUrl: ""
+  bridgeSecret:
+    name: ""
+    key: sitesBrowserBridgeSecret
