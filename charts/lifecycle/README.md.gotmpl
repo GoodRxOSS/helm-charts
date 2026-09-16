@@ -61,9 +61,6 @@ set `sitesPrivate.uiOrigin` explicitly for a standalone UI. Human Sites manageme
 and new grants reuse the existing read-only `lifecycleApiPrincipalSync` credential.
 Keep authorization-capable gateways and principal-status credentials during a
 forward rollback; disabling private access must never expose existing private data.
-See the [release checks](../../docs/sites-private-release-check.md) for the complete
-values example, packaging order, required identity/storage prerequisites, and
-known optional MinIO chart limitation.
 
 ## Lifecycle API Keycloak Credentials
 
