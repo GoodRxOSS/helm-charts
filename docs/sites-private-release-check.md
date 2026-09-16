@@ -7,13 +7,18 @@ The implementation candidate is `lifecycle` chart **0.9.13**, bundling `lifecycl
 1. Build and validate the matching core and UI image candidates. Select their actual released tags for `global.image.tag` and `ui.image.tag`; check any `components.<name>.image.tag` overrides, which take precedence for core workloads. Do not enable private Sites while an old web, gateway, worker, or UI image still participates in Sites operations.
 2. From a checkout containing both sibling charts, run `helm dependency update charts/lifecycle`. The exact `lifecycle-ui` version 0.3.6 resolves through `file://../lifecycle-ui`; this packages the local matching UI templates into the umbrella archive. `Chart.lock` and downloaded `charts/` contents are ignored according to repository convention. Regenerate the lock/dependency packages and retain their digest in release evidence.
 3. Lint and render the full umbrella and standalone UI with Helm 3.14.0, matching CI. Package both charts only after the matching-image and runtime checks pass. Repository release automation resolves all dependencies before publishing charts, so a same-commit HTTP reference to an unpublished UI version would fail. The local sibling dependency removes that ordering race; consumers of the published umbrella archive need no sibling checkout.
-4. Complete enabled acceptance in an isolated deployment, then use the coordinated production barrier below. Do not start any new core image against production before that barrier. Startup runs `pnpm db:migrate`, even when both private flags are disabled. A normal image-only rolling upgrade leaves incompatible legacy writers running during migration.
+4. Complete enabled acceptance in an isolated deployment, then use the coordinated production barrier below. Do not start any new core image against production before that barrier. Startup runs `pnpm db:migrate`, even when the private readiness flag is disabled. A normal image-only rolling upgrade leaves incompatible legacy writers running during migration.
 
 No publication, deployment, or image tag fabrication is performed by editing this source candidate.
 
 ## Configuration paths
 
-For the umbrella chart, core settings live at top-level `sitesPrivate`; bundled UI settings live at `ui.sitesPrivate`. Setting only core values does not automatically configure UI. The same bridge Secret value must be available to both workloads in their respective namespaces. This is a dedicated random secret of at least 32 bytes, separate from NextAuth and preview credentials.
+Core settings live at top-level `sitesPrivate`. The UI uses its existing NextAuth
+session, `NEXTAUTH_URL` and `NEXT_PUBLIC_API_URL`, populated by `ui.config.appUrl`
+and `ui.config.apiUrl`. Core derives `SITES_UI_ORIGIN` from the bundled UI's app URL,
+falling back to `https://<global.uiSubDomain>.<global.domain>`. Set
+`sitesPrivate.uiOrigin` explicitly for a standalone UI. No Sites bridge secret,
+separate UI flag, UI OAuth-client binding or directory client is required.
 
 ```yaml
 global:
@@ -24,43 +29,74 @@ components:
     enabled: true
 sitesPrivate:
   enabled: false
-  uiOAuthClientId: YOUR_UI_KEYCLOAK_CLIENT_ID
-  uiOrigin: https://ui.example.com
-  bridgeSecret:
-    name: sites-browser-bridge
-    key: sitesBrowserBridgeSecret
-  directory:
-    clientId: lifecycle-sites-directory
-    secretName: sites-directory
-    secretKey: clientSecret
 ui:
   image:
     tag: YOUR_VALIDATED_UI_IMAGE_TAG
-  sitesPrivate:
-    enabled: false
-    uiOrigin: https://ui.example.com
-    apiInternalUrl: http://YOUR_CORE_WEB_SERVICE
-    bridgeSecret:
-      name: sites-browser-bridge
-      key: sitesBrowserBridgeSecret
+  config:
+    appUrl: https://ui.example.com
+    apiUrl: https://api.example.com
+keycloak:
+  clients:
+    lifecycleApiPrincipalSync:
+      enabled: true
 ```
 
-The example keeps both flags disabled for production preparation. Enable both only in the isolated acceptance deployment or at the production enablement step. `uiOAuthClientId` must equal the UI's `NEXT_PUBLIC_KEYCLOAK_CLIENT_ID`.
+The example keeps private access disabled for production preparation. Enable it
+only in the isolated acceptance deployment or at the production enablement step.
+The canonical UI and API URLs must be reachable by the UI server as well as the
+browser; validate the existing API route and reverse-proxy configuration.
+For a standalone UI chart, use its top-level `config.appUrl` and `config.apiUrl`,
+and set the matching `sitesPrivate.uiOrigin` on core.
 
-The web Service uses `components.web.service.port`, which defaults to 80. Its default name is `<release>-lifecycle-web` (or `<release>-web` when the release name contains `lifecycle`). `fullnameOverride`, `nameOverride`, or `components.web.fullnameOverride` can change it. Read the rendered Service name and port; use that Service DNS name, including its namespace for a separately installed UI. Do not use the pod/container port as the Service port.
+Core must have authentication enabled and a matching verified issuer. Human Sites
+management and new grants reuse the existing read-only
+`keycloak.clients.lifecycleApiPrincipalSync` client and Secret contract. The chart
+injects `KEYCLOAK_PRINCIPAL_SYNC_CLIENT_ID` and `KEYCLOAK_PRINCIPAL_SYNC_CLIENT_SECRET`
+into worker, web and gateway whenever that bundled identity contract is enabled,
+including when private access is off. Optional external Secret name/key overrides
+retain their existing behavior. The privileged management client stays web-only
+and must never substitute for the read-only client. For external Keycloak
+(`keycloak.enabled=false`), supply the same principal-status environment variables
+through the existing workload environment/Secret configuration.
 
-For a standalone UI chart, remove the outer `ui:` level. Core must have authentication enabled, a matching verified issuer, and a separately provisioned read-only directory client. Directory credentials are required for all human Sites management, including public Sites with private creation disabled. The same confidential directory client must authenticate token introspection at `<issuer>/protocol/openid-connect/token/introspect`. Verify active, revoked and disabled-user credentials, including CLI and dynamically registered MCP offline tokens. Keep only `view-users`; no client search or client UUID mapping is required. The chart references existing Secrets; it does not reconcile a directory client into an existing Keycloak realm. Keep management, worker principal-sync, and Sites directory credentials separate.
+The bundled client's existing `view-users` / `query-users` roles are unchanged.
+Verify user status, sessions, composite-role/group reads and incoming-token
+introspection against the selected Keycloak version, including long-lived
+personal keys, CLI tokens and dynamically registered MCP offline tokens. Probe
+these permissions with the existing read-only client before release. Realm import
+is one-shot; an existing realm may need its existing client/Secret reconciled
+externally. No additional Sites client is provisioned by this chart.
+
+Private asset reads use a Site-only grant plus current Site state, without
+per-asset identity-provider calls or retaining the original OAuth bearer. Grants
+expire after at most 300 seconds and no later than the authorizing JWT. The chart's
+Keycloak realm specifies a 300-second token default; verify actual issued tokens
+and any existing-realm overrides. An authenticated, authorized user can renew with
+a valid JWT, including one refreshed through the ordinary UI session. A Site
+cookie alone cannot extend authorization beyond its JWT deadline.
+
+Local logout clears the UI session and stops its ordinary refresh path. It does
+not immediately revoke issued JWTs/grants, other logins or Keycloak SSO. Account
+or token revocation may take until the issued viewing grant's deadline to stop
+existing viewing access; newly issued grants and management still check identity.
+Site deletion, expiration, ownership/revision and public-to-private host retirement
+are checked before bytes on each request. Loaded bytes cannot be recalled.
 
 Use an HTTPS content domain with a different registrable domain from the UI and host-only content cookies. Storage must remain private, with no public bucket/object URL bypass. Supply the Sites storage/domain configuration through the application's supported admin configuration. Route all content through authorization-capable gateways.
 
-When disabling private creation or performing a forward rollback, preserve the configured core/UI bridge Secret, UI origin, internal API URL, and directory values for existing login revocation and human public-site access. Disable the flags; do not remove their credential configuration prematurely. Disabled private readiness stops all human uploads, including explicitly public uploads; service-key public uploads remain available when Sites is enabled.
+When disabling private creation or performing a forward rollback, retain the
+ACL-capable core/gateway images, schema, trusted UI origin and existing principal-
+status credential configuration. Disable the core flag; private reads must fail
+closed while human public-Site management retains identity checks. Disabled
+private readiness stops all human uploads, including explicitly public uploads;
+service-key public uploads remain available when Sites is enabled.
 
 ## Coordinated production barrier
 
 Schedule a maintenance window. This procedure temporarily stops all core API, gateway, and worker workloads; review effects on queued jobs and other product tasks. Keep PostgreSQL, Redis, object storage and Keycloak available. Suspend GitOps, autoscalers and other reconcilers that could restore old replicas. Inventory external/all-mode writers, gateways and direct storage paths as well as this Helm release.
 
-1. Test the exact image/chart set in an isolated deployment with **both flags enabled**. Verify owner access, unrelated-user denial, disabled-user and terminated-session denial, publication, privatization with old-host retirement, expiration, deletion and logout. Complete the directory capability probe before scheduling production migration.
-2. Back up the production database, object storage, configuration and Secrets as one recovery checkpoint. Provision and verify the directory account and bridge configuration before replacing existing workloads. Resolve the directory prerequisite in [the configuration guide](https://uselifecycle.com/docs/operations/configuration#sites-directory-release-prerequisite).
+1. Test the exact image/chart set in an isolated deployment with **private access enabled**. Verify owner access and unrelated/anonymous denial for HTML and assets; current identity checks for new grants/management; publication, old-host retirement, expiration and deletion. Test JWT-bounded grants, authenticated sliding renewal, local logout/refresh races and account-switch isolation. Confirm issued grants may survive logout/account revocation until their deadline. Complete the read-only principal-status capability probe before scheduling production migration.
+2. Back up the production database, object storage, configuration and Secrets as one recovery checkpoint. Verify the existing read-only principal-status account and canonical UI/API routing before replacing existing workloads.
 3. Fence Sites requests at every external and internal entry point, including service-key/automation uploads and content hosts. Drain requests. Stop external legacy writers and gateways. Keep this fence until the compatible deployment passes its checks.
 4. Apply a reviewed maintenance values file that disables every core component. Use the **currently installed chart and image values**, not the new image. The standard component names are `web`, `worker`, and `gateway`; include any custom components. For example:
 
@@ -74,9 +110,6 @@ Schedule a maintenance window. This procedure temporarily stops all core API, ga
        enabled: false
    sitesPrivate:
      enabled: false
-   ui:
-     sitesPrivate:
-       enabled: false
    ```
 
    ```sh
@@ -86,7 +119,7 @@ Schedule a maintenance window. This procedure temporarily stops all core API, ga
    ```
 
    Verify all inventoried old core pods have terminated and no external writer or gateway remains. Do not use `replicaCount: 0`: this chart's defaulting renders it as one replica. Do not use automatic Helm rollback across the migration.
-5. Render the candidate with reviewed production values, both flags disabled, only `web` enabled, and `web.deployment.replicaCount: 1`. Keep `worker` and `gateway` disabled in a separate `FIRST_WEB_VALUES.yaml`:
+5. Render the candidate with reviewed production values, the core flag disabled, only `web` enabled, and `web.deployment.replicaCount: 1`. Keep `worker` and `gateway` disabled in a separate `FIRST_WEB_VALUES.yaml`:
 
    ```yaml
    components:
@@ -100,9 +133,6 @@ Schedule a maintenance window. This procedure temporarily stops all core API, ga
        enabled: false
    sitesPrivate:
      enabled: false
-   ui:
-     sitesPrivate:
-       enabled: false
    ```
 
    Start that single new web instance:
@@ -113,10 +143,10 @@ Schedule a maintenance window. This procedure temporarily stops all core API, ga
    ```
 
    Verify startup completed the access-control migration successfully before starting any other core instance. Verify migrated rows remain public and unassigned through the reviewed migration checks. The first instance runs the migration; later compatible startups find it already applied. Abort with traffic fenced if migration or readiness fails.
-6. Apply the complete candidate values with all intended components restored and both flags still disabled. Verify every API, worker, gateway and UI runs its selected compatible image. Verify directory reads and public-site management, private-content denial, internal bridge connectivity, DNS/TLS and absence of storage bypass. Replace incompatible CLI clients and identity-unbound personal keys. Disabled-state checks do not exercise private access.
-7. Enable `sitesPrivate.enabled` and `ui.sitesPrivate.enabled` together while the traffic fence remains. Repeat the enabled access tests through a restricted operator test path. If they pass, reopen traffic and resume reconcilers with the compatible desired state. If they fail, disable both flags and verify private-content denial before deciding whether to reopen public traffic.
+6. Apply the complete candidate values with all intended components restored and the core flag still disabled. Verify every API, worker, gateway and UI runs its selected compatible image. Verify principal-status reads and public-site management, private-content denial, canonical UI/API routing, DNS/TLS and absence of storage bypass. Replace incompatible CLI clients and identity-unbound personal keys. Disabled-state checks do not exercise private access.
+7. Enable `sitesPrivate.enabled` while the traffic fence remains. Repeat the enabled access tests through a restricted operator test path. If they pass, reopen traffic and resume reconcilers with the compatible desired state. If they fail, disable the core flag and verify private-content denial before deciding whether to reopen public traffic.
 
-Forward recovery retains the ACL-capable core/gateway images, schema, UI OAuth client ID, origin and directory/bridge credentials. Disabling flags does not make private data public and does not permit legacy binaries to return. Restore the complete pre-upgrade checkpoint only in isolation under the tested recovery procedure.
+Forward recovery retains the ACL-capable core/gateway images, schema, trusted UI origin and read-only principal-status credentials. Disabling private access does not make private data public and does not permit legacy binaries to return. Restore the complete pre-upgrade checkpoint only in isolation under the tested recovery procedure.
 
 ## Full-chart validation
 
@@ -131,7 +161,22 @@ helm template candidate charts/lifecycle-ui -f STANDALONE_UI_VALUES.yaml
 
 The Keycloak capability argument describes a required installed operator CRD for offline rendering. Rendering without it correctly fails when bundled Keycloak is enabled. It does not install or validate the CRD on a real cluster.
 
-Validate core web/gateway and UI receive their private flag and bridge reference; only web/gateway receive the separate directory reference. Repeat with both flags disabled while retaining configuration and verify credential references remain. Validate missing enabled-state credentials and gateway disablement fail rendering. These checks complement runtime browser logout, owner/nonowner, URL retirement, object-storage isolation, and migration acceptance.
+Validate only core web/gateway receive the private flag, trusted UI origin and proxy
+settings. Worker/web/gateway receive the shared read-only principal-status Secret;
+management remains web-only, and the UI receives neither credential. Repeat with
+the core flag disabled and verify principal-status references remain. Validate
+custom client/Secret key overrides, disabled/missing client configuration, gateway
+disablement and existing bundled/standalone UI canonical URLs. Run the focused
+render regressions:
+
+```sh
+bash scripts/test-sites-private-config.sh
+bash scripts/test-keycloak-credential-isolation.sh
+```
+
+These checks complement runtime owner/nonowner/anonymous access, bounded/sliding
+renewal, logout races, URL retirement, storage isolation and migration acceptance.
+Helm renders cannot establish those runtime properties.
 
 ## Existing optional MinIO limitation
 

@@ -92,7 +92,7 @@ deployment_secret_ref() {
     kind == "Deployment" && want_secret_name && $1 == "name:" {
       gsub(/"/, "", $2)
       print deployment "|" $2
-      exit
+      want_secret_name = 0
     }
   '
 }
@@ -255,12 +255,12 @@ for release_length in 48 49 53; do
 
   [[ "$management_ref_count" == "1" ]] ||
     fail "umbrella release length ${release_length}: management credential appeared in ${management_ref_count} Deployments"
-  [[ "$principal_sync_ref_count" == "1" ]] ||
+  [[ "$principal_sync_ref_count" == "2" ]] ||
     fail "umbrella release length ${release_length}: principal-sync credential appeared in ${principal_sync_ref_count} Deployments"
   [[ "$management_ref" == *-lifecycle-web"|${management_name}" ]] ||
     fail "umbrella release length ${release_length}: management credential was not isolated to web (${management_ref})"
-  [[ "$principal_sync_ref" == *-lifecycle-worker"|${principal_sync_name}" ]] ||
-    fail "umbrella release length ${release_length}: principal-sync credential was not isolated to worker (${principal_sync_ref})"
+  [[ "$principal_sync_ref" == "${release_name}-lifecycle-web|${principal_sync_name}"$'\n'"${release_name}-lifecycle-worker|${principal_sync_name}" ]] ||
+    fail "umbrella release length ${release_length}: principal-status credential was not confined to web and worker (${principal_sync_ref})"
 done
 
 if render_umbrella collision-check \

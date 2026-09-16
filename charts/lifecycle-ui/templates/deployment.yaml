@@ -1,7 +1,3 @@
-{{- if .Values.sitesPrivate.enabled }}
-{{- $_ := required "sitesPrivate.uiOrigin is required" .Values.sitesPrivate.uiOrigin }}
-{{- $_ := required "sitesPrivate.bridgeSecret.name is required" .Values.sitesPrivate.bridgeSecret.name }}
-{{- end }}
 {{- /*
 Copyright 2025 GoodRx, Inc.
 
@@ -105,25 +101,6 @@ spec:
                 secretKeyRef:
                   name: {{ tpl (.Values.config.authClientSecret.secretKeyRef.name | default (include "lifecycle-ui.helper.authSecretName" .)) . | quote }}
                   key: {{ .Values.config.authClientSecret.secretKeyRef.key | default "authClientSecret" | quote }}
-            {{- if .Values.sitesPrivate.enabled }}
-            - name: SITES_PRIVATE_ENABLED
-              value: "true"
-            {{- end }}
-            {{- if .Values.sitesPrivate.uiOrigin }}
-            - name: SITES_UI_ORIGIN
-              value: {{ required "sitesPrivate.uiOrigin is required" .Values.sitesPrivate.uiOrigin | quote }}
-            {{- end }}
-            {{- if .Values.sitesPrivate.bridgeSecret.name }}
-            - name: SITES_BROWSER_BRIDGE_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ required "sitesPrivate.bridgeSecret.name is required" .Values.sitesPrivate.bridgeSecret.name | quote }}
-                  key: {{ .Values.sitesPrivate.bridgeSecret.key | quote }}
-            {{- end }}
-            {{- if .Values.sitesPrivate.apiInternalUrl }}
-            - name: SITES_API_INTERNAL_URL
-              value: {{ .Values.sitesPrivate.apiInternalUrl | quote }}
-            {{- end }}
             {{- with .Values.deployment.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

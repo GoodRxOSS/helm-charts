@@ -456,12 +456,12 @@ keycloak:
           name:
           key:
 
-    # Lifecycle worker receives this separate read-only credential for
-    # principal status synchronization.
+    # Worker, web and gateway share this read-only credential for principal
+    # synchronization and Sites mint/management status checks.
     lifecycleApiPrincipalSync:
-      # -- Inject the read-only principal-sync credential only into Lifecycle worker.
+      # -- Inject the read-only principal-status credential into worker, web and gateway.
       enabled: true
-      # -- Keycloak client ID for Lifecycle worker principal synchronization.
+      # -- Keycloak client ID for read-only principal status checks.
       clientId: lifecycle-api-principal-sync
       clientSecret:
         secretKeyRef:
@@ -513,16 +513,6 @@ keycloak:
 ui:
   enabled: true
   nameOverride: ui
-  # Configure both sitesPrivate (core) and ui.sitesPrivate (bundled UI).
-  # Use compatible ACL-capable core and UI image tags before enabling either.
-  sitesPrivate:
-    enabled: false
-    uiOrigin: ""
-    apiInternalUrl: ""
-    # Same Secret value as sitesPrivate.bridgeSecret; retain during flag rollback.
-    bridgeSecret:
-      name: ""
-      key: sitesBrowserBridgeSecret
   config:
     # -- Public UI URL used for links in API responses; defaults to https://<uiSubDomain>.<domain>.
     appUrl: ""
@@ -574,31 +564,13 @@ minio:
       cpu: 100m
       memory: 256Mi
 
-# Private Sites stays disabled until all gateways, storage, DNS/TLS, identity status,
-# UI logout and the bridge have passed the rollout acceptance checks.
+# Enable only after compatible images, gateway enforcement, storage, DNS/TLS and
+# identity checks pass the release checklist. Disabling never exposes private data.
 sitesPrivate:
-  # Disabling stops private access/creation, but configured bridge and directory
-  # credentials remain mounted for logout and public-site management.
   enabled: false
+  # Canonical trusted UI origin. Bundled UI defaults to ui.config.appUrl or
+  # https://<global.uiSubDomain>.<global.domain>; required for a standalone UI.
   uiOrigin: ""
-  # Must match the UI NEXT_PUBLIC_KEYCLOAK_CLIENT_ID, including standalone UIs.
-  uiOAuthClientId: ""
   # Exact proxy IPs (comma-separated) that append the real peer to X-Forwarded-For.
   # Blank ignores that header. Never trust arbitrary client-supplied forwarding.
   trustedProxyAddresses: ""
-  # Force HTTPS URL generation for local .localhost TLS acceptance fixtures.
-  # Non-local production domains already generate HTTPS URLs.
-  gatewayHttps: false
-  # Same >=32-byte random value as lifecycle-ui.sitesPrivate.bridgeSecret.
-  # Provision externally; never reuse the NextAuth or preview-grant secret.
-  bridgeSecret:
-    name: ""
-    key: sitesBrowserBridgeSecret
-  # Required for ALL human Sites management, including public Sites when private
-  # creation is disabled. A separately provisioned read-only directory client.
-  # Do not reuse management or worker-sync credentials. Verify user, session,
-  # composite-role and group reads with the selected Keycloak version.
-  directory:
-    clientId: lifecycle-sites-directory
-    secretName: ""
-    secretKey: clientSecret

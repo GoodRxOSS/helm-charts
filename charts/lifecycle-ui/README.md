@@ -179,8 +179,3 @@ deployment:
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
-| sitesPrivate.apiInternalUrl | string | `""` |  |
-| sitesPrivate.bridgeSecret.key | string | `"sitesBrowserBridgeSecret"` |  |
-| sitesPrivate.bridgeSecret.name | string | `""` |  |
-| sitesPrivate.enabled | bool | `false` |  |
-| sitesPrivate.uiOrigin | string | `""` |  |
