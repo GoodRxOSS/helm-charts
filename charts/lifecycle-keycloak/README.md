@@ -102,7 +102,7 @@ This chart bootstraps two fixed, confidential service-account clients:
   `manage-clients` and `manage-realm` for the Lifecycle web process. Keycloak
   expands the built-in `manage-realm` composites in its token.
 * `lifecycle-api-principal-sync` is directly assigned only `view-users` and
-  `query-users` for Lifecycle worker, web and gateway principal-status checks.
+  `query-users` for Lifecycle worker and web principal-status checks.
   On Keycloak 26.4.7, `query-users`
   also adds its built-in `query-groups` composite to the token.
 
@@ -210,8 +210,7 @@ Chart-generated credential Secrets use
 them. If the Keycloak realm is retained, revoke or delete the matching clients
 before deleting the retained Secrets. Rotate a credential by updating its
 Keycloak client and Kubernetes Secret as one coordinated operation, then
-restart the consuming Lifecycle processes (`web` for management; `web`,
-`gateway` and `worker` for principal status). `KeycloakRealmImport` is one-shot,
+restart the consuming Lifecycle processes (`web` for management; `web` and `worker` for principal status). `KeycloakRealmImport` is one-shot,
 so changing a Helm value alone does not rotate an existing client.
 
 ---

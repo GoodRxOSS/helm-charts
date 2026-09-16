@@ -58,9 +58,8 @@ dependencies:
   # lifecycle-ui (Lifecycle UI) Dependency
   - name: lifecycle-ui
     alias: ui
-    version: 0.3.6
-    # Package the matching sibling candidate before either chart is published.
-    repository: "file://../lifecycle-ui"
+    version: 0.3.5
+    repository: "https://goodrxoss.github.io/helm-charts"
     condition: ui.enabled
 
   # MinIO (S3-compatible object store for log archival)

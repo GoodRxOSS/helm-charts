@@ -456,10 +456,10 @@ keycloak:
           name:
           key:
 
-    # Worker, web and gateway share this read-only credential for principal
+    # Worker and web share this read-only credential for principal
     # synchronization and Sites mint/management status checks.
     lifecycleApiPrincipalSync:
-      # -- Inject the read-only principal-status credential into worker, web and gateway.
+      # -- Inject the read-only principal-status credential into worker and web.
       enabled: true
       # -- Keycloak client ID for read-only principal status checks.
       clientId: lifecycle-api-principal-sync
@@ -563,14 +563,3 @@ minio:
     requests:
       cpu: 100m
       memory: 256Mi
-
-# Enable only after compatible images, gateway enforcement, storage, DNS/TLS and
-# identity checks pass the release checklist. Disabling never exposes private data.
-sitesPrivate:
-  enabled: false
-  # Canonical trusted UI origin. Bundled UI defaults to ui.config.appUrl or
-  # https://<global.uiSubDomain>.<global.domain>; required for a standalone UI.
-  uiOrigin: ""
-  # Exact proxy IPs (comma-separated) that append the real peer to X-Forwarded-For.
-  # Blank ignores that header. Never trust arbitrary client-supplied forwarding.
-  trustedProxyAddresses: ""

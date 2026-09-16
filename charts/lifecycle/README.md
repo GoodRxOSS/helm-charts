@@ -48,28 +48,24 @@ helm upgrade -i lifecycle \
 
 ## Private Sites release and configuration
 
-The umbrella packages its matching sibling UI chart using a local, version-pinned
-dependency. Run `helm dependency update charts/lifecycle` from this repository
-before packaging; the published umbrella archive includes the UI dependency.
-
 Private Sites requires compatible core and UI images. Chart versions do not prove
 image availability; select released ACL-capable image tags before enablement.
-Core `sitesPrivate.enabled` is the authoritative readiness switch. The bundled UI
-uses its existing `ui.config.appUrl` / `apiUrl` configuration and core capabilities.
-Core derives its trusted UI origin from that app URL (or the global UI domain);
-set `sitesPrivate.uiOrigin` explicitly for a standalone UI. Human Sites management
-and new grants reuse the existing read-only `lifecycleApiPrincipalSync` credential.
-Keep authorization-capable gateways and principal-status credentials during a
-forward rollback; disabling private access must never expose existing private data.
+Sites uses its existing core configuration setting for enablement.
+The chart already sets `LIFECYCLE_UI_URL` from `ui.config.appUrl`, or the global UI
+domain. Set `ui.config.appUrl` when the UI is installed separately. No additional
+Sites enablement, URL or proxy values are required. Human Sites management and new
+grants reuse the existing read-only `lifecycleApiPrincipalSync` credential.
+Install compatible core, gateway and UI images before enabling Sites. Keep the
+access-control-capable gateway and schema during rollback, or disable Sites.
 
 ## Lifecycle API Keycloak Credentials
 
 The bundled Keycloak chart creates two separate service-account credentials.
 Only the Lifecycle web Deployment receives
-`lifecycle-api-keycloak-management`. Worker, web and gateway receive the read-only
+`lifecycle-api-keycloak-management`. Worker and web receive the read-only
 `lifecycle-api-principal-sync` credential for principal synchronization and Sites
 mint/management status checks. Neither credential is exposed through a shared
-`envFrom` or Lifecycle UI. Private asset reads do not call the identity provider. The Keycloak server pod receives
+`envFrom`, the gateway, or Lifecycle UI. Private asset reads do not call the identity provider. The Keycloak server pod receives
 neither secret; the realm-import Job reads both through `KeycloakRealmImport`
 placeholders to substitute them into the two clients at first import.
 
@@ -89,20 +85,19 @@ Chart-generated credential Secrets use
 them. If the Keycloak realm is retained, revoke or delete the matching Keycloak
 clients before deleting the retained Secrets. Rotate a credential by updating
 the Keycloak client and Kubernetes Secret as one coordinated operation, then
-restart its consuming Deployments (`web` for management; `web`, `gateway` and
-`worker` for principal status). Because realm import is one-shot, changing a Helm value alone
+restart its consuming Deployments (`web` for management; `web` and `worker` for principal status). Because realm import is one-shot, changing a Helm value alone
 does not rotate an existing Keycloak client.
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../lifecycle-ui | ui(lifecycle-ui) | 0.3.6 |
 | https://andrcuns.github.io/charts | buildkit(buildkit-service) | 1.4.0 |
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
 | https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
 | https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
 | https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.6 |
+| https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.5 |
 | https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
 
 ## Values
@@ -319,7 +314,7 @@ does not rotate an existing Keycloak client.
 | keycloak.clients.lifecycleApiPrincipalSync.clientId | string | `"lifecycle-api-principal-sync"` | Keycloak client ID for read-only principal status checks. |
 | keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key | string | `nil` |  |
 | keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name | string | `nil` |  |
-| keycloak.clients.lifecycleApiPrincipalSync.enabled | bool | `true` | Inject the read-only principal-status credential into worker, web and gateway. |
+| keycloak.clients.lifecycleApiPrincipalSync.enabled | bool | `true` | Inject the read-only principal-status credential into worker and web. |
 | keycloak.clients.lifecycleUi.url | string | `"https://ui.example.com"` |  |
 | keycloak.enabled | bool | `true` |  |
 | keycloak.externalDatabase.database | string | `"keycloak"` |  |
@@ -418,9 +413,6 @@ does not rotate an existing Keycloak client.
 | secrets.redis.enabled | bool | `true` |  |
 | secrets.redis.fullnameOverride | string | `""` |  |
 | secrets.redis.redisPassword | string | `""` |  |
-| sitesPrivate.enabled | bool | `false` |  |
-| sitesPrivate.trustedProxyAddresses | string | `""` |  |
-| sitesPrivate.uiOrigin | string | `""` |  |
 | ui.config.apiUrl | string | `"https://app.example.com"` |  |
 | ui.config.appUrl | string | `""` | Public UI URL used for links in API responses; defaults to https://<uiSubDomain>.<domain>. |
 | ui.config.authBaseUrl | string | `"https://app.example.com"` |  |

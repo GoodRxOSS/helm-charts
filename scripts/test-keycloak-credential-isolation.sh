@@ -263,6 +263,21 @@ for release_length in 48 49 53; do
     fail "umbrella release length ${release_length}: principal-status credential was not confined to web and worker (${principal_sync_ref})"
 done
 
+# Enabling the content gateway must not distribute identity credentials to it.
+rendered=$(render_umbrella sites --set components.gateway.enabled=true)
+[[ "$(printf '%s\n' "$rendered" | deployment_secret_ref KEYCLOAK_PRINCIPAL_SYNC_CLIENT_SECRET)" == \
+  $'sites-lifecycle-web|sites-keycloak-api-principal-sync\nsites-lifecycle-worker|sites-keycloak-api-principal-sync' ]] ||
+  fail "read-only credential must stay confined to web and worker with gateway enabled"
+[[ "$(printf '%s\n' "$rendered" | env_occurrence_count KEYCLOAK_MANAGEMENT_CLIENT_SECRET)" == "1" ]] ||
+  fail "gateway must not receive the management credential"
+
+# Sites reuses the established UI URL, including separately installed UIs.
+[[ "$(printf '%s\n' "$rendered" | configmap_data_value LIFECYCLE_UI_URL)" == '"https://ui.example.com"' ]] ||
+  fail "default UI URL was not supplied"
+rendered=$(render_umbrella sites --set ui.enabled=false --set ui.config.appUrl=https://reader.example.org)
+[[ "$(printf '%s\n' "$rendered" | configmap_data_value LIFECYCLE_UI_URL)" == '"https://reader.example.org"' ]] ||
+  fail "standalone UI URL was not supplied"
+
 if render_umbrella collision-check \
   --set-string keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name=shared-api-credential \
   --set-string keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name=shared-api-credential \
