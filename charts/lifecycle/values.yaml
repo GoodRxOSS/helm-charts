@@ -456,12 +456,12 @@ keycloak:
           name:
           key:
 
-    # Lifecycle worker receives this separate read-only credential for
-    # principal status synchronization.
+    # Worker and web share this read-only credential for principal
+    # synchronization and Sites mint/management status checks.
     lifecycleApiPrincipalSync:
-      # -- Inject the read-only principal-sync credential only into Lifecycle worker.
+      # -- Inject the read-only principal-status credential into worker and web.
       enabled: true
-      # -- Keycloak client ID for Lifecycle worker principal synchronization.
+      # -- Keycloak client ID for read-only principal status checks.
       clientId: lifecycle-api-principal-sync
       clientSecret:
         secretKeyRef:

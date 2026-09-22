@@ -102,8 +102,9 @@ This chart bootstraps two fixed, confidential service-account clients:
   `manage-clients` and `manage-realm` for the Lifecycle web process. Keycloak
   expands the built-in `manage-realm` composites in its token.
 * `lifecycle-api-principal-sync` is directly assigned only `view-users` and
-  `query-users` for the Lifecycle worker. On Keycloak 26.4.7, `query-users`
-  also adds its built-in `query-groups` composite to the token.
+  `query-users` for Lifecycle web and worker principal-status checks. On
+  Keycloak 26.4.7, `query-users` also adds its built-in `query-groups` composite
+  to the token.
 
 Their Kubernetes Secrets are lookup-stable and remain in place during rollback.
 `KeycloakRealmImport` creates the clients during the initial realm import. The
@@ -136,7 +137,8 @@ secrets:
 `KeycloakRealmImport` is one-shot: upgrading an installation whose Lifecycle
 realm already exists will not add either client. Create the missing clients
 externally before enabling MCP (`lifecycle-api-keycloak-management`) or relying
-on the API-key owner sweep (`lifecycle-api-principal-sync`). Each is an enabled
+on API-key owner synchronization or human Sites operations
+(`lifecycle-api-principal-sync`). Each is an enabled
 confidential OpenID Connect service-account client with interactive and
 direct-access flows disabled, `fullScopeAllowed: false`, and scope mappings for
 exactly its `realm-management` roles: `manage-clients` + `manage-realm` for the
@@ -208,9 +210,9 @@ Chart-generated credential Secrets use
 them. If the Keycloak realm is retained, revoke or delete the matching clients
 before deleting the retained Secrets. Rotate a credential by updating its
 Keycloak client and Kubernetes Secret as one coordinated operation, then
-restart only the owning Lifecycle process (`web` for management, `worker` for
-principal sync). `KeycloakRealmImport` is one-shot, so changing a Helm value
-alone does not rotate an existing client.
+restart the consuming Lifecycle processes (`web` for management; `web` and
+`worker` for principal status). `KeycloakRealmImport` is one-shot, so changing a
+Helm value alone does not rotate an existing client.
 
 ---
 
@@ -244,10 +246,10 @@ helm upgrade -i lifecycle-keycloak \
 | clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.key | string | `nil` |  |
 | clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name | string | `nil` |  |
 | clients.lifecycleApiKeycloakManagement.enabled | bool | `true` | Bootstrap the web-only Lifecycle API Keycloak-management credential. |
-| clients.lifecycleApiPrincipalSync.clientId | string | `"lifecycle-api-principal-sync"` | Keycloak client ID for the worker-only principal-sync credential. |
+| clients.lifecycleApiPrincipalSync.clientId | string | `"lifecycle-api-principal-sync"` | Keycloak client ID for the read-only principal-status credential. |
 | clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key | string | `nil` |  |
 | clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name | string | `nil` |  |
-| clients.lifecycleApiPrincipalSync.enabled | bool | `true` | Bootstrap the worker-only read-only principal-sync credential. |
+| clients.lifecycleApiPrincipalSync.enabled | bool | `true` | Bootstrap the read-only principal-status credential. |
 | clients.lifecycleCli.clientId | string | `"lifecycle-cli"` |  |
 | clients.lifecycleCli.enabled | bool | `true` |  |
 | clients.lifecycleCore.clientId | string | `"lifecycle-core"` |  |

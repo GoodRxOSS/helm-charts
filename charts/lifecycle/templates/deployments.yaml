@@ -149,7 +149,7 @@ spec:
                   name: {{ tpl ($.Values.keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name | default (include "..helper.apiKeycloakManagementSecretName" $)) $ | quote }}
                   key: {{ $.Values.keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.key | default "clientSecret" | quote }}
             {{- end }}
-            {{- if and (eq $name "worker") $.Values.keycloak.enabled $.Values.keycloak.clients.lifecycleApiPrincipalSync.enabled }}
+            {{- if and (or (eq $name "worker") (eq $name "web")) $.Values.keycloak.enabled $.Values.keycloak.clients.lifecycleApiPrincipalSync.enabled }}
             - name: KEYCLOAK_PRINCIPAL_SYNC_CLIENT_ID
               value: {{ $.Values.keycloak.clients.lifecycleApiPrincipalSync.clientId | quote }}
             - name: KEYCLOAK_PRINCIPAL_SYNC_CLIENT_SECRET

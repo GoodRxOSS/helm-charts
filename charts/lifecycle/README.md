@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.12](https://img.shields.io/badge/Version-0.9.12-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.1](https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square)
+![Version: 0.9.13](https://img.shields.io/badge/Version-0.9.13-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.1](https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,21 +40,33 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.12 \
+  --version 0.9.13 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
 ```
 
+## Private Sites release and configuration
+
+Use matching core, gateway, and UI images that support Sites access control.
+Enable Sites through its existing core configuration setting. The chart already
+sets `LIFECYCLE_UI_URL` from `ui.config.appUrl` or the global UI domain. Set
+`ui.config.appUrl` when the UI is installed separately.
+
+Human Sites management and new browser grants use the existing read-only
+`lifecycleApiPrincipalSync` client. Keep a gateway that enforces access control
+during rollback, or disable Sites until a compatible gateway is available.
+
 ## Lifecycle API Keycloak Credentials
 
 The bundled Keycloak chart creates two separate service-account credentials.
-The Lifecycle web Deployment receives only
-`lifecycle-api-keycloak-management`; the worker receives only
-`lifecycle-api-principal-sync`. Neither credential is exposed through a shared
-`envFrom`, the gateway, or Lifecycle UI. The Keycloak server pod receives
-neither secret; the realm-import Job reads both through `KeycloakRealmImport`
-placeholders to substitute them into the two clients at first import.
+Only the Lifecycle web Deployment receives
+`lifecycle-api-keycloak-management`. Web and worker receive the read-only
+`lifecycle-api-principal-sync` credential for principal synchronization and Sites
+mint/management status checks. Neither credential is exposed through a shared
+`envFrom`, the gateway, or Lifecycle UI. The Keycloak server pod receives neither
+secret; the realm-import Job reads both through `KeycloakRealmImport` placeholders
+to substitute them into the two clients at first import.
 
 `KeycloakRealmImport` creates both clients only when the realm is first
 imported. It does not reconcile an existing realm. For an existing
@@ -72,8 +84,8 @@ Chart-generated credential Secrets use
 them. If the Keycloak realm is retained, revoke or delete the matching Keycloak
 clients before deleting the retained Secrets. Rotate a credential by updating
 the Keycloak client and Kubernetes Secret as one coordinated operation, then
-restart only its owning Deployment (`web` for management, `worker` for
-principal sync). Because realm import is one-shot, changing a Helm value alone
+restart its consuming Deployments (`web` for management; `web` and `worker` for
+principal status). Because realm import is one-shot, changing a Helm value alone
 does not rotate an existing Keycloak client.
 
 ## Requirements
@@ -299,10 +311,10 @@ does not rotate an existing Keycloak client.
 | keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.key | string | `nil` |  |
 | keycloak.clients.lifecycleApiKeycloakManagement.clientSecret.secretKeyRef.name | string | `nil` |  |
 | keycloak.clients.lifecycleApiKeycloakManagement.enabled | bool | `true` | Inject the Keycloak-management credential only into Lifecycle web. |
-| keycloak.clients.lifecycleApiPrincipalSync.clientId | string | `"lifecycle-api-principal-sync"` | Keycloak client ID for Lifecycle worker principal synchronization. |
+| keycloak.clients.lifecycleApiPrincipalSync.clientId | string | `"lifecycle-api-principal-sync"` | Keycloak client ID for read-only principal status checks. |
 | keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key | string | `nil` |  |
 | keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.name | string | `nil` |  |
-| keycloak.clients.lifecycleApiPrincipalSync.enabled | bool | `true` | Inject the read-only principal-sync credential only into Lifecycle worker. |
+| keycloak.clients.lifecycleApiPrincipalSync.enabled | bool | `true` | Inject the read-only principal-status credential into worker and web. |
 | keycloak.clients.lifecycleUi.url | string | `"https://ui.example.com"` |  |
 | keycloak.enabled | bool | `true` |  |
 | keycloak.externalDatabase.database | string | `"keycloak"` |  |
