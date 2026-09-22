@@ -466,6 +466,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#private-sites-release-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private Sites release and configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-api-keycloak-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -580,6 +591,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#private-sites-release-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private Sites release and configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#lifecycle-api-keycloak-credentials" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -630,7 +652,7 @@
 
 
 <h1 id="lifecycle">lifecycle</h1>
-<p><img alt="Version: 0.9.12" src="https://img.shields.io/badge/Version-0.9.12-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.2.1" src="https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square" /></p>
+<p><img alt="Version: 0.9.13" src="https://img.shields.io/badge/Version-0.9.13-informational?style=flat-square" />  <img alt="Type: application" src="https://img.shields.io/badge/Type-application-informational?style=flat-square" />  <img alt="AppVersion: 0.2.1" src="https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square" /></p>
 <p>A Helm umbrella chart for full Lifecycle stack</p>
 <h2 id="installation">Installation</h2>
 <h3 id="prerequisites">Prerequisites</h3>
@@ -647,32 +669,41 @@
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nt">buildkit</span><span class="p">:</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="nt">buildkitdToml</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="no">debug = true</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="no">[registry.&quot;distribution.YOUR-DOMAIN.com&quot;]  # CHANGE THIS to match your domain</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="no">[registry."distribution.YOUR-DOMAIN.com"]  # CHANGE THIS to match your domain</span>
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">      </span><span class="no">http = true</span>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">      </span><span class="no">insecure = true</span>
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="no">[worker.oci]</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">      </span><span class="no">platforms = [ &quot;linux/amd64&quot; ]</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">      </span><span class="no">reservedSpace = &quot;60%&quot;</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">      </span><span class="no">maxUsedSpace = &quot;80%&quot;</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">      </span><span class="no">platforms = [ "linux/amd64" ]</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">      </span><span class="no">reservedSpace = "60%"</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">      </span><span class="no">maxUsedSpace = "80%"</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">      </span><span class="no">max-parallelism = 25</span>
 </span></code></pre></div>
 <p><strong>Important:</strong> Replace all instances of <code>YOUR-DOMAIN.com</code> with your actual domain name.</p>
 <h3 id="install-the-chart">Install the Chart</h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>helm<span class="w"> </span>upgrade<span class="w"> </span>-i<span class="w"> </span>lifecycle<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span>oci://ghcr.io/goodrxoss/helm-charts/lifecycle<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.9.12<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--version<span class="w"> </span><span class="m">0</span>.9.13<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>-f<span class="w"> </span>values.yaml<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>-n<span class="w"> </span>lifecycle-app<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>--create-namespace
 </span></code></pre></div>
+<h2 id="private-sites-release-and-configuration">Private Sites release and configuration</h2>
+<p>Use matching core, gateway, and UI images that support Sites access control.
+Enable Sites through its existing core configuration setting. The chart already
+sets <code>LIFECYCLE_UI_URL</code> from <code>ui.config.appUrl</code> or the global UI domain. Set
+<code>ui.config.appUrl</code> when the UI is installed separately.</p>
+<p>Human Sites management and new browser grants use the existing read-only
+<code>lifecycleApiPrincipalSync</code> client. Keep a gateway that enforces access control
+during rollback, or disable Sites until a compatible gateway is available.</p>
 <h2 id="lifecycle-api-keycloak-credentials">Lifecycle API Keycloak Credentials</h2>
 <p>The bundled Keycloak chart creates two separate service-account credentials.
-The Lifecycle web Deployment receives only
-<code>lifecycle-api-keycloak-management</code>; the worker receives only
-<code>lifecycle-api-principal-sync</code>. Neither credential is exposed through a shared
-<code>envFrom</code>, the gateway, or Lifecycle UI. The Keycloak server pod receives
-neither secret; the realm-import Job reads both through <code>KeycloakRealmImport</code>
-placeholders to substitute them into the two clients at first import.</p>
+Only the Lifecycle web Deployment receives
+<code>lifecycle-api-keycloak-management</code>. Web and worker receive the read-only
+<code>lifecycle-api-principal-sync</code> credential for principal synchronization and Sites
+mint/management status checks. Neither credential is exposed through a shared
+<code>envFrom</code>, the gateway, or Lifecycle UI. The Keycloak server pod receives neither
+secret; the realm-import Job reads both through <code>KeycloakRealmImport</code> placeholders
+to substitute them into the two clients at first import.</p>
 <p><code>KeycloakRealmImport</code> creates both clients only when the realm is first
 imported. It does not reconcile an existing realm. For an existing
 installation, create a missing <code>lifecycle-api-keycloak-management</code> confidential
@@ -688,8 +719,8 @@ Chart-generated credential Secrets use
 them. If the Keycloak realm is retained, revoke or delete the matching Keycloak
 clients before deleting the retained Secrets. Rotate a credential by updating
 the Keycloak client and Kubernetes Secret as one coordinated operation, then
-restart only its owning Deployment (<code>web</code> for management, <code>worker</code> for
-principal sync). Because realm import is one-shot, changing a Helm value alone
+restart its consuming Deployments (<code>web</code> for management; <code>web</code> and <code>worker</code> for
+principal status). Because realm import is one-shot, changing a Helm value alone
 does not rotate an existing Keycloak client.</p>
 <h2 id="requirements">Requirements</h2>
 <table>
@@ -1995,7 +2026,7 @@ does not rotate an existing Keycloak client.</p>
 <td>keycloak.clients.lifecycleApiPrincipalSync.clientId</td>
 <td>string</td>
 <td><code>"lifecycle-api-principal-sync"</code></td>
-<td>Keycloak client ID for Lifecycle worker principal synchronization.</td>
+<td>Keycloak client ID for read-only principal status checks.</td>
 </tr>
 <tr>
 <td>keycloak.clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key</td>
@@ -2013,7 +2044,7 @@ does not rotate an existing Keycloak client.</p>
 <td>keycloak.clients.lifecycleApiPrincipalSync.enabled</td>
 <td>bool</td>
 <td><code>true</code></td>
-<td>Inject the read-only principal-sync credential only into Lifecycle worker.</td>
+<td>Inject the read-only principal-status credential into worker and web.</td>
 </tr>
 <tr>
 <td>keycloak.clients.lifecycleUi.url</td>

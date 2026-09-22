@@ -868,17 +868,17 @@
 <h3 id="prerequisites">Prerequisites</h3>
 <p>Before installing, ensure the operator is running and watching the target namespace. Create a <code>values.yaml</code> file to configure your instance.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Example minimal values.yaml</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://keycloak.example.com&quot;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s">"https://keycloak.example.com"</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nt">clients</span><span class="p">:</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">lifecycleUi</span><span class="p">:</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;https://ui.example.com&quot;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s">"https://ui.example.com"</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nt">secrets</span><span class="p">:</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="nt">githubIdp</span><span class="p">:</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="nt">clientId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-github-id&quot;</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-github-secret&quot;</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="nt">clientId</span><span class="p">:</span><span class="w"> </span><span class="s">"your-github-id"</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"your-github-secret"</span>
 </span></code></pre></div>
 <hr />
 <h2 id="configuration-details">Configuration Details</h2>
@@ -891,25 +891,25 @@
 <p>Reference an existing Kubernetes Secret. The <code>name</code> field supports Helm templates.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">secrets</span><span class="p">:</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">githubIdp</span><span class="p">:</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># We don&#39;t need the chart to create a secret</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># We don't need the chart to create a secret</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nt">githubIdp</span><span class="p">:</span>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="nt">clientId</span><span class="p">:</span>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="nt">secretKeyRef</span><span class="p">:</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;{{</span><span class="nv"> </span><span class="s">.Release.Name</span><span class="nv"> </span><span class="s">}}-custom-secret&#39;</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;github-client-id&quot;</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">'{{</span><span class="nv"> </span><span class="s">.Release.Name</span><span class="nv"> </span><span class="s">}}-custom-secret'</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">"github-client-id"</span>
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="nt">clientSecret</span><span class="p">:</span>
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">secretKeyRef</span><span class="p">:</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-existing-secret&quot;</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;github-client-secret&quot;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">"my-existing-secret"</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">"github-client-secret"</span>
 </span></code></pre></div>
 <h4 id="option-b-inline-credentials-universal-but-less-secure">Option B: Inline Credentials (Universal but less secure)</h4>
 <p>The chart will automatically create a Secret for you.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">secrets</span><span class="p">:</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">githubIdp</span><span class="p">:</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">clientId</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-github-id&quot;</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;your-github-secret&quot;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">clientId</span><span class="p">:</span><span class="w"> </span><span class="s">"your-github-id"</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">clientSecret</span><span class="p">:</span><span class="w"> </span><span class="s">"your-github-secret"</span>
 </span></code></pre></div>
 <h3 id="2-hostname-and-client-urls">2. Hostname and Client URLs</h3>
 <p>You <strong>must</strong> provide the actual domains during installation. These are used for redirect URIs and token issuance.</p>
@@ -924,8 +924,9 @@
   <code>manage-clients</code> and <code>manage-realm</code> for the Lifecycle web process. Keycloak
   expands the built-in <code>manage-realm</code> composites in its token.</li>
 <li><code>lifecycle-api-principal-sync</code> is directly assigned only <code>view-users</code> and
-  <code>query-users</code> for the Lifecycle worker. On Keycloak 26.4.7, <code>query-users</code>
-  also adds its built-in <code>query-groups</code> composite to the token.</li>
+  <code>query-users</code> for Lifecycle web and worker principal-status checks. On
+  Keycloak 26.4.7, <code>query-users</code> also adds its built-in <code>query-groups</code> composite
+  to the token.</li>
 </ul>
 <p>Their Kubernetes Secrets are lookup-stable and remain in place during rollback.
 <code>KeycloakRealmImport</code> creates the clients during the initial realm import. The
@@ -953,7 +954,8 @@ client registration when an administrator enables MCP.</p>
 <p><code>KeycloakRealmImport</code> is one-shot: upgrading an installation whose Lifecycle
 realm already exists will not add either client. Create the missing clients
 externally before enabling MCP (<code>lifecycle-api-keycloak-management</code>) or relying
-on the API-key owner sweep (<code>lifecycle-api-principal-sync</code>). Each is an enabled
+on API-key owner synchronization or human Sites operations
+(<code>lifecycle-api-principal-sync</code>). Each is an enabled
 confidential OpenID Connect service-account client with interactive and
 direct-access flows disabled, <code>fullScopeAllowed: false</code>, and scope mappings for
 exactly its <code>realm-management</code> roles: <code>manage-clients</code> + <code>manage-realm</code> for the
@@ -983,22 +985,22 @@ operation.</p>
 <code>ROLES="view-users query-users"</code> for the second client):</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nv">REALM</span><span class="o">=</span>lifecycle
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">C</span><span class="o">=</span>lifecycle-api-keycloak-management
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">ROLES</span><span class="o">=</span><span class="s2">&quot;manage-clients manage-realm&quot;</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">SECRET</span><span class="o">=</span>...<span class="w"> </span><span class="c1"># the value from the client&#39;s Kubernetes Secret</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">ROLES</span><span class="o">=</span><span class="s2">"manage-clients manage-realm"</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">SECRET</span><span class="o">=</span>...<span class="w"> </span><span class="c1"># the value from the client's Kubernetes Secret</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>kcadm.sh<span class="w"> </span>create<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$C</span><span class="s2">&quot;</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">protocol</span><span class="o">=</span>openid-connect<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>kcadm.sh<span class="w"> </span>create<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">"</span><span class="nv">$REALM</span><span class="s2">"</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span><span class="s2">"</span><span class="nv">$C</span><span class="s2">"</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">protocol</span><span class="o">=</span>openid-connect<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span>-s<span class="w"> </span><span class="nv">publicClient</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">serviceAccountsEnabled</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">standardFlowEnabled</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span>-s<span class="w"> </span><span class="nv">implicitFlowEnabled</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">directAccessGrantsEnabled</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span>-s<span class="w"> </span><span class="nv">fullScopeAllowed</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">secret</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$SECRET</span><span class="s2">&quot;</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span>-s<span class="w"> </span><span class="nv">fullScopeAllowed</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span>-s<span class="w"> </span><span class="nv">secret</span><span class="o">=</span><span class="s2">"</span><span class="nv">$SECRET</span><span class="s2">"</span>
 </span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>kcadm.sh<span class="w"> </span>add-roles<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>--uusername<span class="w"> </span><span class="s2">&quot;service-account-</span><span class="nv">$C</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span>--cclientid<span class="w"> </span>realm-management<span class="w"> </span><span class="k">$(</span><span class="nb">printf</span><span class="w"> </span>--<span class="w"> </span><span class="s1">&#39;--rolename %s &#39;</span><span class="w"> </span><span class="nv">$ROLES</span><span class="k">)</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>kcadm.sh<span class="w"> </span>add-roles<span class="w"> </span>-r<span class="w"> </span><span class="s2">"</span><span class="nv">$REALM</span><span class="s2">"</span><span class="w"> </span>--uusername<span class="w"> </span><span class="s2">"service-account-</span><span class="nv">$C</span><span class="s2">"</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span>--cclientid<span class="w"> </span>realm-management<span class="w"> </span><span class="k">$(</span><span class="nb">printf</span><span class="w"> </span>--<span class="w"> </span><span class="s1">'--rolename %s '</span><span class="w"> </span><span class="nv">$ROLES</span><span class="k">)</span>
 </span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="nv">CID</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-q<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$C</span><span class="s2">&quot;</span><span class="w"> </span>--fields<span class="w"> </span>id<span class="w"> </span>--format<span class="w"> </span>csv<span class="w"> </span>--noquotes<span class="k">)</span>
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nv">RMID</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-q<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span>realm-management<span class="w"> </span>--fields<span class="w"> </span>id<span class="w"> </span>--format<span class="w"> </span>csv<span class="w"> </span>--noquotes<span class="k">)</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="nv">CID</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">"</span><span class="nv">$REALM</span><span class="s2">"</span><span class="w"> </span>-q<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span><span class="s2">"</span><span class="nv">$C</span><span class="s2">"</span><span class="w"> </span>--fields<span class="w"> </span>id<span class="w"> </span>--format<span class="w"> </span>csv<span class="w"> </span>--noquotes<span class="k">)</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="nv">RMID</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span>clients<span class="w"> </span>-r<span class="w"> </span><span class="s2">"</span><span class="nv">$REALM</span><span class="s2">"</span><span class="w"> </span>-q<span class="w"> </span><span class="nv">clientId</span><span class="o">=</span>realm-management<span class="w"> </span>--fields<span class="w"> </span>id<span class="w"> </span>--format<span class="w"> </span>csv<span class="w"> </span>--noquotes<span class="k">)</span>
 </span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="k">for</span><span class="w"> </span>ROLE<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nv">$ROLES</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">  </span><span class="nv">R</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span><span class="s2">&quot;clients/</span><span class="nv">$RMID</span><span class="s2">/roles/</span><span class="nv">$ROLE</span><span class="s2">&quot;</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>--fields<span class="w"> </span>id,name<span class="k">)</span>
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">  </span>kcadm.sh<span class="w"> </span>create<span class="w"> </span><span class="s2">&quot;clients/</span><span class="nv">$CID</span><span class="s2">/scope-mappings/clients/</span><span class="nv">$RMID</span><span class="s2">&quot;</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REALM</span><span class="s2">&quot;</span><span class="w"> </span>-b<span class="w"> </span><span class="s2">&quot;[</span><span class="nv">$R</span><span class="s2">]&quot;</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">  </span><span class="nv">R</span><span class="o">=</span><span class="k">$(</span>kcadm.sh<span class="w"> </span>get<span class="w"> </span><span class="s2">"clients/</span><span class="nv">$RMID</span><span class="s2">/roles/</span><span class="nv">$ROLE</span><span class="s2">"</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">"</span><span class="nv">$REALM</span><span class="s2">"</span><span class="w"> </span>--fields<span class="w"> </span>id,name<span class="k">)</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">  </span>kcadm.sh<span class="w"> </span>create<span class="w"> </span><span class="s2">"clients/</span><span class="nv">$CID</span><span class="s2">/scope-mappings/clients/</span><span class="nv">$RMID</span><span class="s2">"</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">"</span><span class="nv">$REALM</span><span class="s2">"</span><span class="w"> </span>-b<span class="w"> </span><span class="s2">"[</span><span class="nv">$R</span><span class="s2">]"</span>
 </span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="k">done</span>
 </span></code></pre></div>
 <p>The preferred migration path is to let an external secret manager supply the
@@ -1016,9 +1018,9 @@ Chart-generated credential Secrets use
 them. If the Keycloak realm is retained, revoke or delete the matching clients
 before deleting the retained Secrets. Rotate a credential by updating its
 Keycloak client and Kubernetes Secret as one coordinated operation, then
-restart only the owning Lifecycle process (<code>web</code> for management, <code>worker</code> for
-principal sync). <code>KeycloakRealmImport</code> is one-shot, so changing a Helm value
-alone does not rotate an existing client.</p>
+restart the consuming Lifecycle processes (<code>web</code> for management; <code>web</code> and
+<code>worker</code> for principal status). <code>KeycloakRealmImport</code> is one-shot, so changing a
+Helm value alone does not rotate an existing client.</p>
 <hr />
 <h2 id="lifecycle-management-realm-import">Lifecycle Management &amp; Realm Import</h2>
 <p>This chart uses the <code>KeycloakRealmImport</code> resource for the initial setup.</p>
@@ -1081,7 +1083,7 @@ alone does not rotate an existing client.</p>
 <td>clients.lifecycleApiPrincipalSync.clientId</td>
 <td>string</td>
 <td><code>"lifecycle-api-principal-sync"</code></td>
-<td>Keycloak client ID for the worker-only principal-sync credential.</td>
+<td>Keycloak client ID for the read-only principal-status credential.</td>
 </tr>
 <tr>
 <td>clients.lifecycleApiPrincipalSync.clientSecret.secretKeyRef.key</td>
@@ -1099,7 +1101,7 @@ alone does not rotate an existing client.</p>
 <td>clients.lifecycleApiPrincipalSync.enabled</td>
 <td>bool</td>
 <td><code>true</code></td>
-<td>Bootstrap the worker-only read-only principal-sync credential.</td>
+<td>Bootstrap the read-only principal-status credential.</td>
 </tr>
 <tr>
 <td>clients.lifecycleCli.clientId</td>
