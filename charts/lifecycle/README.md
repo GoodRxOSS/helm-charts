@@ -334,6 +334,7 @@ does not rotate an existing Keycloak client.
 | keycloak.githubIdp.githubJsonFormat | bool | `true` |  |
 | keycloak.hostname | string | `"https://auth.example.com"` |  |
 | keycloak.keycloakPostgres.enabled | bool | `true` |  |
+| keycloak.keycloakPostgres.image.tag | string | `"16.6.0-debian-12-r2"` |  |
 | keycloak.keycloakPostgres.nameOverride | string | `"keycloak-postgres"` |  |
 | keycloak.secrets.apiKeycloakManagement.clientSecret | string | `nil` |  |
 | keycloak.secrets.apiKeycloakManagement.enabled | bool | `true` | Create the lookup-stable Keycloak-management client Secret. |
@@ -350,6 +351,8 @@ does not rotate an existing Keycloak client.
 | minio.console.image.repository | string | `"bitnamilegacy/minio-object-browser"` |  |
 | minio.console.image.tag | string | `"2.0.2-debian-12-r4"` |  |
 | minio.defaultBuckets | string | `"lifecycle-logs"` |  |
+| minio.defaultInitContainers.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
+| minio.defaultInitContainers.volumePermissions.image.tag | string | `"12-debian-12-r51"` |  |
 | minio.enabled | bool | `false` |  |
 | minio.fullnameOverride | string | `""` |  |
 | minio.image.repository | string | `"bitnamilegacy/minio"` |  |
@@ -358,8 +361,6 @@ does not rotate an existing Keycloak client.
 | minio.persistence.size | string | `"20Gi"` |  |
 | minio.resources.requests.cpu | string | `"100m"` |  |
 | minio.resources.requests.memory | string | `"256Mi"` |  |
-| minio.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
-| minio.volumePermissions.image.tag | string | `"12-debian-12-r51"` |  |
 | objectStore.bucket | string | `""` |  |
 | objectStore.endpoint | string | `""` |  |
 | objectStore.port | string | `"9000"` |  |
