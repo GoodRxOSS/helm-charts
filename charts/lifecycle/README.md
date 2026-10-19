@@ -1,6 +1,6 @@
 # lifecycle
 
-![Version: 0.9.13](https://img.shields.io/badge/Version-0.9.13-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.1](https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square)
+![Version: 0.9.14](https://img.shields.io/badge/Version-0.9.14-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.2.1](https://img.shields.io/badge/AppVersion-0.2.1-informational?style=flat-square)
 
 A Helm umbrella chart for full Lifecycle stack
 
@@ -40,7 +40,7 @@ buildkit:
 ```bash
 helm upgrade -i lifecycle \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle \
-  --version 0.9.13 \
+  --version 0.9.14 \
   -f values.yaml \
   -n lifecycle-app \
   --create-namespace
@@ -92,13 +92,13 @@ does not rotate an existing Keycloak client.
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 1.4.0 |
+| https://andrcuns.github.io/charts | buildkit(buildkit-service) | 1.8.0 |
 | https://charts.bitnami.com/bitnami | minio(minio) | 17.0.21 |
-| https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.19 |
-| https://charts.bitnami.com/bitnami | redis(redis) | 19.6.3 |
+| https://charts.bitnami.com/bitnami | postgres(postgresql) | 15.5.38 |
+| https://charts.bitnami.com/bitnami | redis(redis) | 19.6.4 |
 | https://goodrxoss.github.io/helm-charts | keycloak(lifecycle-keycloak) | 0.7.6 |
 | https://goodrxoss.github.io/helm-charts | ui(lifecycle-ui) | 0.3.5 |
-| https://jouve.github.io/charts | distribution(distribution) | 0.1.7 |
+| https://jouve.github.io/charts | distribution(distribution) | 0.1.10 |
 
 ## Values
 
@@ -107,6 +107,7 @@ does not rotate an existing Keycloak client.
 | buildkit.buildkitdToml | string | `"debug = true\n[registry.\"distribution.example.com\"]\n  http = true\n  insecure = true\n[worker.oci]\n  platforms = [ \"linux/amd64\" ]\n  reservedSpace = \"60%\"\n  maxUsedSpace = \"80%\"\n  max-parallelism = 25\n"` |  |
 | buildkit.enabled | bool | `true` |  |
 | buildkit.fullnameOverride | string | `""` |  |
+| buildkit.image.tag | string | `"v0.33.1"` |  |
 | buildkit.resources.requests.cpu | string | `"500m"` |  |
 | buildkit.resources.requests.memory | string | `"1Gi"` |  |
 | components.gateway.container.args | list | `[]` |  |
@@ -333,6 +334,7 @@ does not rotate an existing Keycloak client.
 | keycloak.githubIdp.githubJsonFormat | bool | `true` |  |
 | keycloak.hostname | string | `"https://auth.example.com"` |  |
 | keycloak.keycloakPostgres.enabled | bool | `true` |  |
+| keycloak.keycloakPostgres.image.tag | string | `"16.6.0-debian-12-r2"` |  |
 | keycloak.keycloakPostgres.nameOverride | string | `"keycloak-postgres"` |  |
 | keycloak.secrets.apiKeycloakManagement.clientSecret | string | `nil` |  |
 | keycloak.secrets.apiKeycloakManagement.enabled | bool | `true` | Create the lookup-stable Keycloak-management client Secret. |
@@ -345,20 +347,20 @@ does not rotate an existing Keycloak client.
 | minio.auth.rootPasswordSecretKey | string | `"OBJECT_STORE_SECRET_KEY"` |  |
 | minio.auth.rootUserSecretKey | string | `"OBJECT_STORE_ACCESS_KEY"` |  |
 | minio.clientImage.repository | string | `"bitnamilegacy/minio-client"` |  |
-| minio.clientImage.tag | string | `"2025.7.23"` |  |
+| minio.clientImage.tag | string | `"2025.7.21-debian-12-r3"` |  |
 | minio.console.image.repository | string | `"bitnamilegacy/minio-object-browser"` |  |
-| minio.console.image.tag | string | `"2.0.2-debian-12-r3"` |  |
+| minio.console.image.tag | string | `"2.0.2-debian-12-r4"` |  |
 | minio.defaultBuckets | string | `"lifecycle-logs"` |  |
+| minio.defaultInitContainers.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
+| minio.defaultInitContainers.volumePermissions.image.tag | string | `"12-debian-12-r51"` |  |
 | minio.enabled | bool | `false` |  |
 | minio.fullnameOverride | string | `""` |  |
 | minio.image.repository | string | `"bitnamilegacy/minio"` |  |
-| minio.image.tag | string | `"2025.7.23"` |  |
+| minio.image.tag | string | `"2025.7.23-debian-12-r5"` |  |
 | minio.persistence.enabled | bool | `true` |  |
 | minio.persistence.size | string | `"20Gi"` |  |
 | minio.resources.requests.cpu | string | `"100m"` |  |
 | minio.resources.requests.memory | string | `"256Mi"` |  |
-| minio.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
-| minio.volumePermissions.image.tag | string | `"2025.7.23"` |  |
 | objectStore.bucket | string | `""` |  |
 | objectStore.endpoint | string | `""` |  |
 | objectStore.port | string | `"9000"` |  |
@@ -373,6 +375,7 @@ does not rotate an existing Keycloak client.
 | postgres.enabled | bool | `true` |  |
 | postgres.fullnameOverride | string | `""` |  |
 | postgres.image.repository | string | `"bitnamilegacy/postgresql"` |  |
+| postgres.image.tag | string | `"16.6.0-debian-12-r2"` |  |
 | postgres.primary.persistence.enabled | bool | `true` |  |
 | postgres.primary.persistence.size | string | `"11Gi"` |  |
 | rbac.create | bool | `true` |  |
@@ -384,6 +387,7 @@ does not rotate an existing Keycloak client.
 | redis.enabled | bool | `true` |  |
 | redis.fullnameOverride | string | `""` |  |
 | redis.image.repository | string | `"bitnamilegacy/redis"` |  |
+| redis.image.tag | string | `"7.2.5-debian-12-r6"` |  |
 | redis.master.persistence.enabled | bool | `true` |  |
 | redis.master.persistence.size | string | `"8Gi"` |  |
 | secrets.bootstrap.annotations | list | `[]` |  |

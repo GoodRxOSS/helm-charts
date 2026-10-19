@@ -352,8 +352,10 @@ postgres:
   # Refer to Bitnami PostgreSQL chart docs for all options:
   # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
 
+  # bitnamilegacy images no longer receive updates; this is the newest 16.x build published there.
   image:
     repository: bitnamilegacy/postgresql
+    tag: 16.6.0-debian-12-r2
   auth:
     database: lifecycle
     username: lifecycle
@@ -383,8 +385,10 @@ redis:
   # Refer to Bitnami Redis chart docs for all options:
   # https://github.com/bitnami/charts/tree/main/bitnami/redis
 
+  # bitnamilegacy images no longer receive updates; this is the newest 7.2.x build published there.
   image:
     repository: bitnamilegacy/redis
+    tag: 7.2.5-debian-12-r6
   auth:
     enabled: true
     password: "password"
@@ -421,6 +425,9 @@ distribution:
 buildkit:
   enabled: true
   fullnameOverride: ""
+  # Overrides the chart's appVersion tag. Use a `-rootless` tag when setting `rootless: true`.
+  image:
+    tag: v0.33.1
   buildkitdToml: |
     debug = true
     [registry."distribution.example.com"]
@@ -497,6 +504,9 @@ keycloak:
   keycloakPostgres:
     enabled: true
     nameOverride: keycloak-postgres
+    # Matches the lifecycle-keycloak 0.7.7 default; drop once the keycloak dependency is >= 0.7.7.
+    image:
+      tag: 16.6.0-debian-12-r2
 
   externalDatabase:
     enabled: false
@@ -544,18 +554,19 @@ minio:
     rootPasswordSecretKey: "OBJECT_STORE_SECRET_KEY"
   image:
     repository: bitnamilegacy/minio
-    tag: "2025.7.23"
+    tag: "2025.7.23-debian-12-r5"
   clientImage:
     repository: bitnamilegacy/minio-client
-    tag: "2025.7.23"
+    tag: "2025.7.21-debian-12-r3"
   console:
     image:
       repository: bitnamilegacy/minio-object-browser
-      tag: "2.0.2-debian-12-r3"
-  volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
-      tag: "2025.7.23"
+      tag: "2.0.2-debian-12-r4"
+  defaultInitContainers:
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell
+        tag: "12-debian-12-r51"
   persistence:
     enabled: true
     size: 20Gi

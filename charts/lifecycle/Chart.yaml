@@ -16,35 +16,35 @@ apiVersion: v2
 name: lifecycle
 description: A Helm umbrella chart for full Lifecycle stack
 type: application
-version: 0.9.13
+version: 0.9.14
 appVersion: 0.2.1
 
 dependencies:
   # PostgreSQL Dependency
   - name: postgresql
     alias: postgres
-    version: 15.5.19
+    version: 15.5.38
     repository: "https://charts.bitnami.com/bitnami"
     condition: postgres.enabled
 
   # Redis Dependency
   - name: redis
     alias: redis
-    version: 19.6.3
+    version: 19.6.4
     repository: "https://charts.bitnami.com/bitnami"
     condition: redis.enabled
 
   # Distribution (Container Registry) Dependency
   - name: distribution
     alias: distribution
-    version: 0.1.7
+    version: 0.1.10
     repository: "https://jouve.github.io/charts"
     condition: distribution.enabled
 
   # BuildKit (Buildx) Dependency
   - name: buildkit-service
     alias: buildkit
-    version: 1.4.0
+    version: 1.8.0
     repository: "https://andrcuns.github.io/charts"
     condition: buildkit.enabled
 
