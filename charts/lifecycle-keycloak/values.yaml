@@ -185,8 +185,10 @@ keycloakPostgres:
   # Refer to Bitnami PostgreSQL chart docs for all options:
   # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
 
+  # bitnamilegacy images no longer receive updates; this is the newest 16.x build published there.
   image:
     repository: bitnamilegacy/postgresql
+    tag: 16.6.0-debian-12-r2
   auth:
     database: keycloak
     username: keycloak

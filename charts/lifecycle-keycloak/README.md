@@ -1,6 +1,6 @@
 # lifecycle-keycloak
 
-![Version: 0.7.6](https://img.shields.io/badge/Version-0.7.6-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
+![Version: 0.7.7](https://img.shields.io/badge/Version-0.7.7-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 0.0.0](https://img.shields.io/badge/AppVersion-0.0.0-informational?style=flat-square)
 
 Keycloak instance for Lifecycle stack with automated Operator-driven setup and imports
 
@@ -18,7 +18,7 @@ This chart does **not** install the Keycloak Operator itself. It manages the con
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | keycloakPostgres(postgresql) | 15.5.19 |
+| https://charts.bitnami.com/bitnami | keycloakPostgres(postgresql) | 15.5.38 |
 
 ---
 
@@ -231,7 +231,7 @@ This chart uses the `KeycloakRealmImport` resource for the initial setup.
 ```shell
 helm upgrade -i lifecycle-keycloak \
   oci://ghcr.io/goodrxoss/helm-charts/lifecycle-keycloak \
-  --version 0.7.6 \
+  --version 0.7.7 \
   -f values.yaml \
   -n lifecycle-keycloak \
   --create-namespace
@@ -313,6 +313,7 @@ helm upgrade -i lifecycle-keycloak \
 | keycloakPostgres.enabled | bool | `true` |  |
 | keycloakPostgres.fullnameOverride | string | `""` |  |
 | keycloakPostgres.image.repository | string | `"bitnamilegacy/postgresql"` |  |
+| keycloakPostgres.image.tag | string | `"16.6.0-debian-12-r2"` |  |
 | keycloakPostgres.nameOverride | string | `"postgres"` |  |
 | keycloakPostgres.primary.persistence.enabled | bool | `true` |  |
 | keycloakPostgres.primary.persistence.size | string | `"1Gi"` |  |
