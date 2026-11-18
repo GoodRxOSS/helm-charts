@@ -16,7 +16,7 @@ apiVersion: v2
 name: lifecycle
 description: A Helm umbrella chart for full Lifecycle stack
 type: application
-version: 0.9.13
+version: 0.9.14
 appVersion: 0.2.1
 
 dependencies:
@@ -51,7 +51,7 @@ dependencies:
   # lifecycle-keycloak (Keycloak instance for Lifecycle) Dependency
   - name: lifecycle-keycloak
     alias: keycloak
-    version: 0.7.6
+    version: 0.7.7
     repository: "https://goodrxoss.github.io/helm-charts"
     condition: keycloak.enabled
 
