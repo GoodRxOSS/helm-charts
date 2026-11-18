@@ -112,6 +112,9 @@ internalIdp:
 
 instances: 1
 
+# Extra environment variables for the Keycloak server (Keycloak CR spec.env), e.g. JAVA_OPTS_APPEND.
+env: []
+
 ingress:
   enabled: true
   annotations:
