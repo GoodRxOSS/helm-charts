@@ -25,6 +25,10 @@ metadata:
   {{- end }}
 spec:
   instances: {{ .Values.instances }}
+  {{- with .Values.env }}
+  env:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   bootstrapAdmin:
     user:
       secret: {{ include "lifecycle-keycloak.bootstrapAdminSecretName" . | quote }}
